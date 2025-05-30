@@ -65,7 +65,7 @@ dependencies=[
   'pillow>=11.2.1',
   'requests>=2.32.3',
   'sentencepiece>=0.2.0',
-  'torch==2.3.0',
+  'torch==2.7.0',
   'torchvision==0.18.0',
   'transformers==4.51.3',
   'numpy<2.0.0',
