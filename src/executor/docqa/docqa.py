@@ -10,12 +10,12 @@ import i18n
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.modelfile import ParameterDict
-from kuwa.executor.llm_executor import extract_last_url
-from kuwa.client import KuwaClient
-from kuwa.rag.document_store_factory import DocumentStoreFactory
-from kuwa.rag.crawler import Crawler
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.modelfile import ParameterDict
+from skyscope.executor.llm_executor import extract_last_url
+from skyscope.client import SkyscopeClient
+from skyscope.rag.document_store_factory import DocumentStoreFactory
+from skyscope.rag.crawler import Crawler
 
 from src.docqa import DocQa
 
@@ -125,12 +125,12 @@ class DocQaExecutor(LLMExecutor):
         generator_group.add_argument(
             "--api_base_url",
             default="http://127.0.0.1/",
-            help="The API base URL of Kuwa multi-chat WebUI",
+            help="The API base URL of Skyscope multi-chat WebUI",
         )
         generator_group.add_argument(
             "--api_key",
             default=None,
-            help="The API authentication token of Kuwa multi-chat WebUI",
+            help="The API authentication token of Skyscope multi-chat WebUI",
         )
         generator_group.add_argument(
             "--limit",
@@ -141,7 +141,7 @@ class DocQaExecutor(LLMExecutor):
         generator_group.add_argument(
             "--model",
             default=None,
-            help="The model name (access code) on Kuwa multi-chat WebUI",
+            help="The model name (access code) on Skyscope multi-chat WebUI",
         )
         generator_group.add_argument(
             "--no_failback", action="store_true", help="Disable the failback mechanism."
@@ -193,7 +193,7 @@ class DocQaExecutor(LLMExecutor):
         self.display_ref_content = not display_params.get(
             "hide_ref_content", self.args.hide_ref_content
         )
-        self.llm = KuwaClient(
+        self.llm = SkyscopeClient(
             base_url=self.args.api_base_url,
             kernel_base_url=self.kernel_url,
             model=generator_params.get(

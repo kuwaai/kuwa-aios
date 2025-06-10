@@ -4,10 +4,10 @@ services:
       file: executor_base.yaml
       service: executor-base
     depends_on:
-      - executor-builder
+      - skyscope-executor-builder
     environment:
       CUSTOM_EXECUTOR_PATH: ./agent/main.py
-      EXECUTOR_ACCESS_CODE: .tool/kuwa/agent
+      EXECUTOR_ACCESS_CODE: .tool/skyscope/agent
       EXECUTOR_NAME: Agent
       EXECUTOR_IMAGE: iteration.png # Refer to src/multi-chat/public/images
       EXECUTOR_ORDER: 999010

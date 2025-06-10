@@ -4,10 +4,10 @@ services:
       file: executor_base.yaml
       service: executor-base
     depends_on:
-      - executor-builder
+      - skyscope-executor-builder
     environment:
       CUSTOM_EXECUTOR_PATH: ./docqa/docqa.py
-      EXECUTOR_ACCESS_CODE: .tool/kuwa/rag
+      EXECUTOR_ACCESS_CODE: .tool/skyscope/rag
       EXECUTOR_NAME: RAG
       EXECUTOR_IMAGE: loupe.png # Refer to src/multi-chat/public/images
       EXECUTOR_ORDER: 990000

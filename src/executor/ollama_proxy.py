@@ -13,18 +13,18 @@ import mimetypes
 from PIL import Image
 from io import BytesIO
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.llm_executor import (
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.llm_executor import (
     rectify_chat_history,
     extract_last_url,
     extract_user_attachment,
 )
-from kuwa.executor.multi_modality import (
+from skyscope.executor.multi_modality import (
     get_supported_image_mime,
     fetch_image,
     image_to_data_url
 )
-from kuwa.executor.util import (
+from skyscope.executor.util import (
     read_config,
     merge_config,
 )

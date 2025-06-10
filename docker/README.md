@@ -107,7 +107,7 @@ The files are as follows:
     DOMAIN_NAME=localhost # Website domain name, if you want to make the service public, please set it to your public domain name
     PUBLIC_BASE_URL="http://${DOMAIN_NAME}/" # Website base URL
 
-    ADMIN_NAME="Kuwa Admin" # Website default administrator name
+    ADMIN_NAME="Skyscope Admin" # Website default administrator name
     ADMIN_EMAIL="admin@${DOMAIN_NAME}" # Website default administrator login email, which can be an invalid email
     ```
 
@@ -117,7 +117,7 @@ The files are as follows:
 > Please use Docker Compose V2 or later.
 > `docker-compose` package in Ubuntu APT is Docker Compose V1 and cannot be used. Please refer to the previous section to install the new version of Docker Compose.
 
-Use the following script to start the basic Kuwa GenAI OS system, including Gemini-Pro Executor, Document QA, WebQA, and Search QA. You can adjust the components to be started by changing the content of the `confs` array in `./run.sh`. The component settings are all in the `compose` directory.
+Use the following script to start the basic Skyscope GenAI OS system, including Gemini-Pro Executor, Document QA, WebQA, and Search QA. You can adjust the components to be started by changing the content of the `confs` array in `./run.sh`. The component settings are all in the `compose` directory.
 ```sh
 ./run.sh
 ```
@@ -142,13 +142,13 @@ Add the required YAML settings file to the `confs` array in `./run.sh`. After se
 If your database is accidentally lost or corrupted, you can reset the database by forcibly updating it  
 Please make sure the system is running, then use the following command to force upgrade the database  
 ```sh
-docker exec -it kuwa-multi-chat-1 docker-entrypoint force-upgrade
+docker exec -it skyscope-chat-1 docker-entrypoint force-upgrade
 ```
 
 ### 4. Building Docker Images from Source Code
-Beginning with v0.3.4, the default behavior is to download pre-built Kuwa Docker Images from Docker Hub. If you want to build the images from source code, make sure the `.git` directory is present in the `genai-os` directory. Then, you can use the following command to create the Kuwa images:
+Beginning with v0.3.4, the default behavior is to download pre-built Skyscope Docker Images from Docker Hub. If you want to build the images from source code, make sure the `.git` directory is present in the `genai-os` directory. Then, you can use the following command to create the Skyscope images:
 ```sh
 cd docker
 ./run.sh build
 ```
-Running this command will create the `kuwaai/model-executor`, `kuwaai/multi-chat`, `kuwaai/kernel`, and `kuwaai/multi-chat-web` images.
+Running this command will create the `skyscopeai/model-executor`, `skyscopeai/multi-chat`, `skyscopeai/kernel`, and `skyscopeai/multi-chat-web` images.

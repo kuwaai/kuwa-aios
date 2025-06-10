@@ -1,6 +1,6 @@
 services:
   gemma2-executor:
-    image: kuwaai/model-executor
+    image: skyscopeai/model-executor
     environment:
       EXECUTOR_TYPE: llamacpp
       EXECUTOR_ACCESS_CODE: gemma2-2b-instruct

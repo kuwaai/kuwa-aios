@@ -14,9 +14,9 @@ import multiprocessing as mp
 from whisper_s2t.backends.ctranslate2.model import BEST_ASR_CONFIG
 from whisper_s2t.utils import format_timestamp
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.llm_executor import extract_last_url
-from kuwa.executor.util import merge_config
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.llm_executor import extract_last_url
+from skyscope.executor.util import merge_config
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 

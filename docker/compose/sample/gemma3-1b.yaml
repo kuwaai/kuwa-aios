@@ -1,6 +1,6 @@
 services:
   gemma-3-1b-executor:
-    image: kuwaai/model-executor
+    image: skyscopeai/model-executor
     environment:
       EXECUTOR_TYPE: llamacpp
       EXECUTOR_ACCESS_CODE: .model/google/gemma-3-1b-it

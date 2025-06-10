@@ -7,7 +7,7 @@ COPY docker/web/fastcgi.conf /etc/nginx/fastcgi.conf
 
 WORKDIR /app
 COPY docker/web/nginx-proxy/ /app/
-COPY --from=kuwaai/multi-chat:latest /app/public /app/public
+COPY --from=skyscopeai/multi-chat:latest /app/public /app/public
 RUN chown -R nginx:nginx /app
 
 ENV DEFAULT_ROOT=none

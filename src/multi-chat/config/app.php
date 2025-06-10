@@ -15,7 +15,7 @@ return [
     'MAIL_FROM_ADDRESS' => env('MAIL_FROM_ADDRESS', null),
     'MAIL_FROM_NAME' => env('MAIL_FROM_NAME', null),
     'Email_Required' => env('Email_Required', true),
-    'LLM_DEFAULT_IMG' => env('LLM_DEFAULT_IMG','images/kuwa.png'),
+    'LLM_DEFAULT_IMG' => env('LLM_DEFAULT_IMG','images/skyscope.png'),
     'KNOWLEDGE_DIRECTORY' => realpath(env('KNOWLEDGE_DIRECTORY','root')),
     'LANGUAGES' => json_decode(env('LANGUAGES'), true) ?: [
         'en_us' => 'English',
@@ -29,7 +29,7 @@ return [
     ],
     'DEFAULT_GROUP' => env("DEFAULT_GROUP", null),
 
-    'KUWA_API_BASE_URLS' => env('KUWA_API_BASE_URLS', 'http://localhost/v1.0/'),
+    'SKYSCOPE_API_BASE_URLS' => env('SKYSCOPE_API_BASE_URLS', 'http://localhost/v1.0/'),
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Skyscope Gen AI OS'),
 
     /*
     |--------------------------------------------------------------------------

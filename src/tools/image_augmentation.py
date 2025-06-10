@@ -12,7 +12,7 @@ import random
 import traceback
 from PIL import Image
 from pathlib import Path
-from kuwa.client import FileOperations
+from skyscope.client import FileOperations
 
 logger = logging.getLogger(__name__)
 
@@ -124,8 +124,8 @@ if __name__ == "__main__":
                 )
                 result_url = upload_to_web(
                     file_path=output_file,
-                    api_url=os.environ['KUWA_BASE_URL'],
-                    api_token=os.environ["KUWA_API_KEY"],
+                    api_url=os.environ['SKYSCOPE_BASE_URL'],
+                    api_token=os.environ["SKYSCOPE_API_KEY"],
                     original_filename=output_file
                 )
 

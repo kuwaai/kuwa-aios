@@ -14,8 +14,8 @@ import shutil
 from torch import cuda
 from pathlib import Path
 
-from kuwa.client import KuwaClient
-from kuwa.rag.document_store_factory import DocumentStoreFactory, path2file_url
+from skyscope.client import SkyscopeClient
+from skyscope.rag.document_store_factory import DocumentStoreFactory, path2file_url
 
 logger = logging.getLogger(__name__)
 
@@ -130,9 +130,9 @@ async def create_bot(
     generator_model:str = "geminipro",
 ):
 
-    client = KuwaClient(
-        base_url = os.environ["KUWA_BASE_URL"],
-        auth_token = os.environ["KUWA_API_KEY"]
+    client = SkyscopeClient(
+        base_url = os.environ["SKYSCOPE_BASE_URL"],
+        auth_token = os.environ["SKYSCOPE_API_KEY"]
     )
     bot_name = f"DB QA ({db_name})"
     modelfile = template.format(db_path=db_path, generator_model=generator_model)
@@ -140,14 +140,14 @@ async def create_bot(
     response = await client.create_bot(
         bot_name = bot_name,
         bot_description = "Created by \"Construct Vector DB\"",
-        llm_access_code = ".tool/kuwa/rag",
+        llm_access_code = ".tool/skyscope/rag",
         modelfile = modelfile,
     )
     logger.info(f"Bot \"{bot_name}\" created successfully.")
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Construct a FAISS vector database from local documents.')
-    parser.add_argument("output_dir", help="The path where the final database will be stored. Under KUWA_ROOT", default="database", type=str)
+    parser.add_argument("output_dir", help="The path where the final database will be stored. Under SKYSCOPE_ROOT", default="database", type=str)
     parser.add_argument('--visible_gpu', default=None, help='Specify the GPU IDs that this executor can use. Separate by comma.')
     parser.add_argument("--chunk-size", help="The chunk size to split the document.", type=int, default=512)
     parser.add_argument("--chunk-overlap", help="The chunk size to split the document.", type=int, default=128)
@@ -185,7 +185,7 @@ if __name__ == "__main__":
                 docs_path = unzip_to_temp(downloaded_file)
             
             db_name = Path(original_filename).stem
-            db_path = os.path.abspath(os.path.join(os.environ["KUWA_ROOT"], f"./{args.output_dir}/{db_name}"))
+            db_path = os.path.abspath(os.path.join(os.environ["SKYSCOPE_ROOT"], f"./{args.output_dir}/{db_name}"))
 
             logger.debug(f"docs_path={docs_path}")
             logger.debug(f"db_path={db_path}")

@@ -1,17 +1,17 @@
-cmd_prefix: /var/kuwa/venv/bin/
+cmd_prefix: /var/skyscope/venv/bin/
 cmd_suffix: --kernel_url "http://127.0.0.1:9000/" --host "127.0.0.1" --log debug
-working_dir: /var/kuwa/genai-os/src/executor
-user: kuwa
+working_dir: /var/skyscope/genai-os/src/executor
+user: skyscope
 env:
-  KUWA_ROOT: /var/kuwa/root
+  SKYSCOPE_ROOT: /var/skyscope/root
 
 program:
   - access_code: gpt-4o
-    cmd: kuwa-executor chatgpt --model gpt-4o
+    cmd: skyscope-executor chatgpt --model gpt-4o
     num_procs: 5
   - access_code: gemini-1.5-pro
-    cmd: kuwa-executor geminipro --model gemini-1.5-pro-latest
+    cmd: skyscope-executor geminipro --model gemini-1.5-pro-latest
     num_procs: 5
   - access_code: doc-qa
     cmd: python ./docqa.py --api_base_url https://chat.gai.tw/
-    working_dir: /var/kuwa/genai-os/src/executor/docqa
+    working_dir: /var/skyscope/genai-os/src/executor/docqa

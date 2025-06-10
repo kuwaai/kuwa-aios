@@ -4,7 +4,7 @@ services:
       file: executor_base.yaml
       service: executor-base
     depends_on:
-      - executor-builder
+      - skyscope-executor-builder
     environment:
       EXECUTOR_TYPE: ollama
       EXECUTOR_ACCESS_CODE: .model:ollama
@@ -23,7 +23,7 @@ services:
       - ollama_volume:/root/.ollama
     pull_policy: always
     restart: unless-stopped
-    networks: ["backend"]
+    networks: ["skyscope-network"]
 
 volumes:
-  ollama_volume:
+  skyscope-ollama-volume:

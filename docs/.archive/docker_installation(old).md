@@ -1,4 +1,4 @@
-# Install Kuwa GenAI OS on Docker
+# Install Skyscope GenAI OS on Docker
 
 ## Software versions
 - Docker Compose V2 or later, tested versions
@@ -107,7 +107,7 @@ The files are as follows:
     DOMAIN_NAME=localhost # Website domain name, if you want to make the service public, please set it to your public domain name
     PUBLIC_BASE_URL="http://${DOMAIN_NAME}/" # Website base URL
 
-    ADMIN_NAME="Kuwa Admin" # Website default administrator name
+    ADMIN_NAME="Skyscope Admin" # Website default administrator name
     ADMIN_EMAIL="admin@${DOMAIN_NAME}" # Website default administrator login email, which can be an invalid email
     ```
 
@@ -117,7 +117,7 @@ The files are as follows:
 > Please use Docker Compose V2 or later.
 > `docker-compose` package in Ubuntu APT is Docker Compose V1 and cannot be used. Please refer to the previous section to install the new version of Docker Compose.
 
-Use the following script to start the basic Kuwa GenAI OS system, including Gemini-Pro Executor, Document QA, WebQA, and Search QA. You can adjust the components to be started by changing the content of the `confs` array in `./run.sh`. The component settings are all in the `compose` directory.
+Use the following script to start the basic Skyscope GenAI OS system, including Gemini-Pro Executor, Document QA, WebQA, and Search QA. You can adjust the components to be started by changing the content of the `confs` array in `./run.sh`. The component settings are all in the `compose` directory.
 ```sh
 ./run.sh
 ```

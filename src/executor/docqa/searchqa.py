@@ -14,9 +14,9 @@ from bs4 import BeautifulSoup
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.modelfile import ParameterDict
-from kuwa.rag.crawler import Crawler
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.modelfile import ParameterDict
+from skyscope.rag.crawler import Crawler
 
 from docqa import DocQaExecutor, NoUrlException
 

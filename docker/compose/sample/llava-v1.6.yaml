@@ -1,6 +1,6 @@
 services:
   llava-v1.6-executor:
-    image: kuwaai/model-executor
+    image: skyscopeai/model-executor
     environment:
       EXECUTOR_TYPE: huggingface
       EXECUTOR_ACCESS_CODE: llava-v1.6-7b

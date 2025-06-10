@@ -14,9 +14,9 @@ import requests
 import hashlib
 from PIL import Image
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.llm_executor import extract_last_url
-from kuwa.executor.util import (
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.llm_executor import extract_last_url
+from skyscope.executor.util import (
     merge_config,
 )
 

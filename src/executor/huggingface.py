@@ -27,14 +27,14 @@ from transformers import (
     StoppingCriteriaList,
 )
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.llm_executor import rectify_chat_history, extract_user_attachment
-from kuwa.executor.multi_modality import get_supported_image_mime, fetch_image
-from kuwa.executor.util import (
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.llm_executor import rectify_chat_history, extract_user_attachment
+from skyscope.executor.multi_modality import get_supported_image_mime, fetch_image
+from skyscope.executor.util import (
     read_config,
     merge_config,
 )
-from kuwa.executor.message import LogChunk, LogLevel
+from skyscope.executor.message import LogChunk, LogLevel
 from transformers.utils import is_vision_available
 
 if is_vision_available():

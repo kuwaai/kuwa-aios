@@ -56,7 +56,7 @@ should_update() {
     then
         return 0
     else
-        dpkg --compare-versions $(cat ${VERSION_FILE}) "lt" "${KUWA_MULTI_CHAT_VERSION}"
+        dpkg --compare-versions $(cat ${VERSION_FILE}) "lt" "${SKYSCOPE_MULTI_CHAT_VERSION}"
         return
     fi
 }

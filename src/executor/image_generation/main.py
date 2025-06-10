@@ -16,8 +16,8 @@ from diffusers.utils import load_image
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.llm_executor import extract_last_url
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.llm_executor import extract_last_url
 
 logger = logging.getLogger(__name__)
 

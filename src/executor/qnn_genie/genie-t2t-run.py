@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.dirname(os.path.abspath(Path(__file__).parent)))
 
 from pipe.main import PipeExecutor
-from kuwa.executor import LLMExecutor, Modelfile
+from skyscope.executor import LLMExecutor, Modelfile
 
 logger = logging.getLogger(__name__)
 

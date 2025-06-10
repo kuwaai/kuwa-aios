@@ -15,10 +15,10 @@ from openai.resources.chat.completions import AsyncCompletions
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.llm_executor import extract_user_attachment
-from kuwa.executor.multi_modality import get_supported_image_mime, fetch_image_as_data_url
-from kuwa.executor.util import (
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.llm_executor import extract_user_attachment
+from skyscope.executor.multi_modality import get_supported_image_mime, fetch_image_as_data_url
+from skyscope.executor.util import (
     expose_function_parameter,
     read_config,
     merge_config,

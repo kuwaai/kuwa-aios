@@ -1,6 +1,6 @@
 services:
   taide-8b-nchc-executor:
-    image: kuwaai/model-executor
+    image: skyscopeai/model-executor
     environment:
       EXECUTOR_TYPE: chatgpt
       EXECUTOR_ACCESS_CODE: taide-8b

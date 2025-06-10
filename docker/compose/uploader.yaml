@@ -4,10 +4,10 @@ services:
       file: executor_base.yaml
       service: executor-base
     depends_on:
-      - executor-builder
+      - skyscope-executor-builder
     environment:
       CUSTOM_EXECUTOR_PATH: ./uploader/main.py
-      EXECUTOR_ACCESS_CODE: .tool/kuwa/uploader
+      EXECUTOR_ACCESS_CODE: .tool/skyscope/uploader
       EXECUTOR_NAME: Uploader
       EXECUTOR_ORDER: 999020
       EXECUTOR_CREATE_BOT: false

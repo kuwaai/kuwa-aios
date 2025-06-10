@@ -2,7 +2,7 @@ services:
   web:
     environment:
       DEBUG_ENDPOINT: "true"
-  multi-chat:
+  skyscope-chat:
     environment:
       APP_ENV: development
       APP_DEBUG: true
@@ -16,4 +16,4 @@ services:
     environment:
       ADMINER_DEFAULT_SERVER: db
     networks:
-      - backend
+      - skyscope-network

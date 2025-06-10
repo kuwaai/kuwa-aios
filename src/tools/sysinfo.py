@@ -35,7 +35,7 @@ def get_sys_info():
         ] + \
         nvidia_version + \
         [
-            f"- Kuwa-executor version: {version('kuwa-executor')}"
+            f"- Skyscope-executor version: {version('skyscope-executor')}"
         ]
     return result
     
@@ -66,7 +66,7 @@ def get_torch_info():
 def get_env_var():
     result = ["**Environment Variables**"]
     env = dict(os.environ)
-    env["KUWA_API_KEY"] = "******"
+    env["SKYSCOPE_API_KEY"] = "******"
     env = dict(sorted(env.items()))
     result.append("```shell")
     result.extend([f'{k}={v}' for k,v in env.items()])
@@ -76,7 +76,7 @@ def get_env_var():
 
 def get_kernel_info():
     result = ["**Registered Executors**"]
-    kernel_debug_url = urljoin(os.environ.get("KUWA_KERNEL_BASE_URL"), "./worker/debug")
+    kernel_debug_url = urljoin(os.environ.get("SKYSCOPE_KERNEL_BASE_URL"), "./worker/debug")
 
     try:
         resp = requests.get(kernel_debug_url, headers={"Accept":"application/json"})

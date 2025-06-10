@@ -4,7 +4,7 @@ services:
       file: executor_base.yaml
       service: executor-base
     depends_on:
-      - executor-builder
+      - skyscope-executor-builder
     environment:
       CUSTOM_EXECUTOR_PATH: ./speech_recognition/main.py
       EXECUTOR_ACCESS_CODE: .model:whisper/

@@ -1,5 +1,5 @@
 services:
-  multi-chat:
+  skyscope-chat:
     depends_on:
       - db
     environment:
@@ -20,11 +20,11 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/db-password
       POSTGRES_DB: ${DB_DATABASE}
     volumes:
-      - pgsql-data:/var/lib/postgresql/data
+      - skyscope-pgsql-data:/var/lib/postgresql/data
     secrets:
       - db-password
     networks:
-      - backend
+      - skyscope-network
 
   # db-ui:
   #   image: adminer
@@ -34,10 +34,10 @@ services:
   #   ports:
   #     - 8080:8080
   #   networks:
-  #     - backend
+  #     - skyscope-network
 
 volumes:
-  pgsql-data: {}
+  skyscope-pgsql-data: {}
 
 secrets:
   db-password:

@@ -14,8 +14,8 @@
             @method('patch')
 
             <div>
-                <x-input-label for="kuwa_api" :value="__('profile.label.kuwa_api')" />
-                <x-text-input type="text" id="kuwa_api" class="mt-1 block w-full" :value="$user->tokens()->where('name', 'API_Token')->first()->token" readonly />
+                <x-input-label for="skyscope_api" :value="__('profile.label.skyscope_api')" />
+                <x-text-input type="text" id="skyscope_api" class="mt-1 block w-full" :value="$user->tokens()->where('name', 'API_Token')->first()->token" readonly />
                 <x-input-error class="mt-2" :messages="$errors->get('name')" />
             </div>
 
@@ -135,7 +135,7 @@
             $(document).ready(function() {
                 $("#copyButton").click(function() {
                     event.preventDefault();
-                    var copyText = document.getElementById("kuwa_api");
+                    var copyText = document.getElementById("skyscope_api");
                     copyText.select();
                     document.execCommand("copy");
 

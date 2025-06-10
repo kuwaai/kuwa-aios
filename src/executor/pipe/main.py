@@ -6,7 +6,7 @@ import logging
 import shlex
 from urllib.parse import urljoin
 from importlib.metadata import version
-from kuwa.executor import LLMExecutor, Modelfile
+from skyscope.executor import LLMExecutor, Modelfile
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from src.subprocess_helper import SubProcessHelper, StreamName
@@ -80,12 +80,12 @@ class PipeExecutor(LLMExecutor):
         """
         Add custom command-line arguments.
         """
-        kuwa_root_path = os.environ.get(
-            "KUWA_ROOT", os.path.join(os.path.expanduser("~"), "kuwa")
+        skyscope_root_path = os.environ.get(
+            "SKYSCOPE_ROOT", os.path.join(os.path.expanduser("~"), "skyscope")
         )
         parser.add_argument(
             "--path",
-            default=os.path.join(kuwa_root_path, "bin"),
+            default=os.path.join(skyscope_root_path, "bin"),
             help="The path to find executables.",
         )
         parser.add_argument("--program", default="cat", help="The program to run.")
@@ -98,7 +98,7 @@ class PipeExecutor(LLMExecutor):
         parser.add_argument(
             "--api_base_url",
             default="http://127.0.0.1/",
-            help="The API base URL of Kuwa multi-chat WebUI. This value will pass to the subprocess.",
+            help="The API base URL of Skyscope multi-chat WebUI. This value will pass to the subprocess.",
         )
         parser.add_argument(
             "--hide_stderr",
@@ -161,17 +161,17 @@ class PipeExecutor(LLMExecutor):
 
         cmd = [program] + argv
         env = os.environ.copy()
-        env["KUWA_BASE_URL"] = (
-            modelfile.parameters["_"]["kuwa_api_base_urls"][0]
+        env["SKYSCOPE_BASE_URL"] = (
+            modelfile.parameters["_"]["skyscope_api_base_urls"][0]
             if self.args.api_base_url is None
             else self.args.api_base_url
         )
-        env["KUWA_KERNEL_BASE_URL"] = urljoin(
+        env["SKYSCOPE_KERNEL_BASE_URL"] = urljoin(
             self.kernel_url, f"{self.executor_iface_version}/"
         )
-        env["KUWA_API_KEY"] = modelfile.parameters["_"]["user_token"]
-        env["KUWA_VERSION"] = version("kuwa-executor")
-        env["KUWA_LANGUAGE"] = modelfile.parameters["_"]["lang"]
+        env["SKYSCOPE_API_KEY"] = modelfile.parameters["_"]["user_token"]
+        env["SKYSCOPE_VERSION"] = version("skyscope-executor")
+        env["SKYSCOPE_LANGUAGE"] = modelfile.parameters["_"]["lang"]
         logger.info(f"Cmd: {cmd}")
         logger.debug(f"Env: {env}")
         generator = self.run_cmd(cmd, env, sub_proc_input, encoding)

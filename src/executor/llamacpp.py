@@ -13,9 +13,9 @@ from huggingface_hub import hf_hub_download
 from llama_cpp import Llama
 import llama_cpp.llama_chat_format as llama_chat_format
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.llm_executor import rectify_chat_history
-from kuwa.executor.util import (
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.llm_executor import rectify_chat_history
+from skyscope.executor.util import (
     expose_function_parameter,
     read_config,
     merge_config,

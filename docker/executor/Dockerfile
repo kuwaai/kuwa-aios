@@ -15,7 +15,7 @@ RUN apt-get update &&\
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-WORKDIR /usr/src/kuwa
+WORKDIR /usr/src/skyscope
 
 COPY docker/executor/requirements-${ARCH}-${IMAGE_VARIANT}.txt.lock ./requirements.txt.lock
 COPY .git .git
@@ -42,11 +42,11 @@ RUN apt-get update && \
     ln -s /usr/lib/$(uname -m)-linux-musl/libc.so /lib/libc.musl-$(uname -m).so.1 &&\
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /usr/src/kuwa-executor
+WORKDIR /usr/src/skyscope-executor
 
-# Install source code of Kuwa Executors
+# Install source code of Skyscope Executors
 COPY --from=build /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages
-COPY --from=build /usr/local/bin/kuwa-executor /usr/local/bin/kuwa-executor
+COPY --from=build /usr/local/bin/skyscope-executor /usr/local/bin/skyscope-executor
 COPY src/executor .
 
 # Install the multi-chat-client and the entrypoint
@@ -54,17 +54,17 @@ COPY docker/executor/multi-chat-client/multi-chat-client /usr/local/bin/
 COPY docker/executor/docker-entrypoint /usr/local/bin/
 RUN chmod +x /usr/local/bin/multi-chat-client /usr/local/bin/docker-entrypoint
 
-# Make the filesystem hierarchy of kuwa
-ENV KUWA_ROOT="/var/kuwa/docker/root"
-VOLUME ${KUWA_ROOT}
-RUN mkdir -p ${KUWA_ROOT}/bin && \
-    mkdir -p ${KUWA_ROOT}/database && \
-    mkdir -p ${KUWA_ROOT}/custom
-COPY src/tools ${KUWA_ROOT}/../../src/tools
+# Make the filesystem hierarchy of skyscope
+ENV SKYSCOPE_ROOT="/var/skyscope/docker/root"
+VOLUME ${SKYSCOPE_ROOT}
+RUN mkdir -p ${SKYSCOPE_ROOT}/bin && \
+    mkdir -p ${SKYSCOPE_ROOT}/database && \
+    mkdir -p ${SKYSCOPE_ROOT}/custom
+COPY src/tools ${SKYSCOPE_ROOT}/../../src/tools
 
 # Default parameters
-ENV no_proxy="kernel,web,localhost,127.0.0.0/8,::1,${no_proxy}"
-ENV NO_PROXY="kernel,web,localhost,127.0.0.0/8,::1,${NO_PROXY}"
+ENV no_proxy="skyscope-kernel,web,localhost,127.0.0.0/8,::1,${no_proxy}"
+ENV NO_PROXY="skyscope-kernel,web,localhost,127.0.0.0/8,::1,${NO_PROXY}"
 ENV EXECUTOR_TYPE="debug"
 ENV EXECUTOR_ACCESS_CODE="debug"
 ENV EXECUTOR_NAME="Debug Executor"
@@ -72,6 +72,6 @@ ENV EXECUTOR_IMAGE=""
 ENV EXECUTOR_ORDER=""
 ENV EXECUTOR_CREATE_BOT="true"
 ENV ADD_EXECUTOR_TO_MULTI_CHAT="true"
-ENV KERNEL_URL="http://kernel:9000/"
+ENV KERNEL_URL="http://skyscope-kernel:9000/"
 ENTRYPOINT [ "docker-entrypoint" ]
 CMD []

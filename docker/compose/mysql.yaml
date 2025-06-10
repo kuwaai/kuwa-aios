@@ -1,5 +1,5 @@
 services:
-  multi-chat:
+  skyscope-chat:
     depends_on:
       - db
     environment:
@@ -25,7 +25,7 @@ services:
     secrets:
       - db-password
     networks:
-      - backend
+      - skyscope-network
 
   # db-ui:
   #   image: adminer
@@ -35,10 +35,10 @@ services:
   #   ports:
   #     - 8080:8080
   #   networks:
-  #     - backend
+  #     - skyscope-network
 
 volumes:
-  mysql-data: {}
+  skyscope-mysql-data: {}
 
 secrets:
   db-password:

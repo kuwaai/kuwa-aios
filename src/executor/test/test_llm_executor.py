@@ -1,7 +1,7 @@
 import unittest
 import itertools
 import logging
-from kuwa.executor.llm_executor import (
+from skyscope.executor.llm_executor import (
     to_openai_chat_format,
     rectify_chat_history,
     extract_last_url,
@@ -187,14 +187,14 @@ class TestExtractLastUrl(unittest.TestCase):
 class TestExtractUserAttachment(unittest.TestCase):
     maxDiff = None
     attachments = [
-        {"url": "https://kuwaai.org/", "mime_type": "text/html"},
+        {"url": "https://skyscope.ai/", "mime_type": "text/html"},
         {
-            "url": "https://kuwaai.org/os/intro",
+            "url": "https://skyscope.ai/os/intro",
             "mime_type": "text/html",
         },
-        {"url": "https://kuwaai.org/notexist", "mime_type": None},
+        {"url": "https://skyscope.ai/notexist", "mime_type": None},
         {"url": "https://not-exist-domain/", "mime_type": None},
-        {"url": "https://kuwaai.org/img/logo.svg", "mime_type": "image/svg+xml"},
+        {"url": "https://skyscope.ai/img/logo.svg", "mime_type": "image/svg+xml"},
     ]
 
     chat_history = [
