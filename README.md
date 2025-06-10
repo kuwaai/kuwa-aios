@@ -3,7 +3,8 @@
 
 
 <p align="center">
-    <img src="(https://github.com/skyscope-sentinel/kuwa-aios/blob/main/Skyscope-Sentinel-AI-OS.png)">
+  <img src="https://github.com/skyscope-sentinel/kuwa-aios/blob/main/Skyscope-Sentinel-AI-OS.png?raw=true" alt="Skyscope Sentinel AI-OS Logo" width="60%" />
+</p>
  
 ## Features Included
 ``` Multimodal and Multi Agentic Text, Image, Audio and Video capabilities ```
