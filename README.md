@@ -1,46 +1,6 @@
 ## Skyscope Sentinel Gen AI OS
 ```An Innovative Generative AI Operating System from Skyscope Sentinel Intelligence```
 
-<h1 align="center">
-  <br>
-  <a href="https://skyscope.ai/">
-  <img src="./src/multi-chat/public/images/skyscope.png" alt="Skyscope GenAI OS" width="200"></a>
-  <br>
-  Skyscope GenAI OS
-  <br>
-</h1>
-
-<h4 align="center">An open, free, secure, and privacy-focused Generative-AI Orchestrating System.</h4>
-
-<p align="center">
-  <a href="http://makeapullrequest.com">
-    <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?logo=github&logoColor=white">
-  </a>
-  <a href="https://laravel.com/docs/10.x/releases">
-    <img src="https://img.shields.io/badge/maintained%20with-Laravel-cc00ff.svg?logo=laravel&logoColor=white">
-  </a>
-  <a href="https://discord.gg/Gu7zPavEmN">
-    <img src="https://img.shields.io/badge/discord-active-blue?logo=discord&logoColor=white">
-  </a>
-  <a href="#">
-    <img src="https://img.shields.io/github/v/release/skyscopeai/skyscope-aios">
-  </a>
-  <!--<a href="#">
-    <img src="https://img.shields.io/github/downloads/skyscopeai/skyscope-aios/total">
-  </a>-->
-  <a href="#">
-    <img src="https://img.shields.io/github/license/skyscopeai/skyscope-aios">
-  </a>
-  <a href="#">
-    <img src="https://img.shields.io/github/stars/skyscopeai">
-  </a>
-</p>
-=======
- main
-
-<p align="center">
-  <img src="https://github.com/skyscope-sentinel/kuwa-aios/blob/main/Skyscope-Sentinel-AI-OS.png?raw=true" alt="Skyscope Sentinel AI-OS Logo" width="60%" />
-</p>
 
 ## Key Features
 * Multi-lingual turnkey solution for GenAI use, development and deployment on Windows, Linux and MacOS
