@@ -33,7 +33,7 @@ Download the script or the executable file, run it, and follow its steps to have
 
   Download and run sudo [build.sh](./docker/build.sh) , or invoke the following command to automatically install Docker, CUDA, and Skyscope. You may need to reboot after installing CUDA. Before finishing installation, you will be asked to set your administration passwords for your Skyscope and database. After installation, it will invoke run.sh to start the system and you can log in with admin@localhost. Enjoy!
   ```
-  bash -c "$(curl -fsSL https://raw.githubusercontent.com/skyscopeai/skyscope-aios/main/docker/build.sh)"
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/skyscope-sentinel/Skyscope-GenAI-OS/main/docker/build.sh)"
   ```
 
 With executors, Skyscope can orchestrate diverse multimodal models, remote services, applications, databases, bots, etc. You can check [Executor's README](./src/executor/README.md) for further customization and configuration.
