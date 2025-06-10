@@ -1,4 +1,5 @@
-[正體中文 README_TW.md](./README_TW.md)
+## Skyscope Sentinel Gen AI OS
+```An Innovative Generative AI Operating System from Skyscope Sentinel Intelligence```
 
 <h1 align="center">
   <br>
@@ -34,14 +35,11 @@
     <img src="https://img.shields.io/github/stars/skyscopeai">
   </a>
 </p>
+=======
+ main
 
 <p align="center">
-  <a href="#key-features">Key Features</a> •
-  <a href="#architecture">Architecture</a> •
-  <a href="#installation-guide">Installation Guide</a> •
-  <a href="#community">Community</a> •
-  <a href="#acknowledgements">Acknowledgements</a> •
-  <a href="#license">License</a>
+  <img src="https://github.com/skyscope-sentinel/kuwa-aios/blob/main/Skyscope-Sentinel-AI-OS.png?raw=true" alt="Skyscope Sentinel AI-OS Logo" width="60%" />
 </p>
 
 ## Key Features
@@ -100,22 +98,21 @@ You can [download](https://github.com/skyscopeai/skyscope-aios/releases) the lat
 [Google Group](https://groups.google.com/g/skyscope-announce) - skyscope-announce
 
 ## Support
+=======
+ 
+## Features Included
+``` Multimodal and Multi Agentic Text, Image, Audio and Video capabilities ```
+``` Concurrent multi-chat with import/export and sharing ability ```
+``` Agentic utilities, RAG, and ability to run local LLM AI Models ```
+``` Customization allowing users to set custom model prompts/ system prompts and other tweaks for truly open user control ```
 
-If you are interested in this project, you can help us develop it together and improve this open-source project. Please do not hesitate to contact us anytime if you are willing to help!
+## Installation Guide
+ main
 
-## Packages & Applications
+Run the script and allow our fully automated solution to perform installation. 
 
-The following packages and applications are used in this project:
+## Coming Soon
 
-- [PHP & PHP-FPM](https://www.php.net/)
-- [Laravel 10](https://laravel.com/)
-- [Python 3](https://www.python.org/)
-- [Node.js](https://nodejs.org/)
-- [Docker](https://www.docker.com/)
-- [Redis](https://redis.io/)
-- [Marked](https://github.com/chjj/marked)
-- [highlight.js](https://highlightjs.org/)
-- [NVIDIA CUDA](https://developer.nvidia.com/cuda-toolkit)
+We will also be providing fully completed bootable .iso and .img variants of our unique AI OS offering - This is currently in development.
 
-## License
-[MIT](./LICENSE)
+
