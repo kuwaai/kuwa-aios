@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Skyscope GenAI OS Installer
 # This script automates the installation of Skyscope GenAI OS and its dependencies.
@@ -94,9 +95,7 @@ if [ -f /etc/os-release ]; then
                         PACKAGE_MANAGER="dnf"
                         ;;
                     centos)
-                        PACKAGE_MANAGER="yum"
                         # Add version check for CentOS via lsb_release if more specific handling is needed
-                        # For instance, if lsb_release -rs returns "7.x.xxxx"
                         if [[ "$(lsb_release -rs)" == 7* ]]; then
                             PACKAGE_MANAGER="yum"
                         else
@@ -155,6 +154,7 @@ echo "[INFO] Using Package Manager: $PACKAGE_MANAGER"
 # --- Dependency Installation ---
 echo ""
 echo "[INFO] Installing core dependencies (curl, git, sudo)..."
+# `set -e` will cause the script to exit if any of these commands fail.
 if [ "$PACKAGE_MANAGER" = "apt" ]; then
   sudo $PACKAGE_MANAGER update -y && sudo $PACKAGE_MANAGER install -y curl git sudo
 elif [ "$PACKAGE_MANAGER" = "dnf" ]; then
@@ -163,31 +163,33 @@ elif [ "$PACKAGE_MANAGER" = "yum" ]; then
   sudo $PACKAGE_MANAGER install -y curl git sudo
 else
   echo "[ERROR] Package manager $PACKAGE_MANAGER not handled for core dependencies. Exiting." >&2
-  exit 1
+  exit 1 # Should be redundant if set -e is active, but good for clarity.
 fi
-
-if [ $? -ne 0 ]; then
-    echo "[ERROR] Failed to install core dependencies. Please check your system and package manager output." >&2
-    exit 1
-fi
+# Explicit error check after this block is less critical with set -e,
+# but can be kept for a custom message if preferred over immediate exit.
+# if [ $? -ne 0 ]; then
+#     echo "[ERROR] Failed to install core dependencies. Please check your system and package manager output." >&2
+#     exit 1
+# fi
 echo "[INFO] Core dependencies installed successfully."
 
 # --- Execute Docker Build Script ---
 echo ""
 echo "[INFO] Proceeding with Skyscope GenAI OS setup using docker/build.sh from GitHub..."
 echo "[INFO] This step will install Docker (if not present) and build the Skyscope application."
-# This command fetches the build script from the main branch of the repository and executes it.
 # The docker/build.sh script is expected to handle Docker installation and then building the Skyscope application.
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/skyscopeai/skyscope-genai-os/main/docker/build.sh)"
+# `set -e` will cause the script to exit if the above command fails (e.g., curl error, or script executed by bash fails)
 
-if [ $? -ne 0 ]; then
-    echo "[ERROR] Execution of docker/build.sh failed. Please check the output above for errors." >&2
-    echo "[INFO] Common troubleshooting steps:"
-    echo "       - Ensure your system has internet connectivity."
-    echo "       - Check if your Linux distribution requires additional steps for Docker installation."
-    echo "       - Look for specific error messages from the docker/build.sh script output."
-    exit 1
-fi
+# Explicit error check after this is less critical with set -e.
+# if [ $? -ne 0 ]; then
+#     echo "[ERROR] Execution of docker/build.sh failed. Please check the output above for errors." >&2
+#     echo "[INFO] Common troubleshooting steps:"
+#     echo "       - Ensure your system has internet connectivity."
+#     echo "       - Check if your Linux distribution requires additional steps for Docker installation."
+#     echo "       - Look for specific error messages from the docker/build.sh script output."
+#     exit 1
+# fi
 
 echo ""
 echo "####################################################################"
