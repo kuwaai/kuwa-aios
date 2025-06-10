@@ -10,10 +10,10 @@ from enum import Enum
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.modelfile import Script
-from kuwa.client import KuwaClient
-from kuwa.client.base import StopAsyncGenerator
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.modelfile import Script
+from skyscope.client import SkyscopeClient
+from skyscope.client.base import StopAsyncGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -130,7 +130,7 @@ class AgentRunner:
         self.state = AgentState.IDLE
 
     async def _invoke_bot(self, bot_name, history):
-        client = KuwaClient(
+        client = SkyscopeClient(
             base_url=self.api_base_url,
             kernel_base_url=self.kernel_url,
             model=bot_name,
@@ -249,12 +249,12 @@ class AgentExecutor(LLMExecutor):
         parser.add_argument(
             "--api_base_url",
             default="http://127.0.0.1/",
-            help="The API base URL of Kuwa multi-chat WebUI",
+            help="The API base URL of Skyscope multi-chat WebUI",
         )
         parser.add_argument(
             "--api_key",
             default=None,
-            help="The API authentication token of Kuwa multi-chat WebUI",
+            help="The API authentication token of Skyscope multi-chat WebUI",
         )
 
     def setup(self):
@@ -270,9 +270,9 @@ class AgentExecutor(LLMExecutor):
         self.setup_i18n(modelfile.parameters["_lang"])
         api_key = modelfile.parameters.get("_user_token", self.args.api_key)
         if api_key is None:
-            yield i18n.t("agent.no_kuwa_api_key")
+            yield i18n.t("agent.no_skyscope_api_key")
         api_base_url = modelfile.parameters.get(
-            "_kuwa_api_base_urls", [self.args.api_base_url]
+            "_skyscope_api_base_urls", [self.args.api_base_url]
         )[0]
         show_step_log = modelfile.parameters["agent_"].get("show_step_log", False)
         append_history = modelfile.parameters["agent_"].get("append_history", False)

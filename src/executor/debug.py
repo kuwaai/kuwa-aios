@@ -5,7 +5,7 @@ import logging
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from kuwa.executor import LLMExecutor, Modelfile
+from skyscope.executor import LLMExecutor, Modelfile
 
 logger = logging.getLogger(__name__)
 

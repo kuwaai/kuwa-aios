@@ -59,7 +59,7 @@
                             <div class="w-full">
                                 <input type="search"
                                     oninput="chatroom_filter($(this).val(), $(this).parent().parent().parent().next().next())"
-                                    class="p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+                                    class="p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-teal-500"
                                     placeholder="{{ __('room.label.search_chat') }}" autocomplete="off">
                             </div>
                         </div>
@@ -69,10 +69,10 @@
             </div>
         </div>
         <div id="histories_hint"
-            class="flex-1 h-full flex flex-col w-full bg-gray-200 dark:bg-gray-600 shadow-xl overflow-hidden">
+            class="flex-1 h-full flex flex-col w-full bg-slate-200 dark:bg-slate-700 shadow-xl overflow-hidden">
             <div class="flex">
                 <button
-                    class="sm:hidden text-center text-black hover:text-black dark:text-white hover:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-5 focus:outline-none dark:focus:ring-blue-800"
+                    class="sm:hidden text-center text-black hover:text-black dark:text-white hover:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 focus:ring-4 focus:ring-teal-300 font-medium text-sm px-5 py-5 focus:outline-none dark:focus:ring-teal-800"
                     type="button" data-drawer-target="chatlist_drawer" data-drawer-show="chatlist_drawer"
                     aria-controls="chatlist_drawer">
                     <i class="fas fa-bars"></i>
@@ -83,7 +83,7 @@
                             class="w-full border border-black dark:border-white border-1 rounded-lg overflow-hidden ml-2">
                             <input type="search"
                                 oninput="filterItems($(this).val(), $(this).parent().parent().parent().parent().next(), '> form', '> button > p', (el) => el.text());"
-                                class="p-2.5 m-auto w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+                                class="p-2.5 m-auto w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-teal-500"
                                 placeholder="{{ __('room.label.search_bot') }}" autocomplete="off">
                         </div>
                     </div>
@@ -96,7 +96,7 @@
                 class="mb-4 grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-10 2xl:grid-cols-12 mb-auto overflow-y-auto scrollbar">
                 @foreach ($bots as $bot)
                     <x-sorted-list.item html_tag="form" :$sorting_methods :record="$bot" method="post"
-                        class="text-black dark:text-white h-[115px] p-2 hover:bg-gray-200 dark:hover:bg-gray-500 transition"
+                        class="text-black dark:text-white h-[115px] p-2 hover:bg-slate-200 dark:hover:bg-slate-500 transition"
                         action="{{ route('room.new') }}">
                         @csrf
                         <button class="relative h-full w-full flex flex-col items-center justify-start">
@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="absolute bottom-0 right-0 z-2 opacity-90">
                                     @if ($bot->type == 'server')
-                                        <i class="fas fa-external-link-alt text-blue-400"></i>
+                                        <i class="fas fa-external-link-alt text-teal-400"></i>
                                     @elseif ($bot->type == 'prompt')
                                         @if (time() - strtotime($bot->healthy) > 300)
                                             <div class="bg-red-500 rounded-full w-3 h-3"

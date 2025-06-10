@@ -76,33 +76,33 @@ WORKDIR /usr/local/bin
 RUN chmod +x docker-entrypoint multi-chat import-bots prune-executor upgrade
 
 # Copy the bootstrap bots
-ENV KUWA_ROOT="/var/kuwa/docker/root"
-ENV KUWA_BOT_DIR="${KUWA_ROOT}/bootstrap/bot"
-VOLUME ${KUWA_ROOT}
-COPY src/bot/init/*.bot ${KUWA_BOT_DIR}
+ENV SKYSCOPE_ROOT="/var/skyscope/docker/root"
+ENV SKYSCOPE_BOT_DIR="${SKYSCOPE_ROOT}/bootstrap/bot"
+VOLUME ${SKYSCOPE_ROOT}
+COPY src/bot/init/*.bot ${SKYSCOPE_BOT_DIR}
 
 # Setup the entry point
-ENV KUWA_MULTI_CHAT_VERSION="0.4.0-docker1"
+ENV SKYSCOPE_MULTI_CHAT_VERSION="0.4.0-docker1"
 
 ENV no_proxy="kernel,web,localhost,127.0.0.0/8,::1,${no_proxy}"
 ENV NO_PROXY="kernel,web,localhost,127.0.0.0/8,::1,${NO_PROXY}"
-ENV KUWA_KERNEL_URL="http://kernel:9000"
+ENV SKYSCOPE_KERNEL_URL="http://kernel:9000"
 ENV APP_URL="http://localhost/"
 ENV APP_ENV="production"
 ENV APP_DEBUG="false"
-ENV KUWA_API_BASE_URLS="http://web/v1.0/;http://localhost/"
+ENV SKYSCOPE_API_BASE_URLS="http://web/v1.0/;http://localhost/"
 
 ENV DB_CONNECTION="pgsql"
 ENV DB_HOST="db"
 ENV DB_PORT="5432"
 
 ENV LOGIN_WITH_EMAIL="true"
-ENV INFORMATION_URL="https://kuwaai.tw/"
+ENV INFORMATION_URL="https://skyscope.ai/"
 ENV ALLOWED_IPS="0.0.0.0/0"
 ENV DEFAULT_LOCALE="en_us"
 ENV FALLBACK_LOCALE="en_us"
 
-ENV ADMIN_NAME="Kuwa Admin"
+ENV ADMIN_NAME="Skyscope Admin"
 ENV ADMIN_EMAIL="admin@localhost"
 ENV ADMIN_PASSWORD=""
 ENV ADMIN_PASSWORD_FILE=""

@@ -1,5 +1,5 @@
 services:
-  multi-chat:
+  skyscope-chat:
     depends_on:
       - db
     environment:
@@ -24,7 +24,7 @@ services:
     secrets:
       - db-password
     networks:
-      - backend
+      - skyscope-network
 
   # db-ui:
   #   image: adminer
@@ -37,7 +37,7 @@ services:
   #     - backend
 
 volumes:
-  pgsql-data: {}
+  skyscope-pgsql-data: {}
 
 secrets:
   db-password:

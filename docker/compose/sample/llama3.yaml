@@ -1,6 +1,6 @@
 services:
   llama3-executor:
-    image: kuwaai/model-executor
+    image: skyscopeai/model-executor
     environment:
       EXECUTOR_TYPE: huggingface
       EXECUTOR_ACCESS_CODE: llama3-8b-instruct

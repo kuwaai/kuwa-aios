@@ -1,7 +1,7 @@
-name: kuwa
+name: skyscope
 services:
   web:
-    image: kuwaai/multi-chat-web
+    image: skyscopeai/multi-chat-web
     build:
       context: ../../
       dockerfile: docker/web/Dockerfile
@@ -14,23 +14,23 @@ services:
       - multi-chat-storage:/app/storage:ro
       - ../root:/app/storage/app/public/root:ro
     ports: ["80:80", "443:443"]
-    depends_on: ["multi-chat"]
-    networks: ["backend"]
+    depends_on: ["skyscope-chat"]
+    networks: ["skyscope-network"]
     healthcheck:
       test: ["CMD-SHELL", "curl", "-f", "http://${DOMAIN_NAME}/"]
       timeout: 10s
     extra_hosts:
       - "host.docker.internal:host-gateway"
   
-  multi-chat:
-    image: kuwaai/multi-chat
+  skyscope-chat:
+    image: skyscopeai/multi-chat
     build:
       context: ../../
       dockerfile: docker/multi-chat/Dockerfile
     restart: unless-stopped
     init: true
     depends_on:
-      - redis
+      - skyscope-redis
     environment:
       # For nginx-proxy ("web" container) to generate configuration
       VIRTUAL_PROTO: fastcgi
@@ -59,31 +59,31 @@ services:
     secrets:
       - admin-password
     volumes: 
-      - multi-chat-storage:/app/storage:rw
+      - skyscope-chat-storage:/app/storage:rw
       - ../root:/app/storage/app/public/root:rw
-      - ../root:/var/kuwa/docker/root:rw
+      - ../root:/var/skyscope/docker/root:rw
       - ../root/custom:/app/resources/views/components/custom:ro
       - ~/.cache/huggingface:/root/.cache/huggingface
     healthcheck:
       test: ["CMD-SHELL", "php-fpm-healthcheck"]
       timeout: 10s
-    networks: ["backend"]
+    networks: ["skyscope-network"]
 
-  kernel:
-    image: kuwaai/kernel
+  skyscope-kernel:
+    image: skyscopeai/kernel
     build:
       context: ../../
       dockerfile: docker/kernel/Dockerfile
     restart: unless-stopped
-    networks: ["backend"]
+    networks: ["skyscope-network"]
 
-  redis:
+  skyscope-redis:
     image: redis:6.0.20
     restart: always
-    networks: ["backend"]
+    networks: ["skyscope-network"]
 
-  executor-builder:
-    image: kuwaai/model-executor
+  skyscope-executor-builder:
+    image: skyscopeai/model-executor
     build:
       context: ../../
       dockerfile: docker/executor/Dockerfile
@@ -91,14 +91,14 @@ services:
         - "linux/amd64"
         # - "linux/arm64"
     depends_on:
-      - kernel
-      - multi-chat
+      - skyscope-kernel
+      - skyscope-chat
     entrypoint: /bin/bash -c
     command: ["echo Image builds completed."]
 
 volumes:
-  multi-chat-storage: {}
-  kuwa-root: # The root of Kuwa filesystem hierarchy to store user-uploaded data during runtime.
+  skyscope-chat-storage: {}
+  skyscope-root: # The root of Skyscope filesystem hierarchy to store user-uploaded data during runtime.
     driver: local
     driver_opts:
       type: none
@@ -110,4 +110,4 @@ secrets:
     file: ../.admin-password
 
 networks:
-  backend: {}
+  skyscope-network: {}

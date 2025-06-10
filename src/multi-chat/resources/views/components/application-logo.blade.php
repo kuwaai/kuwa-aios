@@ -1,3 +1,3 @@
 <div class="rounded-xl overflow-hidden">
-    <img src="{{ asset('images/kuwa-logo.png') }}" {{ $attributes }}>
+    <img src="{{ asset('images/skyscope.png') }}" {{ $attributes }}>
 </div>

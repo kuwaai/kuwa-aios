@@ -8,7 +8,7 @@ import platform
 import errno
 import logging
 from pathlib import Path
-from kuwa.client import FileOperations
+from skyscope.client import FileOperations
 
 logger = logging.getLogger(__name__)
 
@@ -76,8 +76,8 @@ def mermaid_to_data_url(mermaid_script, argv):
 
         img_url = upload_to_web(
             file_path=output_filename,
-            api_url=os.environ["KUWA_BASE_URL"],
-            api_token=os.environ["KUWA_API_KEY"],
+            api_url=os.environ["SKYSCOPE_BASE_URL"],
+            api_token=os.environ["SKYSCOPE_API_KEY"],
         )
 
     except FileNotFoundError:

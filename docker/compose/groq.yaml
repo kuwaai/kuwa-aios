@@ -4,7 +4,7 @@ services:
       file: executor_base.yaml
       service: executor-base
     depends_on:
-      - executor-builder
+      - skyscope-executor-builder
     environment:
       EXECUTOR_TYPE: chatgpt
       EXECUTOR_ACCESS_CODE: .model:groq/

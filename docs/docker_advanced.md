@@ -23,7 +23,7 @@ docker exec -it kuwa-multi-chat-1 docker-entrypoint force-upgrade
 
 ### Building Docker Images from Source Code
 
-Since version 0.3.4, Kuwa Docker Images are downloaded pre-built from Docker Hub by default. To build images from source code, follow these steps:
+Since version 0.3.4, Skyscope Docker Images are downloaded pre-built from Docker Hub by default. To build images from source code, follow these steps:
 
 1. Ensure the `.git` directory is present within the `genai-os` directory.
 2. Enable the containerd image store for [multi-platform builds](https://docs.docker.com/build/building/multi-platform/#enable-the-containerd-image-store)
@@ -40,7 +40,7 @@ Since version 0.3.4, Kuwa Docker Images are downloaded pre-built from Docker Hub
     ```sh
     sudo systemctl restart docker
     ```
-3. **Build the Kuwa images using the following command:**
+3. **Build the Skyscope images using the following command:**
     ```sh
     sudo ./run.sh build
     ```
@@ -54,7 +54,7 @@ This command will create the following images:
 
 ### Setting Up HTTPS Service with Let's Encrypt
 
-Starting with version 0.4.0, the Docker version of Kuwa offers automatic HTTPS certificate acquisition using Let's Encrypt. To set up your HTTPS service:
+Starting with version 0.4.0, the Docker version of Skyscope offers automatic HTTPS certificate acquisition using Let's Encrypt. To set up your HTTPS service:
 
 1. Ensure your domain name's DNS records are properly configured and your firewall allows traffic on ports 80 and 443.
 2. In the `docker/.env` file, set the `DOMAIN_NAME` variable to your domain (e.g., `example.com`).

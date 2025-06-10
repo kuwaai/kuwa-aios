@@ -1,8 +1,8 @@
 services:
   executor-base:
-    image: kuwaai/model-executor
+    image: skyscopeai/model-executor
     volumes: [
-      "kuwa-root:/var/kuwa/docker/root:rw", # The root of Kuwa filesystem hierarchy to store user-uploaded data during runtime.
+      "skyscope-root:/var/skyscope/docker/root:rw", # The root of Skyscope filesystem hierarchy to store user-uploaded data during runtime.
       "~/.cache/huggingface:/root/.cache/huggingface",
       "~/.cache/torch:/root/.cache/torch",
       "~/.cache/whisper_s2t:/root/.cache/whisper_s2t",
@@ -10,7 +10,7 @@ services:
     extra_hosts:
       - "localhost:host-gateway"
     restart: unless-stopped
-    networks: ["backend"]
+    networks: ["skyscope-network"]
     # Uncomment to use NVIDIA GPU
     # deploy:
     #   resources:

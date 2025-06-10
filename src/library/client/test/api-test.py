@@ -2,17 +2,17 @@ import os
 import logging
 import argparse
 import asyncio
-from kuwa.client import KuwaClient
-from kuwa.client.base import StopAsyncGenerator
+from skyscope.client import SkyscopeClient
+from skyscope.client.base import StopAsyncGenerator
 
 logger = logging.getLogger(__name__)
 
-class TestKuwaApi:
+class TestSkyscopeApi:
 
     def __init__(self, base_url, api_key, model):
         logger.info(f"Base URL: {base_url}")
         logger.info(f"API Key: {api_key[:5]}...")
-        self.client = KuwaClient(
+        self.client = SkyscopeClient(
             base_url=base_url,
             model=model,
             auth_token=api_key,
@@ -48,12 +48,12 @@ class TestKuwaApi:
     
 async def main():
     parser = argparse.ArgumentParser(
-        description="Test the Kuwa API.",
+        description="Test the Skyscope API.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument("--base-url", default=os.environ.get('KUWA_API_BASE_URL', 'http://localhost/v1.0/'), help="The custom base URL for the Kuwa API.")
-    parser.add_argument("--api-key", default=os.environ.get('KUWA_API_KEY'), help="The API token for authentication with Kuwa.")
-    parser.add_argument("--model", default=".tool/kuwa/copycat", help="The custom base URL for the Kuwa API.")
+    parser.add_argument("--base-url", default=os.environ.get('SKYSCOPE_API_BASE_URL', 'http://localhost/v1.0/'), help="The custom base URL for the Skyscope API.")
+    parser.add_argument("--api-key", default=os.environ.get('SKYSCOPE_API_KEY'), help="The API token for authentication with Skyscope.")
+    parser.add_argument("--model", default=".tool/skyscope/copycat", help="The access code of the bot to test with.")
     parser.add_argument("--log", type=str, default="INFO", help="the log level. (INFO, DEBUG, ...)")
     args = parser.parse_args()
 
@@ -63,7 +63,7 @@ async def main():
         raise ValueError(f'Invalid log level: {args.log}')
     logging.basicConfig(level=numeric_level)
     
-    api_client = TestKuwaApi(
+    api_client = TestSkyscopeApi(
         base_url = args.base_url,
         api_key = args.api_key,
         model = args.model

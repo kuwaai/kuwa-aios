@@ -10,4 +10,4 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     rm -rf ../../.git &&\
     apk del git
 
-CMD [ "kuwa-kernel" ]
+CMD [ "skyscope-kernel" ]

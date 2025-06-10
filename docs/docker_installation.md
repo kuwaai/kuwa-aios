@@ -1,4 +1,4 @@
-## Kuwa Full Installation Guide for Linux
+## Skyscope Full Installation Guide for Linux
 
 * OS version: Ubuntu 22.04 LTS
 
@@ -134,9 +134,9 @@ sudo nvidia-ctk runtime configure --runtime=docker --set-as-default
 sudo systemctl restart docker
 ```
 
-### 5. Install Kuwa
+### 5. Install Skyscope
 
-1. Download Kuwa Repository
+1. Download Skyscope Repository
 
 ```sh=
 git clone https://github.com/kuwaai/kuwa-aios/
@@ -160,7 +160,7 @@ cp .env.sample .env
 DOMAIN_NAME=localhost # Website domain name, if you want to make the service public, please set it to your public domain name
 PUBLIC_BASE_URL="http://${DOMAIN_NAME}/" # Website base URL
 
-ADMIN_NAME="Kuwa Admin" # Website default administrator name
+ADMIN_NAME="Skyscope Admin" # Website default administrator name
 ADMIN_EMAIL="admin@${DOMAIN_NAME}" # Website default administrator login email, which can be an invalid email
 ```
 * `run.sh`: the executable file
@@ -173,7 +173,7 @@ Execute and wait for minutes.
 sudo ./run.sh
 ```
 
-By default, Kuwa will be deployed on `http://localhost`.
+By default, Skyscope will be deployed on `http://localhost`.
 
 **Advanced Configuration:**
 

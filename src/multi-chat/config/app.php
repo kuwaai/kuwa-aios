@@ -41,7 +41,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Skyscope Gen AI OS'),
 
     /*
     |--------------------------------------------------------------------------

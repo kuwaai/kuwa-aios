@@ -15,14 +15,14 @@ import requests
 import hashlib
 import tempfile
 
-from kuwa.executor import LLMExecutor, Modelfile
-from kuwa.executor.multi_modality import get_supported_image_mime, fetch_image, convert_image
-from kuwa.executor.llm_executor import (
+from skyscope.executor import LLMExecutor, Modelfile
+from skyscope.executor.multi_modality import get_supported_image_mime, fetch_image, convert_image
+from skyscope.executor.llm_executor import (
     rectify_chat_history,
     extract_user_attachment,
 )
-from kuwa.executor.cache import lru_cache_with_ttl
-from kuwa.executor.util import (
+from skyscope.executor.cache import lru_cache_with_ttl
+from skyscope.executor.util import (
     expose_function_parameter,
     read_config,
     merge_config,

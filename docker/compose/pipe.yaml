@@ -4,10 +4,10 @@ services:
       file: executor_base.yaml
       service: executor-base
     depends_on:
-      - executor-builder
+      - skyscope-executor-builder
     environment:
       CUSTOM_EXECUTOR_PATH: ./pipe/main.py
-      EXECUTOR_ACCESS_CODE: .tool/kuwa/pipe
+      EXECUTOR_ACCESS_CODE: .tool/skyscope/pipe
       EXECUTOR_NAME: Pipe
       EXECUTOR_IMAGE: pipe.png # Refer to src/multi-chat/public/images
       EXECUTOR_ORDER: 999999

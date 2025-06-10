@@ -2,7 +2,7 @@
 
 REBOOT_FLAG=".reboot_flag"
 BUILD_SCRIPT_VERSION="v0.2.0"
-KUWA_OWNER=${SUDO_USER:-$USER}
+SKYSCOPE_OWNER=${SUDO_USER:-$USER}
 
 install_docker() {
   if ! command -v docker &>/dev/null; then
@@ -40,8 +40,8 @@ EOT
   else
     echo "Docker is already installed."
   fi
-  echo "Adding $KUWA_OWNER to group docker."
-  adduser $KUWA_OWNER docker
+  echo "Adding $SKYSCOPE_OWNER to group docker."
+  adduser $SKYSCOPE_OWNER docker
   docker version
 }
 
@@ -109,13 +109,13 @@ install_nvidia_container_toolkit() {
   fi
 }
 
-install_kuwa() {
-  # Download Kuwa repository if not exist
+install_skyscope() {
+  # Download Skyscope repository if not exist
   cd "$(pwd)"
   if ! git rev-parse &>/dev/null; then
-    git clone https://github.com/kuwaai/kuwa-aios/
-    chown -R $KUWA_OWNER kuwa-aios
-    pushd kuwa-aios/docker > /dev/null
+    git clone https://github.com/skyscopeai/skyscope-aios/ skyscope-genai-os
+    chown -R $SKYSCOPE_OWNER skyscope-genai-os
+    pushd skyscope-genai-os/docker > /dev/null
   else
     pushd "$(dirname "$0")" > /dev/null
   fi
@@ -128,9 +128,9 @@ install_kuwa() {
 
   # Set admin password
   while true; do
-    read -sp "Enter Kuwa admin password: " admin_passwd
+    read -sp "Enter Skyscope admin password: " admin_passwd
     echo
-    read -sp "Confirm Kuwa admin password: " admin_passwd_confirm
+    read -sp "Confirm Skyscope admin password: " admin_passwd_confirm
     echo
 
     if [ "$admin_passwd" == "$admin_passwd_confirm" ]; then
@@ -151,7 +151,7 @@ install_kuwa() {
   ./script/sync-root.sh
   
   # [Optional] Build the docker image from source.
-  read -p "Would you like to build the Kuwa Docker image from its source code? [y/N]: " build_docker_image
+  read -p "Would you like to build the Skyscope Docker image from its source code? [y/N]: " build_docker_image
   if [[ "$build_docker_image" == "y" || "$build_docker_image" == "Y" ]]; then
     ./script/build-image.sh
   fi
@@ -175,11 +175,11 @@ install_all() {
     # install_cuda_toolkit
     install_nvidia_container_toolkit
   fi
-  install_kuwa
+  install_skyscope
 }
 
-echo "Kuwa building script ${BUILD_SCRIPT_VERSION}"
-echo "This script automates the installation of Kuwa and its dependencies. It has been tested on Ubuntu 22.04 and 24.04."
+echo "Skyscope building script ${BUILD_SCRIPT_VERSION}"
+echo "This script automates the installation of Skyscope and its dependencies. It has been tested on Ubuntu 22.04 and 24.04."
 echo "Linux distribution information:"
 lsb_release -a
 echo "Preparing installation..."

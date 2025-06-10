@@ -41,11 +41,11 @@ seed_admin() {
 
 # Store the Kernel API information
 seed_kernel() {
-    if [ -z "${KUWA_KERNEL_URL:-}" ]
+    if [ -z "${SKYSCOPE_KERNEL_URL:-}" ]
     then
         return
     fi
-    php artisan web:config --settings="kernel_location=${KUWA_KERNEL_URL}" || return 0
+    php artisan web:config --settings="kernel_location=${SKYSCOPE_KERNEL_URL}" || return 0
 }
 
 # Update the cache and database
@@ -53,14 +53,14 @@ VERSION_FILE="/app/storage/app/VERSION"
 upgrade() {
     optimize_laravel
     migrate_database
-    echo ${KUWA_MULTI_CHAT_VERSION} > ${VERSION_FILE}
+    echo ${SKYSCOPE_MULTI_CHAT_VERSION} > ${VERSION_FILE}
     
     echo "Try to seed the database."
     seed_kernel || true
     seed_admin || true
     
-    printf "Successfully upgraded Kuwa Multi-Chat and it's database to version ${KUWA_MULTI_CHAT_VERSION}\n"
-    echo -e 'To remove old executors, run this command: `docker exec -it kuwa-multi-chat-1 docker-entrypoint prune-executor`'
+    printf "Successfully upgraded Skyscope Multi-Chat and it's database to version ${SKYSCOPE_MULTI_CHAT_VERSION}\n"
+    echo -e 'To remove old executors, run this command: `docker exec -it skyscope-chat-1 docker-entrypoint prune-executor`'
 }
 
 upgrade

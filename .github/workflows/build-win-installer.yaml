@@ -23,7 +23,7 @@ jobs:
 
       - name: Install Inno Setup extra language files
         run: |
-          $baseUri = 'https://raw.githubusercontent.com/kuwaai/issrc/main/Files/Languages'
+          $baseUri = 'https://raw.githubusercontent.com/skyscopeai/issrc/main/Files/Languages'
           $langPath = "$env:ProgramFiles (x86)\Inno Setup 6\Languages"
           $files = @{
             Default = "..\Default.isl"
@@ -61,11 +61,11 @@ jobs:
       - name: Compile installer
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.5
         with:
-          path: scripts/windows-setup-files/Kuwa-AIOS-Online-Installer.iss
+          path: scripts/windows-setup-files/Skyscope-AIOS-Online-Installer.iss
           options: /O+
 
       - name: Upload installer artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Kuwa-GenAI-OS-${{ github.ref_name }}${{ steps.commit.outputs.short }}
-          path: scripts/windows-setup-files/Kuwa-GenAI-OS.exe
+          name: Skyscope-GenAI-OS-${{ github.ref_name }}${{ steps.commit.outputs.short }}
+          path: scripts/windows-setup-files/Skyscope-GenAI-OS.exe

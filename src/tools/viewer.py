@@ -39,7 +39,7 @@ import tempfile
 import mimetypes
 from magika import Magika
 from urllib.parse import urlparse
-from kuwa.rag.file_text_loader import FileTextLoader
+from skyscope.rag.file_text_loader import FileTextLoader
 
 magika = Magika()
 

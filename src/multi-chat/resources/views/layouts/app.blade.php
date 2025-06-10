@@ -20,7 +20,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="{{ asset('js/kuwa_api.js') }}"></script>
+    <script src="{{ asset('js/skyscope_api.js') }}"></script>
     <script src="{{ asset('js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('js/marked.min.js') }}"></script>
     <script src="{{ asset('js/highlight.min.js') }}"></script>
@@ -248,7 +248,7 @@
 
 <body class="font-sans antialiased h-full">
     <script id="remove-once" type="text/javascript">
-        const client = new KuwaClient("{{ Auth::user()->tokens()->where('name', 'API_Token')->first()->token ?? '' }}",
+        const client = new SkyscopeClient("{{ Auth::user()->tokens()->where('name', 'API_Token')->first()->token ?? '' }}",
             "{{ url('/') }}");
 
         $(document).ready(function() {
@@ -262,10 +262,10 @@
             <label for="modal-worker-count-input"
                 class="block text-gray-700 dark:text-gray-300 mb-2">{{ __('workers.modal.start.label') }}</label>
             <input id="modal-worker-count-input" type="number" min="1" value='10'
-                class="w-full px-4 py-2 border dark:border-gray-700 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300" />
+                class="w-full px-4 py-2 border dark:border-gray-700 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 dark:bg-gray-700 dark:text-gray-300" />
             <div class="flex justify-end mt-4">
                 <button id="confirm-start-workers"
-                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-md">{{ __('workers.button.confirm') }}</button>
+                    class="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded shadow-md">{{ __('workers.button.confirm') }}</button>
                 <button id="cancel-start-workers"
                     class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded shadow-md ml-2">{{ __('workers.button.cancel') }}</button>
             </div>
@@ -310,7 +310,7 @@
                     <div
                         class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
                         <button data-modal-hide="system_announcement_modal" type="button" onclick="$modal1.hide();"
-                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ __('settings.button.close') }}</button>
+                            class="text-white bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800">{{ __('settings.button.close') }}</button>
                     </div>
                 </div>
             </div>
@@ -336,13 +336,13 @@
                     <div
                         class="flex items-center p-4 space-x-2 border-t border-gray-200 rounded-b dark:border-gray-600">
                         <button data-modal-hide="tos_modal" type="button" onclick="$modal2.hide();"
-                            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{{ __('settings.button.accept') }}</button>
+                            class="text-white bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800">{{ __('settings.button.accept') }}</button>
                     </div>
                 </div>
             </div>
         </div>
     @endif
-    <div class="flex flex-col h-full bg-gray-100 dark:bg-gray-900">
+    <div class="flex flex-col h-full bg-slate-100 dark:bg-slate-900">
         @include('layouts.navigation')
 
         <!-- Page Heading -->
@@ -375,7 +375,7 @@
                             {{ __('settings.button.cancel') }}
                         </div>
                         <div id="confirmUpdate"
-                            class="cursor-pointer inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none">
+                            class="cursor-pointer inline-block bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 focus:outline-none">
                             {{ __('settings.button.confirm') }}
                         </div>
                     </div>
@@ -392,7 +392,7 @@
                         class="bg-gray-100 scrollbar-y-auto scrollbar dark:bg-gray-700 p-4 rounded-lg text-sm h-96 overflow-x-hidden text-gray-900 dark:text-gray-200 whitespace-normal">
                     </div>
                     <div id="refreshPage" onclick='location.reload()'
-                        class="mt-4 cursor-pointer hidden inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none">
+                        class="mt-4 cursor-pointer hidden inline-block bg-teal-500 text-white py-2 px-4 rounded hover:bg-teal-600 focus:outline-none">
                         {{ __('settings.button.refresh') }}
                     </div>
                 </div>

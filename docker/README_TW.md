@@ -107,7 +107,7 @@ sudo docker run --rm --gpus all nvidia/cuda:12.2.0-base-ubuntu22.04 nvidia-smi
     DOMAIN_NAME=localhost # 網站域名，若要公開提供服務，請設定成你的公開域名
     PUBLIC_BASE_URL="http://${DOMAIN_NAME}/" # 網站基礎 URL
 
-    ADMIN_NAME="Kuwa Admin" # 網站預設管理者名稱
+    ADMIN_NAME="Skyscope Admin" # 網站預設管理者名稱
     ADMIN_EMAIL="admin@${DOMAIN_NAME}" # 網站預設管理者登入電子郵件，可為不存在的電子郵件
     ```
 
@@ -117,7 +117,7 @@ sudo docker run --rm --gpus all nvidia/cuda:12.2.0-base-ubuntu22.04 nvidia-smi
 > 請使用 Docker Compose V2 以上的版本。
 > Ubuntu APT 中的 `docker-compose` 套件為 Docker Compose V1，無法使用，請參考前面章節安裝新版 Docker Compose
 
-使用以下腳本啟動基礎 Kuwa GenAI OS 系統，包含 Gemini-Pro Executor, Document QA, WebQA, Search QA
+使用以下腳本啟動基礎 Skyscope GenAI OS 系統，包含 Gemini-Pro Executor, Document QA, WebQA, Search QA
 可以透過更改 `./run.sh` 中的 `confs` 陣列內容調整要啟動的元件，元件設定都在 `docker/compose` 目錄中
 ```sh
 ./run.sh
@@ -145,14 +145,14 @@ Docker 版本預設不會在 Multi-Chat 網頁前端顯示任何錯誤訊息，�
 若您資料庫不小心遺失或毀損，可透過強置更新重置資料庫。  
 請先確定系統正在運作中，再使用以下指令強制更新資料庫。  
 ```sh
-docker exec -it kuwa-multi-chat-1 docker-entrypoint force-upgrade
+docker exec -it skyscope-chat-1 docker-entrypoint force-upgrade
 ```
 
 ### 4. 從原始碼建置 Docker Images
-自 v0.3.4 起，預設會從 Docker Hub 下載預先建置好的 Kuwa Docker Image，  
-若您想從原始碼建立映像，請確保您的 `genai-os` 目錄下已包含 `.git` 目錄。接著，可使用以下指令建立 Kuwa 映像：
+自 v0.3.4 起，預設會從 Docker Hub 下載預先建置好的 Skyscope Docker Image，
+若您想從原始碼建立映像，請確保您的 `genai-os` 目錄下已包含 `.git` 目錄。接著，可使用以下指令建立 Skyscope 映像：
 ```sh
 cd docker
 ./run.sh build
 ```
-執行此指令會建立 `kuwaai/model-executor`、`kuwaai/multi-chat`、`kuwaai/kernel`、以及 `kuwaai/multi-chat-web` 等四個映像。
+執行此指令會建立 `skyscopeai/model-executor`、`skyscopeai/multi-chat`、`skyscopeai/kernel`、以及 `skyscopeai/multi-chat-web` 等四個映像。
