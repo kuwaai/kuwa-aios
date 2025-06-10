@@ -3,7 +3,6 @@
   <br>
 </h1>
 
-<h4 align="center">An open, free, secure, and privacy-focused Generative-AI Orchestrating System.</h4>
 
 <p align="center">
     <img src="(https://github.com/skyscope-sentinel/kuwa-aios/blob/main/Skyscope-Sentinel-AI-OS.png)">
