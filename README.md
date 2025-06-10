@@ -1,12 +1,9 @@
 ## Skyscope Sentinel Gen AI OS
 ```An Innovative Generative AI Operating System from Skyscope Sentinel Intelligence```
-  <br>
-</h1>
 
 
 <p align="center">
     <img src="(https://github.com/skyscope-sentinel/kuwa-aios/blob/main/Skyscope-Sentinel-AI-OS.png)">
-  </a>
  
 ## Features Included
 ``` Multimodal and Multi Agentic Text, Image, Audio and Video capabilities ```
