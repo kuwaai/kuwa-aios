@@ -148,7 +148,7 @@ install_skyscope() {
   echo "Database password set successfully."
 
   # Copy bots and tools
-  ./script/sync-root.sh
+  ./script/sync-skyscope-root.sh
   
   # [Optional] Build the docker image from source.
   read -p "Would you like to build the Skyscope Docker image from its source code? [y/N]: " build_docker_image

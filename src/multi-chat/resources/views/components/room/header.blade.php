@@ -10,7 +10,7 @@
     class="bg-gray-300 dark:bg-gray-900/70 p-2 sm:p-4 h-20 text-gray-700 dark:text-white items-center flex">
     @if (!$readonly)
         <button
-            class="block sm:hidden text-center text-black hover:text-black dark:text-white hover:text-gray-300 hover:bg-gray-400 dark:bg-gray-800 dark:hover:bg-gray-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-5 focus:outline-none dark:focus:ring-blue-800"
+            class="block sm:hidden text-center text-black hover:text-black dark:text-white hover:text-gray-300 hover:bg-gray-400 dark:bg-gray-800 dark:hover:bg-gray-800 focus:ring-4 focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-5 focus:outline-none dark:focus:ring-teal-800"
             type="button" data-drawer-target="chatlist_drawer" data-drawer-show="chatlist_drawer"
             aria-controls="chatlist_drawer">
             <i class="fas fa-bars"></i>

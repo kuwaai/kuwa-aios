@@ -42,7 +42,7 @@ RUN apt-get update && \
     ln -s /usr/lib/$(uname -m)-linux-musl/libc.so /lib/libc.musl-$(uname -m).so.1 &&\
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /usr/src/kuwa-executor
+WORKDIR /usr/src/skyscope-executor
 
 # Install source code of Skyscope Executors
 COPY --from=build /usr/local/lib/python3.10/dist-packages /usr/local/lib/python3.10/dist-packages
@@ -63,8 +63,8 @@ RUN mkdir -p ${SKYSCOPE_ROOT}/bin && \
 COPY src/tools ${SKYSCOPE_ROOT}/../../src/tools
 
 # Default parameters
-ENV no_proxy="kernel,web,localhost,127.0.0.0/8,::1,${no_proxy}"
-ENV NO_PROXY="kernel,web,localhost,127.0.0.0/8,::1,${NO_PROXY}"
+ENV no_proxy="skyscope-kernel,web,localhost,127.0.0.0/8,::1,${no_proxy}"
+ENV NO_PROXY="skyscope-kernel,web,localhost,127.0.0.0/8,::1,${NO_PROXY}"
 ENV EXECUTOR_TYPE="debug"
 ENV EXECUTOR_ACCESS_CODE="debug"
 ENV EXECUTOR_NAME="Debug Executor"

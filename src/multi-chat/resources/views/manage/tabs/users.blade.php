@@ -64,7 +64,7 @@
 <div class="flex flex-1 flex-col overflow-hidden bg-gray-100 dark:bg-gray-600">
     <ol
         class="flex items-center w-full space-x-2 text-sm font-medium text-center text-gray-500 bg-gray-200 dark:bg-gray-700 px-4">
-        <li class="flex items-center text-blue-600 dark:text-blue-500">
+        <li class="flex items-center text-teal-600 dark:text-teal-500">
             Menu
         </li>
     </ol>
@@ -103,7 +103,7 @@
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.name') }}
                         <span class="text-red-500">*</span></label>
                     <input type="text" id="create_user_name" name="name" autocomplete="off"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                         placeholder="{{ __('users.placeholder.username') }}" required>
                 </div>
                 <div class="md:col-span-2 lg:col-span-1">
@@ -111,7 +111,7 @@
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.joined_group') }}</label>
                     <input type="text" list="joinable_groups" name="group" autocomplete="off"
                         id="create_user_group"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                         placeholder="{{ __('users.placeholder.group_name') }}">
                     <datalist id="joinable_groups">
                         @foreach (App\Models\Groups::orderby('name')->get() as $group)
@@ -124,7 +124,7 @@
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.email') }}
                         <span class="text-red-500">*</span></label>
                     <input type="text" id="create_user_email" name="email" autocomplete="off"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                         placeholder="{{ __('users.placeholder.email') }}" required>
                 </div>
             </div>
@@ -134,7 +134,7 @@
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.password') }}
                         <span class="text-red-500">*</span></label>
                     <input type="password" id="create_user_password" name="password" autocomplete="off"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                         placeholder="{{ __('users.label.password') }}" required>
                 </div>
             </div>
@@ -143,7 +143,7 @@
                     <label for="create_user_detail"
                         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.detail') }}</label>
                     <input type="text" id="create_user_detail" name="detail" autocomplete="off"
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                         placeholder="{{ __('users.label.detail') }}">
                 </div>
             </div>
@@ -156,7 +156,7 @@
                     <div class="flex items-center">
                         <input id="create_require_change_password" name="require_change_password" value="true"
                             type="checkbox"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <label for="create_require_change_password"
                             class="ml-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                             {{ __('users.label.require_change_password') }}
@@ -180,11 +180,11 @@
                     <div class="flex">
                         <div class="relative w-full">
                             <input type="search" type="submit" name="search" id="fuzzy_search_input"
-                                class="p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+                                class="p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-teal-500"
                                 placeholder="{{ __('users.placeholder.search_user') }}" autocomplete="off"
                                 value="{{ session('fuzzy_search') }}" required>
                             <button type="submit"
-                                class="absolute top-0 right-0 p-2.5 text-sm font-medium h-full text-white bg-blue-700 rounded-r-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                class="absolute top-0 right-0 p-2.5 text-sm font-medium h-full text-white bg-teal-700 rounded-r-lg border border-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800">
                                 <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     fill="none" viewBox="0 0 20 20">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -310,7 +310,7 @@
                             <div class="flex">
                                 <div class="relative w-full">
                                     <input type="search" oninput="search_group($(this).val())"
-                                        class="p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+                                        class="p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-r-lg border-l-gray-50 border-l-2 border border-gray-300 dark:bg-gray-700 dark:border-l-gray-700  dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-teal-500"
                                         placeholder="{{ __('users.placeholder.search_user') }}" autocomplete="off">
                                 </div>
                             </div>
@@ -375,7 +375,7 @@
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.name') }}
                                 <span class="text-red-500">*</span></label>
                             <input type="text" id="edit_user_name" name="name" autocomplete="off"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                                 placeholder="{{ __('users.placeholder.username') }}" required>
                         </div>
                         <div class="md:col-span-2 lg:col-span-1">
@@ -383,7 +383,7 @@
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.joined_group') }}</label>
                             <input type="text" list="joinable_groups" name="group" autocomplete="off"
                                 id="edit_joined_group"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                                 placeholder="{{ __('users.placeholder.group_name') }}">
                             <datalist id="joinable_groups">
                                 @foreach (App\Models\Groups::orderby('name')->get() as $group)
@@ -396,7 +396,7 @@
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.email') }}
                                 <span class="text-red-500">*</span></label>
                             <input type="text" id="edit_user_email" name="email" autocomplete="off"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                                 placeholder="{{ __('users.placeholder.email') }}" required>
                         </div>
                     </div>
@@ -405,7 +405,7 @@
                             <label for="edit_user_password"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.update_password') }}</label>
                             <input type="password" id="edit_user_password" name="password" autocomplete="off"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                                 placeholder="{{ __('users.placeholder.new_password') }}">
                         </div>
                     </div>
@@ -414,7 +414,7 @@
                             <label for="edit_detail"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ __('users.label.detail') }}</label>
                             <input type="text" id="edit_detail" name="detail" autocomplete="off"
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-teal-500 focus:border-teal-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-teal-500 dark:focus:border-teal-500"
                                 placeholder="{{ __('users.label.detail') }}">
                         </div>
                     </div>
@@ -427,7 +427,7 @@
                             <div class="flex items-center">
                                 <input id="edit_require_change_password" name="require_change_password"
                                     value="true" type="checkbox"
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                    class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                 <label for="edit_require_change_password"
                                     class="ml-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                                     {{ __('users.label.require_change_password') }}
@@ -538,7 +538,7 @@
         }
         $("ol").html("");
         for (var index in datas) {
-            $("ol").append(`<li class="flex items-center ${datas.length-1 == index ? "text-blue-600 dark:text-blue-500":""}">
+                $("ol").append(`<li class="flex items-center ${datas.length-1 == index ? "text-teal-600 dark:text-teal-500":""}">
     <a class="${onclicks[datas[index]] && index < 2 ? 'cursor-pointer' : ''}" onclick="${onclicks[datas[index]] && index < 2 ?  onclicks[datas[index]] : '' }">${parse[datas[index]] ? parse[datas[index]] : datas[index]}</a>
     ${datas.length-1 == index ? "" : symbol}
 </li>`);

@@ -11,7 +11,7 @@ services:
       DEFAULT_HOST: ${DOMAIN_NAME}
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - multi-chat-storage:/app/storage:ro
+      - skyscope-chat-storage:/app/storage:ro
       - ../root:/app/storage/app/public/root:ro
     ports: ["80:80", "443:443"]
     depends_on: ["skyscope-chat"]

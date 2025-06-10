@@ -239,7 +239,7 @@
                 <div class="space-y-6 flex-1 rounded">
                     <div class="my-2">
                         <div id="updateWebBtn" onclick='updateWeb()'
-                            class="bg-blue-500 inline-block hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-center cursor-pointer">
+                            class="bg-teal-500 inline-block hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg text-center cursor-pointer">
                             {{ __('settings.button.updateWeb') }}
                         </div>
                     </div>
@@ -253,7 +253,7 @@
                     {{ __('settings.header.setting.other') }}
                 </h3>
                 <div class="my-2"><a
-                        class="bg-blue-500 inline-block hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-center"
+                        class="bg-teal-500 inline-block hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-lg text-center"
                         href="{{ route('manage.setting.resetRedis') }}">{{ __('settings.button.reset_redis') }}</a>
                 </div>
             </div>

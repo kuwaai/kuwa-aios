@@ -179,7 +179,7 @@
                     @php $id = strtolower($label); @endphp
                     <div class="flex items-center">
                         <input id="{{ $id }}" name="react_btn[]" value="{{ $id }}" type="checkbox"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                            class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 rounded focus:ring-teal-500 dark:focus:ring-teal-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                         <label for="{{ $id }}"
                             class="ml-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                             {{ __('store.bot.react.allow_' . $id) }}
@@ -218,7 +218,7 @@
                                 <h3 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
                                     {{ __('models.header.update_model') }}</h3>
                                 <button data-modal-hide="popup-modal2" type="submit"
-                                    class="text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
+                                    class="text-white bg-green-500 hover:bg-green-600 focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
                                     {{ __('models.button.yes') }}
                                 </button>
                                 <button data-modal-hide="popup-modal2" type="button"
