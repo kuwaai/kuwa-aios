@@ -2,7 +2,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://kuwaai.tw/">
+  <a href="https://kuwaai.org/">
   <img src="./src/multi-chat/public/images/kuwa.png" alt="Kuwa GenAI OS" width="200"></a>
   <br>
   Kuwa GenAI OS
@@ -57,7 +57,7 @@
 ## Architecture
 > **Warning**: This a preliminary draft and may be subject to further changes.
 
-[![screenshot](./src/multi-chat/public/images/architecture.svg)](https://kuwaai.tw/os/Intro)
+[![screenshot](./src/multi-chat/public/images/architecture.svg)](https://kuwaai.org/os/Intro)
 
 ## Installation Guide
 ### Quick Installation
@@ -108,7 +108,7 @@ If you are interested in this project, you can help us develop it together and i
 The following packages and applications are used in this project:
 
 - [PHP & PHP-FPM](https://www.php.net/)
-- [Laravel 10](https://laravel.com/)
+- [Laravel](https://laravel.com/)
 - [Python 3](https://www.python.org/)
 - [Node.js](https://nodejs.org/)
 - [Docker](https://www.docker.com/)
