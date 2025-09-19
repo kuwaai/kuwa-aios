@@ -2,7 +2,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://kuwaai.tw/zh-Hant/">
+  <a href="https://kuwaai.org/zh-Hant/">
   <img src="./src/multi-chat/public/images/kuwa.png" alt="Kuwa GenAI OS" width="200"></a>
   <br>
   Kuwa GenAI OS
@@ -54,7 +54,7 @@
 ## 架構
 > **警告**: 本草案為初步版本，可能會有進一步的更改。
 
-[![screenshot](./src/multi-chat/public/images/architecture.svg)](https://kuwaai.tw/os/Intro)
+[![screenshot](./src/multi-chat/public/images/architecture.svg)](https://kuwaai.org/os/Intro)
 
 ## 安裝指南
 ### 快速安裝
@@ -103,7 +103,7 @@ Kuwa透過Executor來支援多種模型架設及應用串接方式，安裝後�
 此專案用到了以下套件和程式：
 
 - [PHP & PHP-FPM](https://www.php.net/)
-- [Laravel 10](https://laravel.com/)
+- [Laravel](https://laravel.com/)
 - [Python 3](https://www.python.org/)
 - [Node.js](https://nodejs.org/)
 - [Docker](https://www.docker.com/)
