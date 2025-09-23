@@ -469,7 +469,6 @@ class ProfileController extends Controller
             $is_calling_bot = false;
             $llm = LLMs::select('*')->orderBy('order');
         }
-
         if (!((!$is_calling_bot && $llm->exists()) || ($is_calling_bot && $bot->exists()))) {
             // Handle the case where the specified model doesn't exist
             $errorResponse = [
@@ -479,7 +478,11 @@ class ProfileController extends Controller
             return response()->json($errorResponse, 404, [], JSON_UNESCAPED_UNICODE);
         }
 
-        $llm = $llm->exists() ? $llm->first() : LLMs::findOrFail($bot->first()->model_id);
+        $llm = $llm->exists() ? $llm->first() : LLMs::query()
+        ->join('bots', 'llms.id', '=', 'bots.model_id')
+        ->where('bots.name', '=', $is_calling_bot ? $bot_name : '')
+        ->select('llms.*')
+        ->first();
         $botFile = $bot->exists() ? (json_decode($bot->first()->config ?? '')->modelfile ?? null) : null;
         if(isset($jsonData['botfile'])){
             $botController = new BotController();
