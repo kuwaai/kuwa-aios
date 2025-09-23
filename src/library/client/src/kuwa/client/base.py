@@ -24,6 +24,7 @@ class KuwaClient:
         model=".bot/.default",
         auth_token=None,
         limit: int = 3072,
+        debug: bool = False,
     ):
         self.base_url = (
             base_url
@@ -39,6 +40,8 @@ class KuwaClient:
         )
         self.limit = limit
         self.running_jobs = []
+        if debug:
+            logger.setLevel(logging.DEBUG)
 
     def _request(self, endpoint, method="GET", json=None, files=None):
         headers = {
