@@ -4,6 +4,7 @@ import logging
 import pprint
 import argparse
 import asyncio
+import json
 from functools import lru_cache
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -250,6 +251,7 @@ class OllamaExecutor(LLMExecutor):
                 yield "[No input message entered]"
                 return
 
+            json_schema = json.loads(modelfile.parameters["model_"].get("json_schema"))
             chat_mode = True
             if modelfile.template:
                 chat_mode = False
@@ -269,6 +271,7 @@ class OllamaExecutor(LLMExecutor):
                     messages=history,
                     options=self.ollama_options,
                     stream=True,
+                    format=json_schema
                 )
             else:
                 dummy_ollama_template = "{{ .Prompt }}{{ .Response }}"
@@ -278,6 +281,7 @@ class OllamaExecutor(LLMExecutor):
                     options=self.ollama_options,
                     stream=True,
                     template=dummy_ollama_template,
+                    format=json_schema
                 )
             async for i in response:
                 if i["done"]:
