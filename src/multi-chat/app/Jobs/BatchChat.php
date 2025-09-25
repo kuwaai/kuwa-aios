@@ -67,7 +67,7 @@ class BatchChat implements ShouldQueue
                 $buffer[] = ['msg' => $prompt, 'isbot' => false];
                 
                 Redis::rpush('usertask_' . $this->user_id, $this->history_id);
-                Redis::expire('usertask_' . $this->user_id, 1200);
+                //Redis::expire('usertask_' . $this->user_id, 1200);
             }
 
             RequestChat::dispatch(json_encode($history->chained ? array_merge($input, $buffer) : [['msg' => $prompt, 'isbot' => false]]), $access_code, $this->user_id, $this->history_id, App::getLocale(), $this->history_id, $modelfile, $new_input . "\n", $index === count($this->prompts) - 1);

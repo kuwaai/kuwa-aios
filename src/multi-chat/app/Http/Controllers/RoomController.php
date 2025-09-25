@@ -321,7 +321,7 @@ class RoomController extends Controller
                                     if ($history->content == '') {
                                         $ids[] = $record->id;
                                         Redis::rpush('usertask_' . $request->user()->id, $record->id);
-                                        Redis::expire('usertask_' . $request->user()->id, 1200);
+                                        //Redis::expire('usertask_' . $request->user()->id, 1200);
                                     }
                                 } else {
                                     $user_msg = $history->content;
@@ -670,7 +670,7 @@ class RoomController extends Controller
                         $history->save();
                         RequestChat::dispatch($tmp, $access_code, Auth::user()->id, $history->id, App::getLocale(), null, json_decode($bot->config ?? '')->modelfile ?? null);
                         Redis::rpush('usertask_' . Auth::user()->id, $history->id);
-                        Redis::expire('usertask_' . Auth::user()->id, 1200);
+                        //Redis::expire('usertask_' . Auth::user()->id, 1200); 
                     }
                 }
             }
@@ -740,7 +740,7 @@ class RoomController extends Controller
                     $record->save();
                     BatchChat::dispatch($prompts, $record->id);
                     Redis::rpush('usertask_' . Auth::user()->id, $record->id);
-                    Redis::expire('usertask_' . Auth::user()->id, 1200);
+                    //Redis::expire('usertask_' . Auth::user()->id, 1200);
                     return Redirect::route('room.chat', $Room->id)->with('selLLMs', [$i]);
                 }
             }
@@ -929,7 +929,7 @@ class RoomController extends Controller
                         $history->save();
                         RequestChat::dispatch($tmp, $access_code, Auth::user()->id, $history->id, App::getLocale(), null, json_decode($bot->config ?? '')->modelfile ?? null);
                         Redis::rpush('usertask_' . Auth::user()->id, $history->id);
-                        Redis::expire('usertask_' . Auth::user()->id, 1200);
+                        //Redis::expire('usertask_' . Auth::user()->id, 1200);
                     }
                 }
             }

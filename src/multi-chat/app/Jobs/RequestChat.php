@@ -145,7 +145,7 @@ class RequestChat implements ShouldQueue
         ignore_user_abort(true);
         set_time_limit(0);
         $this->kernel_location = \App\Models\SystemSetting::where('key', 'kernel_location')->first()->value;
-        $client = new Client(['timeout' => -1]);
+        $client = new Client(['connect_timeout' => 0]);
         if ($this->history_id > 0 && $this->app_type == AppType::CHATROOM) {
             if (Histories::find($this->history_id) && Histories::find($this->history_id)->msg != '* ...thinking... *' && $this->preserved_output == '') {
                 Log::Debug('Hmmm');
@@ -174,6 +174,7 @@ class RequestChat implements ShouldQueue
             $this->input = $chatroomProcessor->rectifyInputMessage($this->input);
 
             $response = $client->post($this->kernel_location . '/' . self::$kernel_api_version . '/chat/completions', [
+                'read_timeout' => 0, // Disable timeout for reading stream chunks
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
                     'Accept-Language' => $this->lang,
@@ -289,7 +290,7 @@ class RequestChat implements ShouldQueue
 
     private function tryScheduleJob()
     {
-        $client = new Client(['timeout' => -1]);
+        $client = new Client(['read_timeout' => 0, 'connect_timeout' => 0]);
         $response = $client->post($this->kernel_location . '/' . self::$kernel_api_version . '/worker/schedule', [
             'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
             'form_params' => [

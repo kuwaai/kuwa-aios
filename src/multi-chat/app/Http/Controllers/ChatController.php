@@ -60,7 +60,7 @@ class ChatController extends Controller
         $history->save();
         
         Redis::rpush('api_' . Auth::user()->id, $history->id);
-        Redis::expire('api_' . Auth::user()->id, 1200);
+        //Redis::expire('api_' . Auth::user()->id, 1200);
         RequestChat::dispatch($tmp, $access_code, Auth::user()->id, $history->id, App::getLocale(), 'api_' . $history->id);
 
         $response = new StreamedResponse();

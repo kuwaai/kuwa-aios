@@ -515,7 +515,7 @@ class ProfileController extends Controller
         $history->save();
 
         Redis::rpush('api_' . $user->tokenable_id, $history->id);
-        Redis::expire('api_' . $user->tokenable_id, 1200);
+        //Redis::expire('api_' . $user->tokenable_id, 1200);
         RequestChat::dispatch($messages_json, $llm->access_code, $user->id, $history->id, $lang, 'api_' . $history->id, $botFile);
 
         if (isset($jsonData['stream']) ? boolval($jsonData['stream']) : false){
