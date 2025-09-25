@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import json
+import time
 import asyncio
 import logging
 import requests
@@ -316,6 +317,11 @@ class SpeechRecognitionExecutor(LLMExecutor):
                 logger.debug(replace_output)
                 yield replace_output
                 return
+
+            # Prevent timeout
+            for i in "**Transcript**\n\n":
+                yield i
+                time.sleep(0.001)
 
             src_file = self.download(url)
             gc_paths.append(src_file)
