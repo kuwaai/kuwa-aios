@@ -31,13 +31,13 @@ class DebugExecutor(LLMExecutor):
             if history[-1]["content"] == "/crash":
                 raise RuntimeError("oiiaioiiiiai")
             for i in "".join([i["content"] for i in history]).strip():
+                await asyncio.sleep(
+                    modelfile.parameters.get("llm_delay", self.args.delay)
+                )
                 yield i
                 if self.stop:
                     self.stop = False
                     break
-                await asyncio.sleep(
-                    modelfile.parameters.get("llm_delay", self.args.delay)
-                )
         except Exception:
             logger.exception("Error occurs during generation.")
             raise
