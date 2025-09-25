@@ -28,7 +28,7 @@ cobble==0.1.4             # via mammoth
 colorama==0.4.6           # via click, colorlog, tqdm, uvicorn
 coloredlogs==15.0.1       # via onnxruntime
 colorlog==6.9.0           # via optuna
-compressed-rtf @ https://archive1.piwheels.org/simple/compressed-rtf/compressed_rtf-1.0.6-py3-none-any.whl#sha256=d6729750a95e2350a7ec0fd3284852a1f7f7e35bfae2699c67f9f4a9b7e6063d  # via -r windows/src/version_patch/ipex-llm/windows/src/requirements.in
+compressed-rtf==1.0.7     # via -r windows/src/version_patch/ipex-llm/windows/src/requirements.in
 contourpy==1.3.2          # via matplotlib
 courlan==1.3.2            # via trafilatura
 cryptography==44.0.2      # via pdfminer-six
@@ -271,5 +271,5 @@ yarl==1.20.0              # via aiohttp
 zipp==3.21.0              # via importlib-metadata
 zstandard==0.23.0         # via langsmith
 
-# uv version: uv 0.8.9 (68c0bf8a2 2025-08-11)
+# uv version: uv 0.8.22 (ade2bdbd2 2025-09-23)
 

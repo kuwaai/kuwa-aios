@@ -1,7 +1,7 @@
 hatchling
 hatch-vcs
 llama-cpp-python @ https://github.com/kuwaai/llama-cpp-python/releases/download/v0.3.8/llama_cpp_python-0.3.8-cp310-cp310-win_amd64.whl
-https://archive1.piwheels.org/simple/compressed-rtf/compressed_rtf-1.0.6-py3-none-any.whl#sha256=d6729750a95e2350a7ec0fd3284852a1f7f7e35bfae2699c67f9f4a9b7e6063d
+compressed-rtf # https://archive1.piwheels.org/simple/compressed-rtf/compressed_rtf-1.0.6-py3-none-any.whl#sha256=d6729750a95e2350a7ec0fd3284852a1f7f7e35bfae2699c67f9f4a9b7e6063d
 torch==2.3.0
 trio==0.24.0
 https://www.piwheels.org/simple/docopt/docopt-0.6.2-py2.py3-none-any.whl#sha256=15fde8252aa9f2804171014d50d069ffbf42c7a50b7d74bcbb82bfd5700fcfc2
