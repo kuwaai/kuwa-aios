@@ -13,7 +13,7 @@ server {
 
     location / {
         try_files $uri $uri/ /index.php?$query_string;
-        fastcgi_read_timeout 300;
+        fastcgi_read_timeout 5h;
     }
 
     location = /favicon.ico { access_log off; log_not_found off; }
@@ -24,7 +24,7 @@ server {
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
         fastcgi_pass unix:/run/php/php8.3-fpm.sock;
-        fastcgi_read_timeout 300;
+        fastcgi_read_timeout 5h;
         #fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
         #include fastcgi_params;
     }

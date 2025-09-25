@@ -76,7 +76,7 @@ class RoomController extends Controller
             ->whereIn('chat_id', $chatIDs)
             ->pluck('id')
             ->toArray();
-        $client = new Client(['timeout' => 300]);
+        $client = new Client(['timeout' => -1]);
         $kernel_location = \App\Models\SystemSetting::where('key', 'kernel_location')->first()->value;
         $response = $client->post($kernel_location . '/' . RequestChat::$kernel_api_version . '/chat/abort', [
             'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
