@@ -765,6 +765,7 @@ class ProfileController extends Controller
          */
         
         // Prevent PHP socket timeout
+        ini_set('max_execution_time', 0);
         ini_set('default_socket_timeout', -1);
         
         if (!$history_id || !$user_id) {

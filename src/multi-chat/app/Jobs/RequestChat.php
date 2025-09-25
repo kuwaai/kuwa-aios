@@ -16,6 +16,7 @@ use App\Models\Histories;
 use GuzzleHttp\Client;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use RuntimeException;
 
 enum JobScheduleResult
 {
@@ -61,7 +62,7 @@ class RequestChat implements ShouldQueue
     private $kernel_location, $client;
     public $backoff_sec = 10; # Backoff for 10 seconds when the executors are busy
     public $tries = 100; # Wait 1000 seconds in total
-    public $timeout = 99999999; # For the 100th try, 200 seconds limit is given
+    public $timeout = 86400; # For the 100th try, 200 seconds limit is given
     public static $kernel_api_version = 'v1.0';
 
     /**
@@ -145,7 +146,7 @@ class RequestChat implements ShouldQueue
         ignore_user_abort(true);
         set_time_limit(0);
         $this->kernel_location = \App\Models\SystemSetting::where('key', 'kernel_location')->first()->value;
-        $client = new Client(['connect_timeout' => 0]);
+        $client = new Client(['timeout' => -1]);
         if ($this->history_id > 0 && $this->app_type == AppType::CHATROOM) {
             if (Histories::find($this->history_id) && Histories::find($this->history_id)->msg != '* ...thinking... *' && $this->preserved_output == '') {
                 Log::Debug('Hmmm');
@@ -174,7 +175,6 @@ class RequestChat implements ShouldQueue
             $this->input = $chatroomProcessor->rectifyInputMessage($this->input);
 
             $response = $client->post($this->kernel_location . '/' . self::$kernel_api_version . '/chat/completions', [
-                'read_timeout' => 0, // Disable timeout for reading stream chunks
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
                     'Accept-Language' => $this->lang,
@@ -200,40 +200,46 @@ class RequestChat implements ShouldQueue
             $buffer = new Utf8Buffer();
             $buffer->addChunk($this->preserved_output);
             while (!$stream->eof()) {
-                $chunk = \GuzzleHttp\Psr7\Utils::readLine($stream);
-                // Extract text response from SSE data
-                if (str_starts_with($chunk, 'data: ')) {
-                    $json = substr($chunk, strlen('data: '));
-                    $resp = json_decode($json, true);
-                    $resp_chunks = $resp['delta'] ?? [];
-                    $chunk = '';
-                    foreach ($resp_chunks as $resp_chunk) {
-                        $type = $resp_chunk['type'] ?? null;
-                        switch ($type) {
-                            case 'text':
-                                $chunk .= $resp_chunk['text']['value'] ?? '';
-                                break;
-                            case 'log':
-                                $chunk .= "\n[" . ($resp_chunk['log']['level'] ?? '') . '] ' . ($resp_chunk['log']['text'] ?? '');
-                                break;
-                            case 'exit_code':
-                                $executorExitCode = $resp_chunk['exit_code'];
-                                break;
-                            default:
-                                break;
+                try {
+                    $chunk = \GuzzleHttp\Psr7\Utils::readLine($stream);
+                    // Extract text response from SSE data
+                    if (str_starts_with($chunk, 'data: ')) {
+                        $json = substr($chunk, strlen('data: '));
+                        $resp = json_decode($json, true);
+                        $resp_chunks = $resp['delta'] ?? [];
+                        $chunk = '';
+                        foreach ($resp_chunks as $resp_chunk) {
+                            $type = $resp_chunk['type'] ?? null;
+                            switch ($type) {
+                                case 'text':
+                                    $chunk .= $resp_chunk['text']['value'] ?? '';
+                                    break;
+                                case 'log':
+                                    $chunk .= "\n[" . ($resp_chunk['log']['level'] ?? '') . '] ' . ($resp_chunk['log']['text'] ?? '');
+                                    break;
+                                case 'exit_code':
+                                    $executorExitCode = $resp_chunk['exit_code'];
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
-                }
-                $buffer->addChunk($chunk);
-                $message = $buffer->processBuffer();
-                if ($message === '') {
-                    continue;
-                }
-                $outputChunk = $chatroomProcessor->addChunk($message);
-                if ($this->app_type == AppType::API) {
-                    Redis::publish($this->channel, 'New ' . json_encode(['msg' => $message]));
-                } elseif ($this->app_type == AppType::CHATROOM) {
-                    Redis::publish($this->channel, 'New ' . json_encode(['msg' => $outputChunk]));
+                    $buffer->addChunk($chunk);
+                    $message = $buffer->processBuffer();
+                    if ($message === '') {
+                        continue;
+                    }
+                    $outputChunk = $chatroomProcessor->addChunk($message);
+                    if ($this->app_type == AppType::API) {
+                        Redis::publish($this->channel, 'New ' . json_encode(['msg' => $message]));
+                    } elseif ($this->app_type == AppType::CHATROOM) {
+                        Redis::publish($this->channel, 'New ' . json_encode(['msg' => $outputChunk]));
+                    }
+                } catch (RuntimeException $e) {
+                    // Log the error and break the loop, as the stream is dead.
+                    Log::warning('Stream connection lost for job ' . $this->channel . ': ' . $e->getMessage());
+                    break;
                 }
             }
 
@@ -290,7 +296,7 @@ class RequestChat implements ShouldQueue
 
     private function tryScheduleJob()
     {
-        $client = new Client(['read_timeout' => 0, 'connect_timeout' => 0]);
+        $client = new Client(['timeout' => -1]);
         $response = $client->post($this->kernel_location . '/' . self::$kernel_api_version . '/worker/schedule', [
             'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
             'form_params' => [
