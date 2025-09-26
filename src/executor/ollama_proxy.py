@@ -229,9 +229,17 @@ class OllamaExecutor(LLMExecutor):
 
     async def llm_compute(self, history: list[dict], modelfile: Modelfile):
         try:
-            model_name = modelfile.parameters["llm_"].get(
-                "model", self.default_model_name
+            llm_param = merge_config(
+                base=modelfile.parameters["llm_"], top=modelfile.parameters["llm."]
             )
+            model_name = llm_param.get("model", self.default_model_name)
+            model_context_window = llm_param.get("num_ctx", self.context_window)
+            ollama_options = merge_config(
+                base=self.ollama_options, top={"num_ctx": model_context_window}
+            )
+            json_schema = llm_param.get("json_schema", None)
+            logger.debug(f"Ollama options: {ollama_options}")
+
             # Apply modelfile
             system_prompt = modelfile.override_system_prompt or self.system_prompt
             prepended_messages = rectify_chat_history(modelfile.messages)
@@ -251,7 +259,6 @@ class OllamaExecutor(LLMExecutor):
                 yield "[No input message entered]"
                 return
 
-            json_schema = json.loads(modelfile.parameters["model_"].get("json_schema"))
             chat_mode = True
             if modelfile.template:
                 chat_mode = False
@@ -261,6 +268,9 @@ class OllamaExecutor(LLMExecutor):
                 history = self.to_multi_modality_history(history)
                 logger.debug(f"History: {history}")
 
+            if json_schema is not None:
+                json_schema = json.loads(json_schema)
+
             # [TODO] Trim the history to fit into the context window
 
             self.proc = True
@@ -269,7 +279,7 @@ class OllamaExecutor(LLMExecutor):
                 response = await self.client.chat(
                     model=model_name,
                     messages=history,
-                    options=self.ollama_options,
+                    options=ollama_options,
                     stream=True,
                     format=json_schema
                 )
@@ -278,7 +288,7 @@ class OllamaExecutor(LLMExecutor):
                 response = await self.client.generate(
                     model=model_name,
                     prompt=prompt,
-                    options=self.ollama_options,
+                    options=ollama_options,
                     stream=True,
                     template=dummy_ollama_template,
                     format=json_schema
