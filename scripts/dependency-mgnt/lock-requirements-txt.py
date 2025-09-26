@@ -154,6 +154,13 @@ def compile_requirements(
     output_dir = os.path.dirname(output_file)
     if output_dir and not os.path.exists(output_dir):
         os.makedirs(output_dir)
+    else:
+        if os.path.exists(output_file):
+            print(f"Deleting existing output file: {output_file}")
+            try:
+                os.remove(output_file)
+            except OSError as e:
+                print(f"Error deleting file {output_file}: {e}")
 
     # Construct the uv pip compile command
     source_files = [str(Path(s)) for s in source_files]
@@ -231,6 +238,7 @@ def main():
     target_platforms = [args.platform]
     if args.platform == all_platform_placeholder:
         target_platforms = platforms.copy()
+
     for platform in target_platforms:
         compile_requirements(
             platform, extra_dependencies=args.extra_dependencies, dry_run=args.dry_run
