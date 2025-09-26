@@ -258,11 +258,7 @@ popd
 
 
 REM Sync locked Python dependencies
-echo Syncing Python dependencies
-pushd ".."
-uv pip uninstall --system -r windows\src\force-reinstall-requirements.txt
-uv pip sync --refresh --system windows\src\requirements.txt.lock
-popd
+call src\sync_python_pkg.bat
 
 REM Install dependency of whisper
 call src\download_extract.bat %url_ffmpeg% packages\%ffmpeg_folder% packages\. ffmpeg.zip
