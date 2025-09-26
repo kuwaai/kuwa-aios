@@ -884,14 +884,16 @@ class RoomController extends Controller
         $roomId = $request->input('room_id');
         $selectedLLMs = $request->input('chatsTo');
         $input = $request->input('input');
-        $attachments = $request->input('attachments');
-        $chained = $request->input('chain') == "on";
-
-        if (!empty($attachments) && is_array($attachments)) {
-            $attachmentBlock = "<<<attachment>>>\n" . implode("\n", $attachments) . "\n<<</attachment>>>\n";
-            $input = $attachmentBlock . $input;
+        if ($request->file()) {
+            $upload_result = $this->upload_file($request);
+            if ($upload_result['succeed']) {
+                $input = $upload_result['url'] . "\n" . $input;
+            } else {
+                return redirect()->route('room.chat', $roomId)->with('errorString', $upload_result['msg'])->withInput();
+            }
         }
 
+        $chained = $request->input('chain') == "on";
         if (count($selectedLLMs) > 0 && $roomId && $input) {
             $chats = Chats::where('roomID', $roomId)->get();
             $result = Bots::pluck('id')->toarray();

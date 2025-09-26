@@ -148,6 +148,9 @@ class ChatController extends Controller
         });
         $response->setCallback(function () use ($response, $request, $awaiting) {
             global $listening;
+            echo "event: listening\n\n";
+            ob_flush();
+            flush();
             $listening = Redis::lrange('usertask_' . Auth::user()->id, 0, -1);
             if ($awaiting) {
                 $union = array_merge($listening, $awaiting);
