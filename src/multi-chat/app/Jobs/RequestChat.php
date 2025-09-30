@@ -60,9 +60,10 @@ class RequestChat implements ShouldQueue
     private $lang, $modelfile, $openai_token, $google_token, $third_party_token, $user_token, $nim_token;
     private $preserved_output, $exit_when_finish;
     private $kernel_location, $client;
-    public $backoff_sec = 10; # Backoff for 10 seconds when the executors are busy
-    public $tries = 100; # Wait 1000 seconds in total
-    public $timeout = 86400; # For the 100th try, 200 seconds limit is given
+    public $backoff_sec = 10;
+    public $tries = 100;
+    public $retry_after = 86400;
+    public $timeout = 86400;
     public static $kernel_api_version = 'v1.0';
 
     /**
