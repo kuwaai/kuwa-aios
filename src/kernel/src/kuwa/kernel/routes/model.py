@@ -33,7 +33,7 @@ def capture_output(pipe, output_list, stop_event):
 
 def download_model_cli(model_name, result_list, stop_event):
     cache_dir = ensure_cache_directory()
-    command = ["huggingface-cli", "download", model_name, "--cache-dir", cache_dir]
+    command = ["hf", "download", model_name, "--cache-dir", cache_dir]
     result_list.append("Executing: " + " ".join(command))
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1)
     download_jobs[model_name]['process'] = process
@@ -197,7 +197,7 @@ def list_download_jobs():
 def hf_login():
     try:
         if request.method == "GET":
-            command = ["huggingface-cli", "whoami"]
+            command = ["hf", "whoami"]
             result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
             username = result.stdout.strip()
@@ -209,7 +209,7 @@ def hf_login():
         if not token:
             return jsonify({"error": "Token is required."}), 400
 
-        command = ["huggingface-cli", "login", "--token", token]
+        command = ["hf", "login", "--token", token]
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         if result.returncode == 0:
@@ -222,8 +222,8 @@ def hf_login():
 @model.route("/hf_logout", methods=["POST"])
 def hf_logout():
     try:
-        # Use the huggingface-cli logout command
-        command = ["huggingface-cli", "logout"]
+        # Use the hf logout command
+        command = ["hf", "logout"]
         result = subprocess.run(
             command,
             stdout=subprocess.PIPE,

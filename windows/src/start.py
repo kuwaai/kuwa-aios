@@ -463,7 +463,7 @@ def command_loop():
                 seed_path = os.path.abspath("../src/multi-chat/executables/bat")
                 run_and_log("AdminSeeder.bat", cwd=seed_path)
             elif cmd == "hf login":
-                run_and_log("huggingface-cli.exe login")
+                run_and_log("hf.exe login")
             elif cmd == "reload":
                 hard_exit(True)
             else:

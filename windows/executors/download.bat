@@ -166,7 +166,7 @@ if "%option%"=="1" (
     
     if /I "!userInput!"=="y" (
     	echo Downloading model...
-		huggingface-cli download "google/gemma-3-1b-it"
+		hf download "google/gemma-3-1b-it"
 		copy gemma3-1b\_run.bat gemma3-1b\run.bat
 		echo Model downloaded!
 	) else (
@@ -180,7 +180,7 @@ if "%option%"=="1" (
     
     if /I "!userInput!"=="y" (
     	echo Downloading model...
-		huggingface-cli download "google/gemma-3-4b-it"
+		hf download "google/gemma-3-4b-it"
 		copy gemma3-4b\_run.bat gemma3-4b\run.bat
 		echo Download complete!
 	) else (
