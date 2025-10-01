@@ -100,7 +100,7 @@ REM Prepare packages folder
 mkdir packages 2>nul
 
 REM init env
-set "PATH=%~dp0\bin;%~dp0..\packages\;%~dp0..\packages\%python_folder%\Scripts;%~dp0..\packages\%python_folder%;%~dp0..\packages\%php_folder%;%~dp0..\packages\%node_folder%;%~dp0..\packages\%gitbash_folder%\cmd;%~dp0..\packages\%ffmpeg_folder%\bin;%PATH%"
+set "PATH=%~dp0..\packages\Composer\vendor\bin;%~dp0\bin;%~dp0..\packages\;%~dp0..\packages\%python_folder%\Scripts;%~dp0..\packages\%python_folder%;%~dp0..\packages\%php_folder%;%~dp0..\packages\%node_folder%;%~dp0..\packages\%gitbash_folder%\cmd;%~dp0..\packages\%ffmpeg_folder%\bin;%PATH%"
 
 if "%1"=="no_migrate" (
     echo Skipped migration
