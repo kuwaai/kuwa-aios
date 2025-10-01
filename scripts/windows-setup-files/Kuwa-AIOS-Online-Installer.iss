@@ -197,7 +197,7 @@ begin
 
     DownloadPage.Clear;
     DownloadPage.Add('https://github.com/wenshui2008/RunHiddenConsole/releases/download/1.0/RunHiddenConsole.zip', 'packages\RunHiddenConsole.zip', '');
-    DownloadPage.Add('https://nodejs.org/dist/v20.11.1/node-v20.11.1-win-x64.zip', 'packages\node.zip', '');
+    DownloadPage.Add('https://nodejs.org/dist/v20.19.5/node-v20.19.5-win-x64.zip', 'packages\node.zip', '');
     DownloadPage.Add('https://windows.php.net/downloads/releases/archives/php-8.3.24-Win32-vs16-x64.zip', 'packages\php.zip', '');
     DownloadPage.Add('https://nginx.org/download/nginx-1.26.3.zip', 'packages\nginx.zip', '');
     DownloadPage.Add('https://www.python.org/ftp/python/3.10.11/python-3.10.11-embed-amd64.zip', 'packages\python.zip', '');

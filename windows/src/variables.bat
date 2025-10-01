@@ -15,7 +15,7 @@ for %%I in ("%url_RunHiddenConsole%") do set "filename_RunHiddenConsole=%%~nxI"
 set "RunHiddenConsole_folder=%filename_RunHiddenConsole:~0,-4%"
 
 REM Variables for Node.js
-set "url_NodeJS=https://nodejs.org/dist/v20.11.1/node-v20.11.1-win-x64.zip"
+set "url_NodeJS=https://nodejs.org/dist/v20.19.5/node-v20.19.5-win-x64.zip"
 for %%I in ("%url_NodeJS%") do set "filename_NodeJS=%%~nxI"
 set "node_folder=%filename_NodeJS:~0,-4%"
 for /f "tokens=2 delims=-" %%v in ("%filename_NodeJS%") do set "version_NodeJS=%%v"
