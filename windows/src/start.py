@@ -319,7 +319,7 @@ def start_servers():
                         if "php artisan" in line.lower():
                             artisan_commands.append(line.strip())
                         else:
-                            other_commands.append(line)
+                            other_commands.append(line.strip())
                 
                 if other_commands:
                     temp_bat_name = f"temp_run_{random.randint(1000,9999)}.bat"
