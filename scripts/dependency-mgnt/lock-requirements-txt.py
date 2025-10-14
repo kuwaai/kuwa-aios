@@ -184,12 +184,12 @@ def compile_requirements(
     try:
         # Execute the command
         result = subprocess.run(
-            command, capture_output=True, text=True, check=True
+            command, capture_output=True, text=True, check=True, encoding="utf-8"
         )  # check=True raises an exception on non-zero exit code.
         print(result.stdout)
         with open(output_file, "a") as f:
             version_result = subprocess.run(
-                ["uv", "--version"], capture_output=True, text=True, check=True
+                ["uv", "--version"], capture_output=True, text=True, check=True, encoding="utf-8"
             )
             f.write(f"\n# uv version: {version_result.stdout}\n")
 
