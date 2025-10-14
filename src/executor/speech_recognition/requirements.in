@@ -8,5 +8,7 @@ huggingface_hub
 # scipy
 # git+https://github.com/speechbrain/speechbrain.git@develop
 # pyannote.audio[separation]==3.3.0
-pyannote.audio
+pyannote.audio==3.4.0
 torchaudio==2.3.0
+pytorch-lightning<=2.0.9
+lightning<=2.0.9
