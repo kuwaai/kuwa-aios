@@ -140,6 +140,9 @@
     let finsihed = false;
 
     function connect() {
+        if ($("#abort_btn")) $("#abort_btn").show();
+        if ($("#upload_btn")) $("#upload_btn").hide()
+        if ($('#recordButton')) $("#recordButton").hide();
         const task = new EventSource("{!! $tasks ? route('room.sse', ['listening' => $tasks]) : route('room.sse') !!}", {
             withCredentials: false
         });
@@ -235,9 +238,6 @@ xmlns="http://www.w3.org/2000/svg">
                     languages: []
                 }); // disable auto detect
                 chatroomFormatter($("#history_" + data["history_id"])[0]);
-                if ($("#abort_btn")) $("#abort_btn").show();
-                if ($("#upload_btn")) $("#upload_btn").hide()
-                if ($('#recordButton')) $("#recordButton").hide();
             }
         });
 
