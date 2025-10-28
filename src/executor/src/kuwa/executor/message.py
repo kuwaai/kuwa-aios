@@ -165,6 +165,7 @@ class ExitCodeChunk(BaseChunk):
     COMPLETE = 0
     INCOMPLETE = 1
     FAILURE = 1024
+
     def __init__(self, exit_code: int, cost: int | None = None):
         super().__init__(cost)
         self.exit_code = exit_code
@@ -174,3 +175,15 @@ class ExitCodeChunk(BaseChunk):
 
     def calculate_cost(self):
         return 0
+
+
+class HeartbeatChunk(BaseChunk):
+    def __init__(self, cost: int | None = None):
+        super().__init__(cost)
+        self.cost = cost
+
+    def __jsonencode__(self):
+        return {"type": "heartbeat"}
+
+    def calculate_cost(self):
+        return 0 if self.cost is None else self.cost

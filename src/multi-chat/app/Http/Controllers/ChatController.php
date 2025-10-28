@@ -189,15 +189,15 @@ class ChatController extends Controller
                             if (count($listening) == 0) {
                                 echo "data: finished\n\n";
                                 echo "event: close\n\n";
-                                ob_flush();
-                                flush();
                                 $client->disconnect();
                             }
                         } elseif ($type == 'New') {
                             echo 'data: ' . json_encode(['history_id' => $history_id, 'msg' => json_decode($msg)->msg]) . "\n\n";
-                            ob_flush();
-                            flush();
+                        } elseif ($type == 'Heartbeat') {
+                            echo ": heartbeat\n\n"; // Use comment line to keep the connection alive.
                         }
+                        ob_flush();
+                        flush();
                     });
                 } catch (RedisException) {
                 }

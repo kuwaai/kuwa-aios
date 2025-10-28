@@ -632,6 +632,10 @@ class ProfileController extends Controller
                     echo 'data: ' . json_encode($resp) . "\n\n";
                 }
 
+                if ($event == 'Heartbeat') {
+                    echo ": heartbeat\n\n"; // Use comment line to keep the connection alive.
+                }
+
                 if ($event == 'Ended') {
                     echo "data: [DONE]\n\n";
                 }

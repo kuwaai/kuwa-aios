@@ -222,6 +222,8 @@ class RequestChat implements ShouldQueue
                                 case 'exit_code':
                                     $executorExitCode = $resp_chunk['exit_code'];
                                     break;
+                                case 'heartbeat':
+                                    Redis::publish($this->channel, 'Heartbeat {}');
                                 default:
                                     break;
                             }

@@ -22,7 +22,14 @@ from fastapi.responses import JSONResponse, StreamingResponse
 
 from .metrics import ExecutorMetrics
 from .logger import ExecutorLoggerFactory
-from .message import BaseChunk, TextChunk, LogChunk, ExitCodeChunk, LogLevel
+from .message import (
+    BaseChunk,
+    TextChunk,
+    LogChunk,
+    ExitCodeChunk,
+    LogLevel,
+    HeartbeatChunk,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +51,52 @@ def find_free_port():
     return port
 
 
+class _AsyncTimedIterator:
+    __slots__ = ("_iterator", "_timeout", "_sentinel", "_next_gen_task")
+
+    def __init__(self, iterable, timeout, sentinel):
+        self._iterator = iterable.__aiter__()
+        self._timeout = timeout
+        self._sentinel = sentinel
+        self._next_gen_task = None
+
+    async def __anext__(self):
+        try:
+            if self._next_gen_task is None:
+                self._next_gen_task = asyncio.create_task(self._iterator.__anext__())
+
+            done, pending = await asyncio.wait(
+                {self._next_gen_task},
+                timeout=self._timeout,
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+            if self._next_gen_task in done:
+                result = self._next_gen_task.result()
+                self._next_gen_task = None
+                return result
+            else:
+                return self._sentinel
+
+        except StopAsyncIteration or asyncio.CancelledError:
+            # StopAsyncIteration: The underlying generator has finished yielding all its items.
+            # asyncio.CancelledError: The outer coroutine (the one calling this method) is cancelled
+
+            # Ensure the generator task is also cancelled to prevent resource leaks.
+            if self._next_gen_task is not None and not self._next_gen_task.done():
+                self._next_gen_task.cancel()
+            raise  # Re-raise to propagate the event.
+
+
+class AsyncTimedIterable:
+    __slots__ = ("_factory",)
+
+    def __init__(self, iterable, timeout=None, sentinel=None):
+        self._factory = lambda: _AsyncTimedIterator(iterable, timeout, sentinel)
+
+    def __aiter__(self):
+        return self._factory()
+
+
 class BaseExecutor:
     """
     The basic functionality of an Executor.
@@ -61,6 +114,7 @@ class BaseExecutor:
 
     concurrent_requests: int = 0
     concurrent_req_limit: int = 1
+    heartbeat_timeout_sec = 60
     ready: bool = False
 
     log_level: str = "INFO"
@@ -133,7 +187,9 @@ class BaseExecutor:
             raise ValueError("Argument --access_code is mandatory.")
         self.log_level = self.args.log.upper()
         logging.config.dictConfig(
-            ExecutorLoggerFactory(level=self.log_level, access_code=self.access_codes[0]).get_config()
+            ExecutorLoggerFactory(
+                level=self.log_level, access_code=self.access_codes[0]
+            ).get_config()
         )
 
         # Registration information
@@ -299,7 +355,14 @@ class BaseExecutor:
             total_output_length = 0
             exit_code_chunks = [ExitCodeChunk(exit_code=ExitCodeChunk.OK)]
 
-            async for chunks in self.serve(header=header, content=content):
+            generator = self.serve(header=header, content=content)
+            timed_generator = AsyncTimedIterable(
+                iterable=generator,
+                timeout=self.heartbeat_timeout_sec,
+                sentinel=HeartbeatChunk(),
+            )
+
+            async for chunks in timed_generator:
                 if isinstance(chunks, str):
                     chunks = TextChunk(chunks)
                 if not isinstance(chunks, list):
@@ -309,7 +372,9 @@ class BaseExecutor:
                     raise RuntimeError(
                         f"Unsupported chunk type: {[type(x) for x in compress(chunks, unsupported_chunk)]}"
                     )
-                exit_code_chunks += list(filter(lambda x: isinstance(x, ExitCodeChunk), chunks))
+                exit_code_chunks += list(
+                    filter(lambda x: isinstance(x, ExitCodeChunk), chunks)
+                )
                 total_output_length += reduce(lambda x, y: x + len(y), chunks, 0)
                 yield self._format_sse({"finish_reason": None, "delta": chunks})
 
@@ -339,7 +404,7 @@ class BaseExecutor:
                 LogChunk(
                     "Error occurred. Please consult support.", level=LogLevel.ERROR
                 ),
-                ExitCodeChunk(exit_code=ExitCodeChunk.FAILURE)
+                ExitCodeChunk(exit_code=ExitCodeChunk.FAILURE),
             ]
             if self.in_debug():
                 display_messages.append(
