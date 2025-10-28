@@ -113,6 +113,17 @@ IF "%HTTP_Server_Runtime%" == "apache" (
     )
 )
 
+rem Check if Git is installed and available in the PATH
+git --version >nul 2>&1
+if %errorlevel% equ 0 (
+    echo Git is available.
+    rem Get the current Git commit ID
+    echo Current Git Commit ID:
+    git rev-parse HEAD
+) else (
+    echo Git is not found or not available in the system's PATH.
+)
+
 REM Copy php.ini if not exists
 if not exist "packages\%php_folder%\php.ini" (
     copy ..\src\multi-chat\php.ini "packages\%php_folder%\php.ini"
