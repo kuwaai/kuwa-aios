@@ -45,7 +45,7 @@
             <div tabindex="0" hidefocus="true" class="transition-colors p-3 bg-gray-300 rounded-r-lg rounded-bl-lg"
                 @if (!$anonymous && $history->isbot) onfocus="toggleHighlight(this, true)" onblur="toggleHighlight(this, false)" @endif>
                 {{-- blade-formatter-disable --}}
-                <div class="text-sm space-y-3 break-words msg-content {{ $history->chained ? ' chain-msg' : '' }}{{ $history->isbot ? ' bot-msg' : '' }}" id="task_{{ $history->id }}">{{ $history->msg == "* ...thinking... *" ? "<pending holder>" : $history->msg }}</div>
+                <div class="text-sm space-y-3 break-words msg-content {{ $history->chained ? ' chain-msg' : '' }}{{ $history->isbot ? ' bot-msg' : '' }}" id="task_{{ $history->id }}">{{ $history->msg == "* ...thinking... *" ? Cache::get("chat_" . $history->id . "_tmp", "<pending holder>") : $history->msg }}</div>
                 {{-- blade-formatter-enable --}}
                 <x-chat.react-buttons :history="$history" :showOnFinished='true' />
             </div>

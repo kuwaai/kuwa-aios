@@ -9,6 +9,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use App\Events\RequestStatus;
@@ -235,6 +236,7 @@ class RequestChat implements ShouldQueue
                     if ($this->app_type == AppType::API) {
                         Redis::publish($this->channel, 'New ' . json_encode(['msg' => $message]));
                     } elseif ($this->app_type == AppType::CHATROOM) {
+                        Cache::put("chat_".$this->channel."_tmp", $outputChunk, now()->addMinutes(180));
                         Redis::publish($this->channel, 'New ' . json_encode(['msg' => $outputChunk]));
                     }
                 } catch (RuntimeException $e) {
@@ -280,6 +282,7 @@ class RequestChat implements ShouldQueue
             if ($history != null) {
                 $history->fill(['msg' => $msg]);
                 $history->save();
+                Cache::forget("chat_".$this->history_id."_tmp");
             }
         }
         $msgTimeInSeconds = Carbon::createFromFormat('Y-m-d H:i:s', $this->msgtime)->timestamp;
