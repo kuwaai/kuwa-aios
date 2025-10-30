@@ -13,7 +13,7 @@ services:
       - db-password
 
   db:
-    image: postgres
+    image: postgres:17
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USERNAME}
