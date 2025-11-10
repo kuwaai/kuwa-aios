@@ -82,9 +82,9 @@ class ImportBot extends Command
                 break;
             }
             $model = LLMs::query()->join('bots', 'llms.id', '=', 'bots.model_id')
-                            ->where('bots.name', '=', $access_code : '')
+                            ->where('bots.name', '=', $access_code)
                             ->select('llms.*')
-                            ->first()
+                            ->first();
             if ($model){
                 break;
             }
