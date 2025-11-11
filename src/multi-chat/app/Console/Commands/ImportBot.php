@@ -38,7 +38,7 @@ class ImportBot extends Command
 
         $model = $this->findModel($botfile['base'], $botfile['name'], $this->option('retry'));
         if (!$model) {
-            error_log('The bot "'.$botfile['name'].'" cannot be imported because "'.$botfile['base'].'" does not exist.');
+            error_log('The bot "'.$botfile['name'].'" cannot be imported because base executor "'.$botfile['base'].'" does not exist.');
             return;
         }
         $model_id = $model->id;
@@ -81,13 +81,7 @@ class ImportBot extends Command
             if ($model) {
                 break;
             }
-            $model = LLMs::query()->join('bots', 'llms.id', '=', 'bots.model_id')
-                            ->where('bots.name', '=', $access_code)
-                            ->select('llms.*')
-                            ->first();
-            if ($model){
-                break;
-            }
+
             // Calculate exponential backoff delay
             $delay = $baseDelay * pow(2, $attempt);
 

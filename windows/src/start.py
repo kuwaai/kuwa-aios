@@ -439,9 +439,10 @@ def start_servers():
     bots_dir = os.path.join(kuwa_root, "bootstrap", "bot")
     if os.path.isdir(bots_dir):
         all_bot_files = glob.glob(os.path.join(bots_dir, '*.*'))
-        if all_bot_files:
+        bot_files_to_import = [p for p in all_bot_files if get_bot_access_code(p) in excluded_access_codes]
+        if bot_files_to_import:
             with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-                list(executor.map(import_bot, all_bot_files))
+                list(executor.map(import_bot, bot_files_to_import))
         else:
             print("No bot files to import.")
     else:
