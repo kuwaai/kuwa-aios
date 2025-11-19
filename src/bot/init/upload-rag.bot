@@ -12,7 +12,7 @@ KUWABOT description "Import your knowledge base data into Kuwa."
 KUWABOT base ".tool/kuwa/uploader"
 PARAMETER uploader_dst_dir "/database"
 PARAMETER uploader_succeed_message "The RAG database uploaded successfully."
-PARAMETER uploader_bot_template "KUWABOT name 'DB QA ({{file_name}})'\nKUWABOT base 'db-qa'\nKUWABOT description 'Created by \"Create RAG\"'\nPARAMETER retriever_database '{{file_path}}'"
+PARAMETER uploader_bot_template "KUWABOT name 'DB QA ({{file_name}})'\nKUWABOT base '.tool/kuwa/rag'\nKUWABOT description 'Created by \"Create RAG\"'\nPARAMETER retriever_database '{{file_path}}'"
 
 --kuwawt36h
 Content-Type: image/png
