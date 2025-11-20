@@ -255,7 +255,7 @@ def extract_executor_access_code(path):
     with open(path) as f:
         for line in f:
             if line.lower().startswith('set '):
-                m = re.match(r'set\s+EXECUTOR_ACCESS_CODE\s*=\s*(.*)', line, re.I)
+                m = re.match(r'set\s+"?EXECUTOR_ACCESS_CODE\s*=\s*([^"\s]*)"?', line, re.I)
                 if m: return m.group(1).strip()
     return None
 
