@@ -193,8 +193,14 @@ class DocQaExecutor(LLMExecutor):
         self.display_ref_content = not display_params.get(
             "hide_ref_content", self.args.hide_ref_content
         )
+        kuwa_api_base_url = (
+            general_params["kuwa_api_base_urls"][0]
+            if self.args.api_base_url is None
+            else self.args.api_base_url
+        )
+
         self.llm = KuwaClient(
-            base_url=self.args.api_base_url,
+            base_url=kuwa_api_base_url,
             kernel_base_url=self.kernel_url,
             model=generator_params.get(
                 "model", params.get("next_bot", self.args.model)
@@ -232,9 +238,7 @@ class DocQaExecutor(LLMExecutor):
 
         # Pre-warm
         if self.pre_built_db is not None:
-            await self.document_store_factory.load_document_store(
-                self.pre_built_db
-            )
+            await self.document_store_factory.load_document_store(self.pre_built_db)
 
     async def _dbqa_and_docqa(
         self,
@@ -309,7 +313,9 @@ class DocQaExecutor(LLMExecutor):
         chat_history: [dict],
         modelfile: Modelfile,
     ):
-        should_failback = self.pre_built_db is None and all([link is None for link in urls])
+        should_failback = self.pre_built_db is None and all(
+            [link is None for link in urls]
+        )
         rag_session_ended = self.is_rag_session_ended(chat_history, urls)
         logger.debug(
             f"Should failback: {should_failback}; RAG session ended: {rag_session_ended}; Allow failback: {self.allow_failback}"

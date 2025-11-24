@@ -27,9 +27,8 @@ return [
         "fr_fr" => "Français (France)",
         "ko_kr" => "한국어 (대한민국)",
     ],
-    'DEFAULT_GROUP' => env("DEFAULT_GROUP", null),
-
-    'KUWA_API_BASE_URLS' => env('KUWA_API_BASE_URLS', 'http://localhost/v1.0/'),
+    'DEFAULT_GROUP' => env('DEFAULT_GROUP', null),
+    'KUWA_API_BASE_URLS' => env('KUWA_API_BASE_URLS', rtrim(env('APP_URL', 'http://localhost/'), '/') . "/v1.0/"),
     /*
     |--------------------------------------------------------------------------
     | Application Name
