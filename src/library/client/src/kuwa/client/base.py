@@ -54,6 +54,7 @@ class KuwaClient:
             headers=headers,
             json=json,
             files=files,
+            allow_redirects=True
         )
         response.raise_for_status()
         return response.json()
@@ -109,7 +110,7 @@ class KuwaClient:
             "system_prompt": system_prompt,
             "react_btn": react_btn,
         }
-        resp = requests.post(url, headers=headers, json=request_body)
+        resp = requests.post(url, headers=headers, json=request_body, allow_redirects=True)
         if not resp.ok:
             raise RuntimeError(
                 f"Request failed with status {resp.status_code}, {resp.json()}"
@@ -143,7 +144,7 @@ class KuwaClient:
             "bot_type": type,
         }
         logger.debug(f"Request body: {request_body}")
-        resp = requests.post(url, headers=headers, json=request_body)
+        resp = requests.post(url, headers=headers, json=request_body, allow_redirects=True)
         if not resp.ok:
             raise RuntimeError(
                 f"Request failed with status {resp.status_code}, {resp.text}"
@@ -243,7 +244,7 @@ class KuwaClient:
         request_body = {"ids": job_ids}
 
         async with httpx.AsyncClient(timeout=None) as client:
-            resp = await client.post(url, headers=headers, json=request_body)
+            resp = await client.post(url, headers=headers, json=request_body, allow_redirects=True)
             resp.raise_for_status()
             logger.debug(f"Aborting response: {resp.json()}")
             return True
