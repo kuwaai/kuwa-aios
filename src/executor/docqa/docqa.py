@@ -124,7 +124,6 @@ class DocQaExecutor(LLMExecutor):
         generator_group = parser.add_argument_group("Generator Options")
         generator_group.add_argument(
             "--api_base_url",
-            default="http://127.0.0.1/",
             help="The API base URL of Kuwa multi-chat WebUI",
         )
         generator_group.add_argument(
@@ -193,11 +192,13 @@ class DocQaExecutor(LLMExecutor):
         self.display_ref_content = not display_params.get(
             "hide_ref_content", self.args.hide_ref_content
         )
-        kuwa_api_base_url = (
-            general_params["kuwa_api_base_urls"][0]
-            if self.args.api_base_url is None
-            else self.args.api_base_url
-        )
+        if self.args.api_base_url is None:
+            try:
+                kuwa_api_base_url = general_params["kuwa_api_base_urls"][0]
+            except IndexError:
+                kuwa_api_base_url = None
+        else:
+            kuwa_api_base_url = self.args.api_base_url
 
         self.llm = KuwaClient(
             base_url=kuwa_api_base_url,

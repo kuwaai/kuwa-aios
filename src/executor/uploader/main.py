@@ -35,7 +35,6 @@ class UploaderExecutor(LLMExecutor):
         )
         parser.add_argument(
             "--api_base_url",
-            default="http://127.0.0.1/",
             help="The API base URL of Kuwa multi-chat WebUI. This value will pass to the subprocess.",
         )
 
@@ -144,7 +143,14 @@ class UploaderExecutor(LLMExecutor):
             return
 
         kuwa_api_token = modelfile.parameters["_"]["user_token"]
-        client = KuwaClient(base_url=self.args.api_base_url, auth_token=kuwa_api_token)
+        if self.args.api_base_url is None:
+            try:
+                kuwa_api_base_url = modelfile.parameters["_"]["kuwa_api_base_urls"][0]
+            except IndexError:
+                kuwa_api_base_url = None
+        else:
+            kuwa_api_base_url = self.args.api_base_url
+        client = KuwaClient(base_url=kuwa_api_base_url, auth_token=kuwa_api_token)
         response = await client.create_bot(
             bot_name=botfile["metadata"].get("name"),
             bot_description=botfile["metadata"].get("description"),

@@ -29,7 +29,7 @@ class KuwaClient:
         self.base_url = (
             base_url
             if base_url is not None
-            else os.environ.get("KUWA_BASE_URL", "http://localhost")
+            else os.environ.get("KUWA_BASE_URL", "http://localhost/v1.0")
         )
         self.kernel_base_url = kernel_base_url
         self.model = model

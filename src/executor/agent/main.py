@@ -270,7 +270,6 @@ class AgentExecutor(LLMExecutor):
         """
         parser.add_argument(
             "--api_base_url",
-            default="http://127.0.0.1/",
             help="The API base URL of Kuwa multi-chat WebUI",
         )
         parser.add_argument(
@@ -293,9 +292,13 @@ class AgentExecutor(LLMExecutor):
         api_key = modelfile.parameters.get("_user_token", self.args.api_key)
         if api_key is None:
             yield i18n.t("agent.no_kuwa_api_key")
-        api_base_url = modelfile.parameters.get(
-            "_kuwa_api_base_urls", [self.args.api_base_url]
-        )[0]
+        if self.args.api_base_url is None:
+            try:
+                kuwa_api_base_url = modelfile.parameters["_"]["kuwa_api_base_urls"][0]
+            except IndexError:
+                kuwa_api_base_url = None
+        else:
+            kuwa_api_base_url = self.args.api_base_url
         show_step_log = modelfile.parameters["agent_"].get("show_step_log", False)
         append_history = modelfile.parameters["agent_"].get("append_history", False)
         mode = modelfile.parameters["agent_"].get("mode", "sequential") # sequential, fan-out
@@ -312,7 +315,7 @@ class AgentExecutor(LLMExecutor):
             return
 
         self.runner = AgentRunner(
-            api_base_url=api_base_url, kernel_url=self.kernel_url, api_key=api_key
+            api_base_url=kuwa_api_base_url, kernel_url=self.kernel_url, api_key=api_key
         )
         try:
             generator = self.runner.run_flow(

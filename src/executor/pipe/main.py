@@ -97,7 +97,6 @@ class PipeExecutor(LLMExecutor):
         )
         parser.add_argument(
             "--api_base_url",
-            default="http://127.0.0.1/",
             help="The API base URL of Kuwa multi-chat WebUI. This value will pass to the subprocess.",
         )
         parser.add_argument(
@@ -161,11 +160,14 @@ class PipeExecutor(LLMExecutor):
 
         cmd = [program] + argv
         env = os.environ.copy()
-        env["KUWA_BASE_URL"] = (
-            modelfile.parameters["_"]["kuwa_api_base_urls"][0]
-            if self.args.api_base_url is None
-            else self.args.api_base_url
-        )
+        if self.args.api_base_url is None:
+            try:
+                kuwa_api_base_url = modelfile.parameters["_"]["kuwa_api_base_urls"][0]
+            except IndexError:
+                kuwa_api_base_url = None
+        else:
+            kuwa_api_base_url = self.args.api_base_url
+        env["KUWA_BASE_URL"] = kuwa_api_base_url
         env["KUWA_KERNEL_BASE_URL"] = urljoin(
             self.kernel_url, f"{self.executor_iface_version}/"
         )
