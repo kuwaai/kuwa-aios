@@ -1,4 +1,4 @@
-diffusers
+diffusers>=0.35.2
 transformers
 accelerate
 scipy
