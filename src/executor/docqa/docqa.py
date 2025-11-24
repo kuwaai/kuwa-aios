@@ -195,7 +195,7 @@ class DocQaExecutor(LLMExecutor):
         if self.args.api_base_url is None:
             try:
                 kuwa_api_base_url = general_params["kuwa_api_base_urls"][0]
-            except IndexError:
+            except (IndexError, KeyError):
                 kuwa_api_base_url = None
         else:
             kuwa_api_base_url = self.args.api_base_url
