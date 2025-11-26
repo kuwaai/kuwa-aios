@@ -155,9 +155,10 @@ class KuwaClient:
         self,
         auth_token: str = None,
         messages: list = [],
-        timeout=120,
+        timeout=86400,
         streaming=True,
         botfile=None,
+        model=None,
     ):
         generator = self.chat_complete_with_exit_code(
             auth_token=auth_token,
@@ -165,6 +166,7 @@ class KuwaClient:
             timeout=timeout,
             streaming=streaming,
             botfile=botfile,
+            model=model
         )
 
         try:
@@ -180,6 +182,7 @@ class KuwaClient:
         timeout=120,
         streaming=True,
         botfile=None,
+        model=None,
     ):
         """
         Chat completion API with the exit code of bot.
@@ -192,7 +195,8 @@ class KuwaClient:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {auth_token}",
         }
-        model = self.model if self.model is not None else ".bot/.default"
+        if model is None:
+            model = self.model if self.model is not None else ".bot/.default"
         logger.debug(f"Use model {model}")
         request_body = {"messages": messages, "model": model, "stream": streaming}
         if botfile is not None:
@@ -221,7 +225,7 @@ class KuwaClient:
                     break
                 elif line.startswith("data: "):
                     chunk = json.loads(line[len("data: ") :])["choices"][0]
-                    chunk_exit_code = chunk["exit_code"]
+                    chunk_exit_code = chunk.get("exit_code")
                     if chunk_exit_code is not None:
                         exit_code = chunk_exit_code
                     if not chunk["delta"]:
