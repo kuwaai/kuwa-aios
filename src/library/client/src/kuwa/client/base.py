@@ -29,7 +29,7 @@ class KuwaClient:
         self.base_url = (
             base_url
             if base_url is not None
-            else os.environ.get("KUWA_BASE_URL", "http://localhost/v1.0")
+            else os.environ.get("KUWA_BASE_URL", "http://localhost/")
         )
         self.kernel_base_url = kernel_base_url
         self.model = model
@@ -42,15 +42,27 @@ class KuwaClient:
         self.running_jobs = []
         if debug:
             logger.setLevel(logging.DEBUG)
+    
+    @classmethod
+    def from_kuwa_client(cls, kuwa_client):
+        # Copy all property from kuwa_client
+        return cls(
+            base_url=kuwa_client.base_url,
+            kernel_base_url=kuwa_client.kernel_base_url,
+            model=kuwa_client.model,
+            auth_token=kuwa_client.auth_token,
+            limit=kuwa_client.limit
+        )
 
     def _request(self, endpoint, method="GET", json=None, files=None):
         headers = {
             "Authorization": f"Bearer {self.auth_token}",
             "Content-Type": "application/json" if json else None,
         }
+        target_url = urljoin(self.base_url, endpoint)
         response = requests.request(
             method,
-            f"{self.base_url}/{endpoint}",
+            target_url,
             headers=headers,
             json=json,
             files=files,
