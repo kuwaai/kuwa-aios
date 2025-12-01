@@ -26,7 +26,7 @@ if /I "%userInput%"=="quit" (
     goto loop
 ) else if /I "%userInput%"=="hf login" (
     echo Running huggingface login command...
-	hf login
+	hf auth login
     goto loop
 ) else if /I "%userInput%"=="stop" (
     echo Stopping everything
