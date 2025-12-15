@@ -68,6 +68,8 @@ Download the script or the executable file, run it, and follow its steps to have
 
 * **Linux/Docker**
 
+  > **Note**: The automatic installation script has been tested on **Ubuntu 22.04** and **24.04**.
+  
   Download and run sudo [build.sh](./docker/build.sh) , or invoke the following command to automatically install Docker, CUDA, and Kuwa. You may need to reboot after installing CUDA. Before finishing installation, you will be asked to set your administration passwords for your Kuwa and database. After installation, it will invoke run.sh to start the system and you can log in with admin@localhost. Enjoy!
   ```
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/kuwaai/kuwa-aios/main/docker/build.sh)"

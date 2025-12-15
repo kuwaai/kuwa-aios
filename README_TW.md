@@ -62,6 +62,9 @@
 * **Windows**
 下載最新版本GenAI OS的[Windows版單一執行檔](https://github.com/kuwaai/kuwa-aios/releases)
 * **Linux/Docker**
+
+> **注意**: 本自動安裝腳本已於 **Ubuntu 22.04** 與 **24.04** 環境中完成測試。
+
 可下載 [build.sh](./docker/build.sh) 後執行 **sudo build.sh**，或在Linux下執行以下指令即可自動下載及安裝Docker、CUDA及Kuwa。安裝CUDA後需重開機，安裝完成前會設定管理者及資料庫密碼，全部安裝完成後會執行 run.sh 自動啟動Kuwa，預設用 admin@localhost 帳號登入。
   ```
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/kuwaai/kuwa-aios/main/docker/build.sh)"
