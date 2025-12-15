@@ -10,6 +10,7 @@ from functools import lru_cache
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import ollama
 import requests
+import tiktoken
 import mimetypes
 from PIL import Image
 from io import BytesIO
@@ -169,6 +170,36 @@ class OllamaExecutor(LLMExecutor):
                 logger.info(status_line)
                 last_status_line = status_line
 
+    def num_tokens_from_messages(self, messages):
+        """
+        Return the number of tokens used by a list of messages.
+        Reference: https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
+        """
+        try:
+            encoding = tiktoken.encoding_for_model(self.default_model_name)
+        except KeyError:
+            logger.warning(
+                f"Model {self.default_model_name} not found. Using cl100k_base encoding."
+            )
+            encoding = tiktoken.get_encoding("cl100k_base")
+
+        # Fixed value for nowadays GPT-3.5/4
+        tokens_per_message = 3
+        tokens_per_name = 1
+
+        num_tokens = 0
+        for message in messages:
+            num_tokens += tokens_per_message
+            for key, value in message.items():
+                if key == "content" and type(value) is list:
+                    value = [v["text"] for v in value if v["type"] == "text"][0]
+                num_tokens += len(encoding.encode(value))
+                if key == "name":
+                    num_tokens += tokens_per_name
+        num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
+        return num_tokens
+
+
     @lru_cache
     def compile_template(self, chat_template: str):
         """
@@ -271,7 +302,17 @@ class OllamaExecutor(LLMExecutor):
             if json_schema is not None:
                 json_schema = json.loads(json_schema)
 
-            # [TODO] Trim the history to fit into the context window
+            if json_schema is not None:
+                json_schema = json.loads(json_schema)
+
+            # Trim the history to fit into the context window
+            while self.num_tokens_from_messages(history) > model_context_window:
+                history = history[1:]
+                if len(history) == 0:
+                    logging.debug("Aborted since the input message exceeds the limit.")
+                    yield "[Sorry, The input message is too long!]"
+                    return
+
 
             self.proc = True
             await self.prepare_model(model_name)
