@@ -72,10 +72,25 @@ Download the script or the executable file, run it, and follow its steps to have
   ```
   bash -c "$(curl -fsSL https://raw.githubusercontent.com/kuwaai/kuwa-aios/main/docker/build.sh)"
   ```
-###  Step-by-step Installation
+### Step-by-step Installation
 You can build your own customized Kuwa by following the step-by-step documents.
 * [Portable Windows version](./windows/README.md)
 * [Linux/Docker version](./docker/README.md)
+
+### Running from a cloned repository (Contributor quick start)
+
+If you forked/cloned this repository and want to explore the project structure locally, these entry points are helpful:
+
+- Traditional Chinese docs: `README_TW.md`
+- Windows portable guide: `windows/README.md` (and `windows/README_TW.md`)
+- Linux/Docker guide: check `docs/` and the helper scripts under `docker/`
+
+Quickly list the related folders:
+
+```bash
+ls docs docker windows
+```
+
 ### More Models and Applications
 With executors, Kuwa can orchestrate diverse multimodal models, remote services, applications, databases, bots, etc. You can check [Executor's README](./src/executor/README.md) for further customization and configuration.
 
