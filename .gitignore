@@ -3,6 +3,7 @@ screenlog.0
 __pycache__
 tmp/
 .venv
+temp_run.bat
 
 # Transformers
 generation_config.json

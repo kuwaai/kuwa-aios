@@ -5,6 +5,7 @@ yarn-error.log
 
 # Laravel 5 & Lumen specific
 public/storage
+public/frontend
 public/hot
 public/build
 

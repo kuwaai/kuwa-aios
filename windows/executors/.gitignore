@@ -6,3 +6,5 @@
 */*.bin
 qnn-genie
 whisper_onnx
+openwork
+**/Breeze-ASR-25-ct2
