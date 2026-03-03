@@ -56,7 +56,7 @@
                                 onchange="sortLists('bots', sorting_method)" value="{{ $LLM->id }}"
                                 class="hidden peer">
                             <label for="llm_create_check_{{ $LLM->id }}"
-                                class="inline-flex items-center justify-between overflow-hidden w-full p-2 text-gray-400 bg-white border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-white dark:bg-gray-600 dark:hover:bg-gray-500">
+                                class="inline-flex items-center justify-between overflow-hidden w-full p-2 text-gray-400 bg-white border-2 border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 dark:peer-checked:border-blue-500 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-white dark:bg-gray-600 dark:hover:bg-gray-500">
                                 <div class="flex items-center overflow-hidden">
                                     <div
                                         class="flex-shrink-0 h-5 w-5 rounded-full border border-gray-400 dark:border-gray-900 bg-black flex items-center justify-center overflow-hidden">

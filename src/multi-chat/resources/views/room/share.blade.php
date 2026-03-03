@@ -6,6 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
+    <script>
+        (() => {
+            const media = window.matchMedia('(prefers-color-scheme: dark)');
+            const apply = (isDark) => document.documentElement.classList.toggle('dark', isDark);
+            apply(media.matches);
+            if (media.addEventListener) {
+                media.addEventListener('change', (event) => apply(event.matches));
+            } else {
+                media.addListener((event) => apply(event.matches));
+            }
+        })();
+    </script>
+
     <title>{{ App\Models\ChatRoom::findOrFail(request()->route('room_id'))->name }}</title>
 
     <!-- Fonts -->

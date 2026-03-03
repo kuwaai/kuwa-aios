@@ -5,7 +5,7 @@
         <input onchange='refreshRoom($(this).val());' value='groupByIdentifier' type="radio"
             id="{{ $extra }}-groupByModel" name="room_group_selector" class="hidden peer" />
         <label for="{{ $extra }}-groupByModel"
-            class="block px-4 py-2 text-center text-xs font-medium text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-700 rounded-tl-lg rounded-bl-lg cursor-pointer peer-checked:bg-blue-600 peer-checked:text-white peer-checked:font-semibold peer-checked:rounded-l-lg transition-all">
+            class="block px-4 py-2 text-center text-xs font-medium text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-700 rounded-tl-lg rounded-bl-lg cursor-pointer peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600 peer-checked:text-white dark:peer-checked:text-white peer-checked:font-semibold peer-checked:rounded-l-lg transition-all">
             {{ __('room.button.group_by_bot') }}
         </label>
     </div>
@@ -15,7 +15,7 @@
         <input type="radio" onchange='refreshRoom($(this).val());' value='groupByTime'
             id="{{ $extra }}-groupByTime" name="room_group_selector" class="hidden peer" />
         <label for="{{ $extra }}-groupByTime"
-            class="block px-4 py-2 text-center text-xs font-medium text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-700 rounded-tr-lg rounded-br-lg cursor-pointer peer-checked:bg-blue-600 peer-checked:text-white peer-checked:font-semibold peer-checked:rounded-r-lg transition-all">
+            class="block px-4 py-2 text-center text-xs font-medium text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-700 rounded-tr-lg rounded-br-lg cursor-pointer peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600 peer-checked:text-white dark:peer-checked:text-white peer-checked:font-semibold peer-checked:rounded-r-lg transition-all">
             {{ __('room.button.group_by_time') }}
         </label>
     </div>
