@@ -13,14 +13,14 @@
         "directorytree/ldaprecord-laravel": "^3.1",
         "dompdf/dompdf": "^3.0",
         "erusev/parsedown": "^1.7",
-        "guzzlehttp/guzzle": "^7.5",
+        "guzzlehttp/guzzle": "7.10.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.8",
         "nyholm/psr7": "^1.8",
         "pestphp/pest": "^4.4.1",
         "phpseclib/phpseclib": "^3.0",
-        "predis/predis": "3.4",
+        "predis/predis": "3.4.1",
         "symfony/psr-http-message-bridge": "7.4"
     },
     "require-dev": {
