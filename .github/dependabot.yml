@@ -6,29 +6,25 @@
 version: 2
 updates:
   - package-ecosystem: "composer"
-    # Files stored in repository root
-    directory: "/"
+    directory: "/src/multi-chat"
     target-branch: "main"
     schedule:
       interval: "daily"
 
   - package-ecosystem: "npm"
-    # Files stored in `app` directory
-    directory: "/"
+    directory: "/src/multi-chat"
     target-branch: "main"
     schedule:
       interval: "daily"
 
   - package-ecosystem: "composer"
-    # Files stored in repository root
-    directory: "/"
+    directory: "/src/multi-chat"
     target-branch: "turu"
     schedule:
       interval: "daily"
 
   - package-ecosystem: "npm"
-    # Files stored in `app` directory
-    directory: "/"
+    directory: "/src/multi-chat"
     target-branch: "turu"
     schedule:
       interval: "daily"
