@@ -5,26 +5,26 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@tailwindcss/forms": "^0.5.2",
-        "alpinejs": "^3.4.2",
-        "autoprefixer": "^10.4.19",
-        "axios": "^1.7.7",
-        "laravel-vite-plugin": "^1.0.5",
-        "postcss": "^8.4.38",
-        "tailwindcss": "^3.1.0",
+        "@tailwindcss/forms": "^0.5.11",
+        "alpinejs": "^3.15.8",
+        "autoprefixer": "^10.4.27",
+        "axios": "^1.13.6",
+        "laravel-vite-plugin": "^2.1.0",
+        "postcss": "^8.5.8",
+        "tailwindcss": "^4.2.1",
         "vite": "^7.3.1"
     },
     "dependencies": {
-        "@openapitools/openapi-generator-cli": "^2.19.1",
+        "@openapitools/openapi-generator-cli": "^2.30.0",
         "Carbon": "^0.3.6",
-        "dotenv": "^16.3.1",
-        "flowbite": "^2.5.2",
+        "dotenv": "^17.3.1",
+        "flowbite": "^4.0.1",
         "multipart-related": "https://github.com/jo/multipart-related.git#v2.0.0",
-        "socket.io": "^4.8.0",
+        "socket.io": "^4.8.3",
         "socketio-auth": "^0.1.1"
     },
     "type": "module",
     "optionalDependencies": {
-        "@rollup/rollup-linux-x64-gnu": "^4.22.4"
+        "@rollup/rollup-linux-x64-gnu": "^4.59.0"
     }
 }
