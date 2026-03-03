@@ -2,13 +2,13 @@
 
 @props(['result', 'sorting_methods', 'llms' => null])
 
-<div id="create-model-modal" data-modal-backdropClasses="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40"
+<div id="create-model-modal" data-modal-backdrop-classes="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40"
     tabindex="-1" aria-hidden="true"
-    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-full">
+    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-full bg-black/40 dark:bg-black/60 backdrop-blur-[1px]">
     <div class="relative w-full max-w-xl flex h-full overflow-hidden">
         <!-- Modal content -->
         <div
-            class="relative bg-white rounded-lg shadow dark:bg-gray-700 overflow-hidden max-h-full flex flex-col w-full">
+            class="relative bg-white border border-gray-200 rounded-lg shadow-2xl dark:bg-gray-700 dark:border-gray-600 overflow-hidden max-h-full flex flex-col w-full">
             <button type="button"
                 class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
                 data-modal-hide="create-model-modal">

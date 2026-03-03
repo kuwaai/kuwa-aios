@@ -38,7 +38,7 @@
                         <div class="border border-black dark:border-white border-1 rounded-lg flex overflow-hidden">
                             @if (request()->user()->hasPerm('Room_update_new_chat'))
                                 <button data-modal-target="create-model-modal" data-modal-toggle="create-model-modal"
-                                    class="flex w-full border-r border-1 border-black dark:border-white menu-btn flex items-center justify-center h-12 dark:hover:bg-gray-700 hover:bg-gray-200 transition duration-300">
+                                    class="cursor-pointer flex w-full border-r border-1 border-black dark:border-white menu-btn flex items-center justify-center h-12 dark:hover:bg-gray-700 hover:bg-gray-200 transition duration-300">
 
                                     <p class="flex-1 text-center text-gray-700 dark:text-white">
                                         {{ __('room.button.create_room') }}
@@ -47,7 +47,7 @@
                             @endif
                             @if (request()->user()->hasPerm('Room_update_import_chat'))
                                 <button data-modal-target="importModal" data-modal-toggle="importModal"
-                                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 {{ request()->user()->hasPerm('Room_update_new_chat') ? 'rounded-r-lg ' : 'rounded-lg w-full' }} flex items-center justify-center transition duration-300">
+                                    class="cursor-pointer bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 {{ request()->user()->hasPerm('Room_update_new_chat') ? 'rounded-r-lg ' : 'rounded-lg w-full' }} flex items-center justify-center transition duration-300">
                                     {{ request()->user()->hasPerm('Room_update_new_chat') ? '' : __('chat.button.header.import') }}
                                     <i class="fas fa-file-import"></i>
                                 </button>
@@ -89,14 +89,14 @@
                     </div>
                 </div>
                 <x-sorted-list.control-menu :$sorting_methods
-                    btn_class="text-sm leading-4 px-5 py-5 font-medium rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100" />
+                    btn_class="cursor-pointer text-sm leading-4 px-5 py-5 font-medium rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100" />
             </div>
 
             <div
                 class="mb-4 grid grid-cols-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 xl:grid-cols-10 2xl:grid-cols-12 mb-auto overflow-y-auto scrollbar">
                 @foreach ($bots as $bot)
                     <x-sorted-list.item html_tag="form" :$sorting_methods :record="$bot" method="post"
-                        class="text-black dark:text-white h-[115px] p-2 hover:bg-gray-200 dark:hover:bg-gray-500 transition"
+                        class="text-black dark:text-white h-[115px] p-2 hover:bg-gray-300 dark:hover:bg-gray-500 transition"
                         action="{{ route('room.new') }}">
                         @csrf
                         <button class="relative h-full w-full flex flex-col items-center justify-start">

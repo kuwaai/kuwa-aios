@@ -3,8 +3,10 @@
         request()->user()->hasPerm('Chat_update_detail_feedback')) ||
         (request()->routeIs('room.*') &&
             request()->user()->hasPerm('Room_update_detail_feedback')))
-<div id="feedback_modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
-    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+<div id="feedback_modal" data-modal-backdrop="static"
+    data-modal-backdrop-classes="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40"
+    tabindex="-1" aria-hidden="true"
+    class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-full max-h-full bg-black/40 dark:bg-black/60 backdrop-blur-[1px]">
     <div class="relative w-full max-w-2xl max-h-full">
         <!-- Modal content -->
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -87,6 +89,19 @@
 </div>
 @endif
 <script>
+    function parseNiceValue(value) {
+        if (value === true || value === false || value === null || value === undefined) {
+            return value;
+        }
+        if (value === 1 || value === '1' || value === 'true') {
+            return true;
+        }
+        if (value === 0 || value === '0' || value === 'false') {
+            return false;
+        }
+        return null;
+    }
+
     function feedback(id, type, obj, data) {
         $(obj).parent().find("button:not(:first)").removeClass("bg-gray-400")
         adjustTextareaRows($("#feedbacks"));
@@ -118,11 +133,13 @@
                 "{{ __('chat.label.feedback_bad') }}")
         }
         if (data) {
-            if (data['nice'] === true && type == 1) {
+            const niceValue = parseNiceValue(data['nice']);
+
+            if (niceValue === true && type == 1) {
                 if (data["detail"]) {
                     $("#feedback_form textarea").val(data["detail"]);
                 }
-            } else if (data['nice'] === false && type == 2) {
+            } else if (niceValue === false && type == 2) {
                 if (data["detail"]) {
                     $("#feedback_form textarea").val(data["detail"]);
                 }

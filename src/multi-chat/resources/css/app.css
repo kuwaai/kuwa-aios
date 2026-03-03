@@ -1,15 +1,32 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.cjs";
+@custom-variant hover (&:hover);
 @layer base {
   h1 {
-    @apply text-2xl;
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
   h2 {
-    @apply text-xl;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
   }
   h3 {
-    @apply text-lg;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  html:not(.dark) [data-modal-backdrop] .bg-white.rounded-lg,
+  html:not(.dark) [id$='-modal'] .bg-white.rounded-lg,
+  html:not(.dark) [id$='_modal'] .bg-white.rounded-lg,
+  html:not(.dark) [id*='Modal'] .bg-white.rounded-lg {
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.18), 0 8px 10px -6px rgb(0 0 0 / 0.12);
   }
 }
 @layer utilities {

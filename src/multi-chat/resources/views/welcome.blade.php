@@ -13,6 +13,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <script>
+        (() => {
+            const media = window.matchMedia('(prefers-color-scheme: dark)');
+            const apply = (isDark) => document.documentElement.classList.toggle('dark', isDark);
+            apply(media.matches);
+            if (media.addEventListener) {
+                media.addEventListener('change', (event) => apply(event.matches));
+            } else {
+                media.addListener((event) => apply(event.matches));
+            }
+        })();
+    </script>
+
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
@@ -76,7 +89,7 @@
 
                 <button type="button" data-dropdown-toggle="language-dropdown-menu" data-dropdown-trigger="hover"
                     data-dropdown-delay="100"
-                    class="ml-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:rounded-sm focus:outline-red-500">
+                    class="ml-8 pl-2 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:rounded-sm focus:outline-red-500">
                     <div class="flex items-center">
                         <i class="fas fa-language mr-2"></i>
                     </div>

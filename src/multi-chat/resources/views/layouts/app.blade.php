@@ -9,6 +9,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
+    <script>
+        (() => {
+            const media = window.matchMedia('(prefers-color-scheme: dark)');
+            const apply = (isDark) => document.documentElement.classList.toggle('dark', isDark);
+            apply(media.matches);
+            if (media.addEventListener) {
+                media.addEventListener('change', (event) => apply(event.matches));
+            } else {
+                media.addListener((event) => apply(event.matches));
+            }
+        })();
+    </script>
+
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
@@ -425,7 +438,8 @@
     @endif
     @if (\App\Models\SystemSetting::where('key', 'announcement')->first()->value != '')
         <div id="system_announcement_modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
-            class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            data-modal-backdrop-classes="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40"
+            class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-full bg-black/40 dark:bg-black/60 backdrop-blur-[1px]">
             <div class="relative w-full max-w-2xl max-h-full">
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -460,7 +474,8 @@
     @endif
     @if (\App\Models\SystemSetting::where('key', 'tos')->first()->value != '')
         <div id="tos_modal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true"
-            class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+            data-modal-backdrop-classes="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40"
+            class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-full bg-black/40 dark:bg-black/60 backdrop-blur-[1px]">
             <div class="relative w-full max-w-2xl max-h-full">
                 <!-- Modal content -->
                 <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
