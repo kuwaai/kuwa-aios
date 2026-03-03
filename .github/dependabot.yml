@@ -8,11 +8,27 @@ updates:
   - package-ecosystem: "composer"
     # Files stored in repository root
     directory: "/"
+    target-branch: "main"
     schedule:
       interval: "daily"
 
   - package-ecosystem: "npm"
     # Files stored in `app` directory
     directory: "/"
+    target-branch: "main"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "composer"
+    # Files stored in repository root
+    directory: "/"
+    target-branch: "turu"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "npm"
+    # Files stored in `app` directory
+    directory: "/"
+    target-branch: "turu"
     schedule:
       interval: "daily"
