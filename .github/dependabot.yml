@@ -7,24 +7,22 @@ version: 2
 updates:
   - package-ecosystem: "composer"
     directory: "/src/multi-chat"
-    target-branch: "main"
     schedule:
       interval: "daily"
+    groups:
+      composer-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+    open-pull-requests-limit: 0
 
   - package-ecosystem: "npm"
     directory: "/src/multi-chat"
-    target-branch: "main"
     schedule:
       interval: "daily"
-
-  - package-ecosystem: "composer"
-    directory: "/src/multi-chat"
-    target-branch: "turu"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "npm"
-    directory: "/src/multi-chat"
-    target-branch: "turu"
-    schedule:
-      interval: "daily"
+    groups:
+      npm-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
+    open-pull-requests-limit: 0
