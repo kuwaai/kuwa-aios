@@ -16,6 +16,7 @@ use App\Models\{
     SystemSetting,
     User
 };
+use OpenApi\Attributes as OA;
 use DB;
 class CloudController extends Controller
 {
@@ -69,28 +70,22 @@ class CloudController extends Controller
         $result = '/' . implode('/', array_filter($pathArray));
         return $result;
     }
-/**
- * @OA\Get(
- *     path="/api/user/read/cloud/{path}",
- *     summary="List cloud directory or file",
- *     tags={"Cloud"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="path",
- *         in="path",
- *         required=false,
- *         description="The cloud directory or file path. If not provided, defaults to a single dot.",
- *         @OA\Schema(
- *             type="string",
- *             default="."
- *         )
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Cloud data listed"
- *     )
- * )
- */
+    #[OA\Get(
+        path: '/api/user/read/cloud/{path}',
+        summary: 'List cloud directory or file',
+        tags: ['Cloud'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'path',
+                in: 'path',
+                required: true,
+                description: 'The cloud directory or file path. If not provided, defaults to a single dot.',
+                schema: new OA\Schema(type: 'string', default: '.')
+            ),
+        ],
+        responses: [new OA\Response(response: 200, description: 'Cloud data listed')]
+    )]
 
 
     public function api_read_cloud(Request $request, $paths = null)
@@ -181,25 +176,22 @@ class CloudController extends Controller
     {
         return view('cloud');
     }
-    /**
- * @OA\Delete(
- *     path="/api/user/delete/cloud/{path}",
- *     summary="Delete cloud file or folder",
- *     tags={"Cloud"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="path",
- *         in="path",
- *         required=true,
- *         description="Path to cloud item to delete",
- *         @OA\Schema(type="string")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Cloud item deleted"
- *     )
- * )
- */
+    #[OA\Delete(
+        path: '/api/user/delete/cloud/{path}',
+        summary: 'Delete cloud file or folder',
+        tags: ['Cloud'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'path',
+                in: 'path',
+                required: true,
+                description: 'Path to cloud item to delete',
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [new OA\Response(response: 200, description: 'Cloud item deleted')]
+    )]
     public function api_delete_cloud(Request $request, $paths = null)
     {
         $result = DB::table('personal_access_tokens')

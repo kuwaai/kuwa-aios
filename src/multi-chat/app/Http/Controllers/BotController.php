@@ -21,6 +21,7 @@ use App\Models\LLMs;
 use App\Models\Bots;
 use App\Models\User;
 use App\Models\Feedback;
+use OpenApi\Attributes as OA;
 use DB;
 use Session;
 // use Illuminate\Support\Facades\Log;
@@ -215,22 +216,17 @@ class BotController extends Controller
 
         return redirect()->route('store.home');
     }
-/**
- * @OA\Post(
- *     path="/api/user/create/bot",
- *     summary="Create a bot",
- *     tags={"Bots"},
- *     security={{"bearerAuth":{}}},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(ref="#/components/schemas/CreateBotRequest")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Bot created"
- *     )
- * )
- */
+    #[OA\Post(
+        path: '/api/user/create/bot',
+        summary: 'Create a bot',
+        tags: ['Bots'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/CreateBotRequest')
+        ),
+        responses: [new OA\Response(response: 200, description: 'Bot created')]
+    )]
     public function api_create_bot(Request $request)
     {
         $result = DB::table('personal_access_tokens')
@@ -297,65 +293,26 @@ class BotController extends Controller
         $this->create($request);
         return response()->json(['status' => 'success', 'last_bot_id' => session('last_bot_id')], 200, [], JSON_UNESCAPED_UNICODE);
     }
-/**
- * @OA\Get(
- *     path="/api/user/read/bots",
- *     summary="List all bots available to the user",
- *     tags={"Bots"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Response(
- *         response=200,
- *         description="Successful response returns a list of bots",
- *         @OA\JsonContent(
- *             type="object",
- *             @OA\Property(
- *                 property="status",
- *                 type="string",
- *                 description="Indicates the status of the response",
- *                 example="success"
- *             ),
- *             @OA\Property(
- *                 property="result",
- *                 type="array",
- *                 description="An array of bot objects",
- *                 @OA\Items(
- *                     type="object",
- *                     @OA\Property(property="id", type="integer", description="Unique identifier for the bot", example=4),
- *                     @OA\Property(property="image", type="string", nullable=true, description="URL of the bot's image (nullable)", example=null),
- *                     @OA\Property(property="name", type="string", description="Display name of the bot", example="ChineseConvert"),
- *                     @OA\Property(property="access_code", type="string", description="Access code required to use the bot", example="nihao"),
- *                     @OA\Property(property="created_at", type="string", format="date-time", description="Timestamp when the bot was created", example="2024-05-21T12:23:48.000000Z"),
- *                     @OA\Property(property="updated_at", type="string", format="date-time", description="Timestamp when the bot was last updated", example="2025-03-30T03:22:06.000000Z"),
- *                     @OA\Property(property="order", type="integer", description="Used to determine the bot's display order. Lower is higher priority.", example=8400),
- *                     @OA\Property(property="enabled", type="boolean", description="Indicates if the bot is enabled and available", example=true),
- *                     @OA\Property(property="description", type="string", description="Short description of the bot's functionality", example="簡繁轉換"),
- *                     @OA\Property(
- *                         property="config",
- *                         type="object",
- *                         description="Configuration options as a JSON object",
- *                         @OA\Property(
- *                             property="react_btn",
- *                             type="array",
- *                             description="List of button types shown for this bot",
- *                             @OA\Items(type="string", example="feedback")
- *                         )
- *                     ),
- *                     @OA\Property(property="healthy", type="boolean", description="Indicates whether the bot is currently operational", example=false),
- *                     @OA\Property(property="type", type="string", description="Type of bot (e.g., 'prompt')", example="prompt"),
- *                     @OA\Property(property="visibility", type="integer", description="Visibility status (e.g., 0 = private)", example=0),
- *                     @OA\Property(property="model_id", type="integer", description="Identifier for the underlying language model used", example=26),
- *                     @OA\Property(property="owner_id", type="integer", nullable=true, description="User ID of the bot's owner, or null if system-owned", example=null),
- *                     @OA\Property(property="base_image", type="string", description="Path to the base image shown for this bot", example="/storage/images/sXC8DggS9ncILAksVHZEAvVrloQT85nC4mIjLNmt.png"),
- *                     @OA\Property(property="llm_name", type="string", description="Name of the associated large language model (LLM)", example="ChineseConvert"),
- *                     @OA\Property(property="group_id", type="integer", nullable=true, description="ID of the group this bot belongs to, if any", example=null)
- *                 )
- *             )
- *         )
- *     )
- * )
- */
 
-
+    #[OA\Get(
+        path: '/api/user/read/bots',
+        summary: 'List all bots available to the user',
+        tags: ['Bots'],
+        security: [['bearerAuth' => []]],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Successful response returns a list of bots',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    properties: [
+                        new OA\Property(property: 'status', type: 'string', description: 'Indicates the status of the response', example: 'success'),
+                        new OA\Property(property: 'result', type: 'array', description: 'An array of bot objects', items: new OA\Items(type: 'object')),
+                    ]
+                )
+            ),
+        ]
+    )]
     public function api_read_bots(Request $request)
     {
         $result = DB::table('personal_access_tokens')

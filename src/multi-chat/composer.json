@@ -11,6 +11,7 @@
         "carbonphp/carbon-doctrine-types": "3.*",
         "darkaonline/l5-swagger": "10.1",
         "directorytree/ldaprecord-laravel": "^3.1",
+        "doctrine/annotations": "2.0",
         "dompdf/dompdf": "^3.0",
         "erusev/parsedown": "^1.7",
         "guzzlehttp/guzzle": "7.10.0",

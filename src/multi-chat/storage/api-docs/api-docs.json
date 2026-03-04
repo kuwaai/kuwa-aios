@@ -58,112 +58,6 @@
                                             "description": "An array of bot objects",
                                             "type": "array",
                                             "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "description": "Unique identifier for the bot",
-                                                        "type": "integer",
-                                                        "example": 4
-                                                    },
-                                                    "image": {
-                                                        "description": "URL of the bot's image (nullable)",
-                                                        "type": "string",
-                                                        "example": null,
-                                                        "nullable": true
-                                                    },
-                                                    "name": {
-                                                        "description": "Display name of the bot",
-                                                        "type": "string",
-                                                        "example": "ChineseConvert"
-                                                    },
-                                                    "access_code": {
-                                                        "description": "Access code required to use the bot",
-                                                        "type": "string",
-                                                        "example": "nihao"
-                                                    },
-                                                    "created_at": {
-                                                        "description": "Timestamp when the bot was created",
-                                                        "type": "string",
-                                                        "format": "date-time",
-                                                        "example": "2024-05-21T12:23:48.000000Z"
-                                                    },
-                                                    "updated_at": {
-                                                        "description": "Timestamp when the bot was last updated",
-                                                        "type": "string",
-                                                        "format": "date-time",
-                                                        "example": "2025-03-30T03:22:06.000000Z"
-                                                    },
-                                                    "order": {
-                                                        "description": "Used to determine the bot's display order. Lower is higher priority.",
-                                                        "type": "integer",
-                                                        "example": 8400
-                                                    },
-                                                    "enabled": {
-                                                        "description": "Indicates if the bot is enabled and available",
-                                                        "type": "boolean",
-                                                        "example": true
-                                                    },
-                                                    "description": {
-                                                        "description": "Short description of the bot's functionality",
-                                                        "type": "string",
-                                                        "example": "簡繁轉換"
-                                                    },
-                                                    "config": {
-                                                        "description": "Configuration options as a JSON object",
-                                                        "properties": {
-                                                            "react_btn": {
-                                                                "description": "List of button types shown for this bot",
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "type": "string",
-                                                                    "example": "feedback"
-                                                                }
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    "healthy": {
-                                                        "description": "Indicates whether the bot is currently operational",
-                                                        "type": "boolean",
-                                                        "example": false
-                                                    },
-                                                    "type": {
-                                                        "description": "Type of bot (e.g., 'prompt')",
-                                                        "type": "string",
-                                                        "example": "prompt"
-                                                    },
-                                                    "visibility": {
-                                                        "description": "Visibility status (e.g., 0 = private)",
-                                                        "type": "integer",
-                                                        "example": 0
-                                                    },
-                                                    "model_id": {
-                                                        "description": "Identifier for the underlying language model used",
-                                                        "type": "integer",
-                                                        "example": 26
-                                                    },
-                                                    "owner_id": {
-                                                        "description": "User ID of the bot's owner, or null if system-owned",
-                                                        "type": "integer",
-                                                        "example": null,
-                                                        "nullable": true
-                                                    },
-                                                    "base_image": {
-                                                        "description": "Path to the base image shown for this bot",
-                                                        "type": "string",
-                                                        "example": "/storage/images/sXC8DggS9ncILAksVHZEAvVrloQT85nC4mIjLNmt.png"
-                                                    },
-                                                    "llm_name": {
-                                                        "description": "Name of the associated large language model (LLM)",
-                                                        "type": "string",
-                                                        "example": "ChineseConvert"
-                                                    },
-                                                    "group_id": {
-                                                        "description": "ID of the group this bot belongs to, if any",
-                                                        "type": "integer",
-                                                        "example": null,
-                                                        "nullable": true
-                                                    }
-                                                },
                                                 "type": "object"
                                             }
                                         }
@@ -193,7 +87,7 @@
                         "name": "path",
                         "in": "path",
                         "description": "The cloud directory or file path. If not provided, defaults to a single dot.",
-                        "required": false,
+                        "required": true,
                         "schema": {
                             "type": "string",
                             "default": "."
@@ -376,8 +270,7 @@
                                     },
                                     "options": {
                                         "description": "Additional options for the completion",
-                                        "type": "object",
-                                        "additionalProperties": []
+                                        "type": "object"
                                     }
                                 },
                                 "type": "object"
@@ -387,56 +280,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Chat completion response (streamed or full)",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "choices": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object",
-                                                "oneOf": [
-                                                    {
-                                                        "properties": {
-                                                            "delta": {
-                                                                "properties": {
-                                                                    "content": {
-                                                                        "type": "string",
-                                                                        "example": "Hello, how can I assist?"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    },
-                                                    {
-                                                        "properties": {
-                                                            "message": {
-                                                                "properties": {
-                                                                    "role": {
-                                                                        "type": "string",
-                                                                        "example": "assistant"
-                                                                    },
-                                                                    "content": {
-                                                                        "type": "string",
-                                                                        "example": "Hello, how can I assist you?"
-                                                                    }
-                                                                },
-                                                                "type": "object"
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "Chat completion response (streamed or full)"
                     },
                     "400": {
                         "description": "Bad request"

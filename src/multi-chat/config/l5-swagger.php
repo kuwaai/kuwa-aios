@@ -6,6 +6,8 @@ return [
         'default' => [
             'api' => [
                 'title' => 'Kuwa API Docs',
+                'description' => 'API Documentation',
+                'version' => '1.0.0',
             ],
 
             'routes' => [
@@ -44,7 +46,7 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
-                    base_path('app'),
+                    base_path('app/Http/Controllers'),
                 ],
             ],
         ],
@@ -108,16 +110,6 @@ return [
              * @link https://zircote.github.io/swagger-php/reference/processors.html
              */
             'default_processors_configuration' => [
-            /** Example */
-            /**
-             * 'operationId.hash' => true,
-             * 'pathFilter' => [
-             * 'tags' => [
-             * '/pets/',
-             * '/store/',
-             * ],
-             * ],.
-             */
             ],
 
             /**
@@ -156,7 +148,16 @@ return [
              * @note This option overwrites `paths.excludes`
              * @see \OpenApi\scan
              */
-            'exclude' => [],
+            'exclude' => [
+                base_path('app/Jobs'),
+                base_path('app/Models'),
+                base_path('app/Events'),
+                base_path('app/Listeners'),
+                base_path('app/Mail'),
+                base_path('app/Notifications'),
+                base_path('app/Observers'),
+                base_path('app/Rules'),
+            ],
 
             /*
              * Allows to generate specs either for OpenAPI 3.0.0 or OpenAPI 3.1.0.

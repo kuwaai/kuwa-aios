@@ -28,6 +28,7 @@ use Illuminate\Support\Arr;
 use DB;
 use Session;
 use Carbon\Carbon;
+use OpenApi\Attributes as OA;
 
 use function Laravel\Prompts\error;
 
@@ -426,22 +427,17 @@ class RoomController extends Controller
             'msg' => 'Succeed.',
         ];
     }
-    /**
- * @OA\Post(
- *     path="/api/user/create/room",
- *     summary="Create a room with bots",
- *     tags={"Rooms"},
- *     security={{"bearerAuth":{}}},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(ref="#/components/schemas/CreateRoomRequest")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Room created"
- *     )
- * )
- */
+    #[OA\Post(
+        path: '/api/user/create/room',
+        summary: 'Create a room with bots',
+        tags: ['Rooms'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/CreateRoomRequest')
+        ),
+        responses: [new OA\Response(response: 200, description: 'Room created')]
+    )]
     public function api_create_room(Request $request)
     {
         $result = DB::table('personal_access_tokens')
@@ -472,18 +468,13 @@ class RoomController extends Controller
             return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
         }
     }
-    /**
- * @OA\Get(
- *     path="/api/user/read/rooms",
- *     summary="List rooms",
- *     tags={"Rooms"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Response(
- *         response=200,
- *         description="List of rooms"
- *     )
- * )
- */
+    #[OA\Get(
+        path: '/api/user/read/rooms',
+        summary: 'List rooms',
+        tags: ['Rooms'],
+        security: [['bearerAuth' => []]],
+        responses: [new OA\Response(response: 200, description: 'List of rooms')]
+    )]
     public function api_read_rooms(Request $request)
     {
         $result = DB::table('personal_access_tokens')
@@ -512,25 +503,22 @@ class RoomController extends Controller
             return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
         }
     }
-    /**
- * @OA\Delete(
- *     path="/api/user/delete/room/message",
- *     summary="Delete a message",
- *     tags={"Messages"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="id",
- *         in="query",
- *         required=true,
- *         description="Message ID to delete",
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Message deleted"
- *     )
- * )
- */
+    #[OA\Delete(
+        path: '/api/user/delete/room/message',
+        summary: 'Delete a message',
+        tags: ['Messages'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'query',
+                required: true,
+                description: 'Message ID to delete',
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [new OA\Response(response: 200, description: 'Message deleted')]
+    )]
     public function api_delete_message(Request $request)
     {
         $result = DB::table('personal_access_tokens')
@@ -783,25 +771,24 @@ class RoomController extends Controller
         }
 
         return redirect()->route('room.home')->with('llms', $llms);
-    }/**
- * @OA\Delete(
- *     path="/api/user/delete/room",
- *     summary="Delete a room",
- *     tags={"Rooms"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Parameter(
- *         name="id",
- *         in="query",
- *         required=true,
- *         description="Room ID to delete",
- *         @OA\Schema(type="integer")
- *     ),
- *     @OA\Response(
- *         response=200,
- *         description="Room deleted"
- *     )
- * )
- */
+    }
+
+    #[OA\Delete(
+        path: '/api/user/delete/room',
+        summary: 'Delete a room',
+        tags: ['Rooms'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                in: 'query',
+                required: true,
+                description: 'Room ID to delete',
+                schema: new OA\Schema(type: 'integer')
+            ),
+        ],
+        responses: [new OA\Response(response: 200, description: 'Room deleted')]
+    )]
     public function api_delete_room(Request $request)
     {
         $result = DB::table('personal_access_tokens')

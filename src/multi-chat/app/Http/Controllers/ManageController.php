@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use OpenApi\Attributes as OA;
 use DB;
 
 class ManageController extends Controller
@@ -230,19 +231,17 @@ class ManageController extends Controller
         return Redirect::route('manage.home')->with('last_tab', 'llms')->with('last_llm_id', $request->input('id'));
     }
 
-/**
- * @OA\Post(
- *     path="/api/user/create/base_model",
- *     summary="Create a base model",
- *     tags={"Models"},
- *     security={{"bearerAuth":{}}},
- *     @OA\RequestBody(
- *         required=true,
- *         @OA\JsonContent(ref="#/components/schemas/BaseModel")
- *     ),
- *     @OA\Response(response=200, description="Model created")
- * )
- */
+    #[OA\Post(
+        path: '/api/user/create/base_model',
+        summary: 'Create a base model',
+        tags: ['Models'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/BaseModel')
+        ),
+        responses: [new OA\Response(response: 200, description: 'Model created')]
+    )]
     public function api_create_base_model(Request $request)
     {
         $result = DB::table('personal_access_tokens')
@@ -279,15 +278,13 @@ class ManageController extends Controller
             return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
         }
     }
-/**
- * @OA\Get(
- *     path="/api/user/read/models",
- *     summary="List base models",
- *     tags={"Models"},
- *     security={{"bearerAuth":{}}},
- *     @OA\Response(response=200, description="List of models")
- * )
- */
+    #[OA\Get(
+        path: '/api/user/read/models',
+        summary: 'List base models',
+        tags: ['Models'],
+        security: [['bearerAuth' => []]],
+        responses: [new OA\Response(response: 200, description: 'List of models')]
+    )]
     public function api_read_models(Request $request)
     {
         $result = DB::table('personal_access_tokens')
