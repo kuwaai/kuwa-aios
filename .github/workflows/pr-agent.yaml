@@ -4,7 +4,6 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
   issue_comment:
-    types: [created]
 
 permissions:
   pull-requests: write
@@ -13,17 +12,16 @@ permissions:
 
 jobs:
   pr_agent_job:
+    if: ${{ github.event.sender.type != 'Bot' }}
     runs-on: ubuntu-latest
-    name: Run PR Agent
-    # Run on pull requests, or on comments starting with '/' (e.g., /review, /describe)
-    if: |
-      github.event_name == 'pull_request' ||
-      (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/'))
     steps:
-      - name: PR-Agent Action
-        uses: Codium-ai/pr-agent@main
+      - name: PR Agent action step
+        uses: the-pr-agent/pr-agent@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PROVIDER: "google"
-          GOOGLE.KEY: ${{ secrets.GEMINI_API_KEY }}
-          CONFIG.MODEL: "gemini-3.5-flash"
+          config.model: "gemini/gemini-3.5-flash"
+          config.fallback_models: '["gemini/gemini-3.1-flash-lite"]'
+          GOOGLE_AI_STUDIO.GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          github_action_config.auto_review: "true"
+          github_action_config.auto_describe: "true"
+          github_action_config.auto_improve: "false"
