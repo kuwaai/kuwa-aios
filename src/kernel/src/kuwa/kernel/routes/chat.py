@@ -1,9 +1,50 @@
+import json
 import requests
 from typing import List, Optional
 from flask import Blueprint, request, Response
 from ..variable import *
 from ..safety_middleware import safety_middleware
 chat = Blueprint('chat', __name__)
+
+
+def parse_history_id(raw_history_id) -> Optional[int]:
+    if isinstance(raw_history_id, bool):
+        return None
+
+    if isinstance(raw_history_id, int):
+        return raw_history_id
+
+    if isinstance(raw_history_id, str):
+        try:
+            return int(raw_history_id)
+        except ValueError:
+            return None
+
+    return None
+
+
+def parse_history_ids(raw_history_id: str) -> Optional[List[int]]:
+    """Parse a history_id form value without executing attacker-controlled code."""
+    try:
+        parsed = json.loads(raw_history_id)
+    except (TypeError, json.JSONDecodeError):
+        parsed = raw_history_id
+
+    history_id = parse_history_id(parsed)
+    if history_id is not None:
+        return [history_id]
+
+    if isinstance(parsed, list):
+        history_ids = []
+        for item in parsed:
+            history_id = parse_history_id(item)
+            if history_id is None:
+                return None
+            history_ids.append(history_id)
+        return history_ids
+
+    return None
+
 
 @chat.route("/completions", methods=["POST"])
 def completions():
@@ -65,9 +106,11 @@ def completions_backend(form: dict, headers: dict, dest:list):
 def abort():
     history_id, user_id = request.form.get("history_id"), request.form.get("user_id")
     if history_id and user_id:
-        history_id = eval(history_id)
+        history_ids = parse_history_ids(history_id)
+        if history_ids is None:
+            return "Invalid history_id", 400
         for i, o in data.items():
-            dest = [k for k in o if int(k[2]) in history_id and k[3] == user_id]
+            dest = [k for k in o if int(k[2]) in history_ids and k[3] == user_id]
             for d in dest:
                 requests.get(d[0] + "/abort", timeout=10)
     return "Success"
