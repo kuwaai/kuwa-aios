@@ -161,3 +161,7 @@ cython_debug/
 
 # hatch-vcs
 _version.py
+
+cert_extract
+cert_ocr
+yolo

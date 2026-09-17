@@ -2,6 +2,8 @@
 node_modules/
 npm-debug.log
 yarn-error.log
+package-lock.json
+yarn.lock
 
 # Laravel 5 & Lumen specific
 public/storage
@@ -28,3 +30,6 @@ exported_data.json
 converted_data.jsonl
 *.sqlite
 *auth.json
+
+# Generated build metadata
+VERSION.json

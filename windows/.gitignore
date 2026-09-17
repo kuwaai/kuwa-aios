@@ -13,8 +13,8 @@ src/conf/migrations.txt
 logs/
 .ssh/
 .gitconfig
+config.yaml
 .*
 !.gitignore
 !.gitattributes
-prepare_qnn.*
-postinstall
+/postinstall

@@ -1,10 +1,15 @@
 */env.bat
-*/run.bat
+*/run.yaml
 */*.gguf
 */*.safetensors
 */*.model
 */*.bin
+*/src/*
 qnn-genie
 whisper_onnx
 openwork
+openclaw
 **/Breeze-ASR-25-ct2
+YoloCertFinder
+CertExtract
+datavisualizer

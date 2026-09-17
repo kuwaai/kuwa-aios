@@ -1,4 +1,7 @@
 .env
 .db-password
 .admin-password
-run.sh
+compose.conf
+compose/generated-configs/
+model-cache/
+kuwa-images.tar.gz
