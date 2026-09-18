@@ -242,6 +242,13 @@ async function runBuild({ pythonOnly: _pythonOnly = false, uiOnly: _uiOnly = fal
   ensureDir(path.join(ctx.SCRIPT_DIR, 'packages'));
   const pythonDir = path.join(ctx.SCRIPT_DIR, 'packages', cfg.python_folder);
   const multiChatDir = path.join(ctx.ROOT_DIR, 'src', 'multi-chat');
+  const frontendDir = path.join(multiChatDir, 'frontend');
+  const frontendPackagePath = path.join(frontendDir, 'package.json');
+  const hasFrontendPackage = fs.existsSync(frontendPackagePath)
+    && fs.statSync(frontendPackagePath).isFile();
+  if (!hasFrontendPackage) {
+    logToFile('Frontend package.json not found; skipping Frontend App build.');
+  }
   const envFile = path.join(multiChatDir, '.env');
   const kuwaRoot = cfg.KUWA_ROOT;
 
@@ -479,14 +486,13 @@ async function runBuild({ pythonOnly: _pythonOnly = false, uiOnly: _uiOnly = fal
             }
           },
         },
-        {
+        ...(hasFrontendPackage ? [{
           id: 'frontend', label: 'Frontend App', steps: 2,
           fn: async (step) => {
             await pnpmReady;
             // CI=true makes pnpm run non-interactively. Without it, pnpm aborts when it
             // needs to recreate node_modules because there is no TTY to confirm the prompt.
             const pnpmEnv = { CI: 'true' };
-            const frontendDir = path.join(multiChatDir, 'frontend');
             step('pnpm install');
             if (await runAsync('pnpm install --frozen-lockfile', { cwd: frontendDir, env: pnpmEnv }) !== 0) {
               throw new Error('pnpm install failed for Frontend App');
@@ -496,7 +502,7 @@ async function runBuild({ pythonOnly: _pythonOnly = false, uiOnly: _uiOnly = fal
               throw new Error('pnpm run build failed for Frontend App');
             }
           },
-        },
+        }] : []),
         {
           id: 'mermaid', label: 'Mermaid CLI',
           fn: async () => {
@@ -631,6 +637,7 @@ async function runBuild({ pythonOnly: _pythonOnly = false, uiOnly: _uiOnly = fal
   ].filter(j => {
     if (_pythonOnly && (j.id === 'node' || j.id === 'laravel')) return false;
     if (_uiOnly && j.id === 'python') return false;
+    if (j.id === 'frontend' && !hasFrontendPackage) return false;
     return true;
   });
 
