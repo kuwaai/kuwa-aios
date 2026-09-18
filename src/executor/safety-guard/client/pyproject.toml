@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/llm_safety_guard"]
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "0.4.3"
+raw-options = {root = "../../../../"}
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/llm_safety_guard/_version.py"
+
+[tool.hatch.metadata.hooks.vcs]
+
+[project]
+name = "llm-safety-guard"
+dynamic = ["version"]
+authors = [
+  { name="Yung-Hsiang Hu", email="iftnt1999@gmail.com" },
+]
+description = "The client library of the Safety Guard system."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies=[
+  'grpcio>=1.60.0',
+  'requests>=2.31.0',
+  'protobuf>=4.25.1'
+]
+
+[project.urls]
+"Homepage" = "https://thuniverse.ai/"
+"Bug Tracker" = ""
