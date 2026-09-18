@@ -1,0 +1,9 @@
+version: 1
+access_code: 'llamacpp'
+
+# Simple declarative executor. Put the .gguf in this folder and set --model_path.
+executor:
+  type: llamacpp         # kuwa-executor <type>
+  name: GGUF Model       # model display name
+  image: llamacpp.png    # model image (relative to this folder)
+  command: ["--ngl", "-1", "--model_path", "model.gguf"]

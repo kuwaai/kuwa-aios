@@ -1,0 +1,21 @@
+# List the executor folder names you want to run at startup.
+# This is the default template. The launcher copies it to config.yaml
+# (which is gitignored) if config.yaml does not exist. Edit config.yaml
+# to choose which executors run on this machine.
+- agent
+- chatgpt
+- contextualizer
+- copycat
+- dall-e
+- extractor
+- geminipro
+- groq
+- mcp-client
+- nim
+- ollama
+- painter
+- phi4
+- pipe
+- uploader
+- whisper
+- whisper_onnx

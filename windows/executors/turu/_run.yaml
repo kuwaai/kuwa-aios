@@ -1,0 +1,13 @@
+version: 1
+access_code: '.tool/turu/bot'
+
+# Declarative executor — a proxy bot that forwards the conversation to a
+# remote, OpenAI-compatible "Turu" endpoint. Configure the target per-bot via
+# the Modelfile parameters `llm_model`, `llm_endpoint` and `llm_api_key`, or
+# supply defaults here through `command` (e.g.
+# ["--endpoint", "https://...", "--api_key", "<token>", "--model", "turu"]).
+executor:
+  type: turu             # kuwa-executor <type>
+  name: Turu Bot         # model display name
+  order: 999999          # model ordering
+  command: []            # extra CLI args, like docker `command:`

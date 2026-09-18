@@ -1,0 +1,11 @@
+version: 1
+access_code: '.model:ollama'
+
+# Simple declarative executor (mirrors docker/compose/ollama.yaml).
+executor:
+  type: ollama           # kuwa-executor <type>
+  name: Ollama           # model display name
+  order: 318000          # model ordering
+  image: ollama.png      # model image (relative to this folder)
+  create_bot: false      # do not create the default bot
+  command: ["--ollama_host", "127.0.0.1:11434", "--model", "gemma4:e2b"]

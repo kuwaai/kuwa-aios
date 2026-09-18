@@ -1,0 +1,11 @@
+version: 1
+access_code: '.tool/kuwa/copycat'
+
+# Simple declarative executor — no run.js needed. Field names mirror the
+# docker compose configuration (docker/compose/copycat.yaml).
+executor:
+  type: debug            # kuwa-executor <type>
+  name: CopyCat          # model display name
+  order: 999000          # model ordering
+  image: copycat.png     # model image (relative to this folder)
+  command: ["--delay", "0.02", "--log", "debug"]

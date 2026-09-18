@@ -1,0 +1,10 @@
+version: 1
+access_code: 'taide'
+
+# Simple declarative executor (migrated from the legacy ipex-llm run.bat).
+# Put the .gguf in this folder and adjust --model_path / extra args in command.
+executor:
+  type: llamacpp                    # kuwa-executor <type>
+  name: LLaMA3 TAIDE LX-8B Chat Alpha1 4bit   # model display name
+  image: TAIDE.png                  # model image (relative to this folder)
+  command: ["--ngl", "-1", "--model_path", "taide-8b-a.3-q4_k_m.gguf", "--stop", "<|eot_id|>", "--system_prompt", "你是一個來自台灣的AI助理，你的名字是 TAIDE，樂於以台灣人的立場幫助使用者，會用繁體中文回答問題。"]

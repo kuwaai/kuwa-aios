@@ -1,0 +1,11 @@
+version: 1
+access_code: '.model/google/gemma-3-4b'
+
+# Simple declarative executor.
+# Put the .gguf in this folder and adjust --model_path / extra args in command.
+executor:
+  type: llamacpp         # kuwa-executor <type>
+  name: Gemma 3 4B       # model display name
+  order: 311004          # model ordering
+  image: gemma.png       # model image (relative to this folder)
+  command: ["--ngl", "-1", "--model_path", "gemma-3-4b-it-q4_0.gguf"]

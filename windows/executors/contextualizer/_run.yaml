@@ -1,0 +1,10 @@
+version: 1
+access_code: '.tool/turu/contextualizer'
+
+# Simple declarative executor (mirrors docker/compose/contextualizer.yaml).
+executor:
+  source: contextualizer     # src/executor/<source>/main.py (Python executor)
+  name: Contextualizer       # model display name
+  order: 990000              # model ordering
+  image: context.png         # model image (relative to this folder)
+  command: ["--log", "debug"]

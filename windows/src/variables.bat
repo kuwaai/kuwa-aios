@@ -1,13 +1,9 @@
 @echo off
-chcp 65001
 cd "%~dp0.."
 
 if "%KUWA_ENV_INIT%" neq "" (exit /b)
 
-call src\getproxy.bat
-
 set HTTP_Server_Runtime=nginx
-REM set HTTP_Server_Runtime=apache
 
 REM Variables for RunHiddenConsole
 set "url_RunHiddenConsole=https://github.com/wenshui2008/RunHiddenConsole/releases/download/1.0/RunHiddenConsole.zip"
@@ -15,7 +11,7 @@ for %%I in ("%url_RunHiddenConsole%") do set "filename_RunHiddenConsole=%%~nxI"
 set "RunHiddenConsole_folder=%filename_RunHiddenConsole:~0,-4%"
 
 REM Variables for Node.js
-set "url_NodeJS=https://nodejs.org/dist/v20.19.5/node-v20.19.5-win-x64.zip"
+set "url_NodeJS=https://nodejs.org/dist/v22.22.0/node-v22.22.0-win-x64.zip"
 for %%I in ("%url_NodeJS%") do set "filename_NodeJS=%%~nxI"
 set "node_folder=%filename_NodeJS:~0,-4%"
 for /f "tokens=2 delims=-" %%v in ("%filename_NodeJS%") do set "version_NodeJS=%%v"
@@ -38,18 +34,6 @@ for %%I in ("%url_Nginx%") do set "filename_Nginx=%%~nxI"
 set "nginx_folder=%filename_Nginx:~0,-4%"
 for /f "tokens=2 delims=-" %%v in ("%filename_Nginx%") do set "version_Nginx=%%v"
 
-REM Variables for Apache
-set "url_Apache=https://www.apachelounge.com/download/VS17/binaries/httpd-2.4.63-250207-win64-VS17.zip"
-for %%I in ("%url_Apache%") do set "filename_Apache=%%~nxI"
-set "apache_folder=%filename_Apache:~0,-4%"
-for /f "tokens=2 delims=-" %%v in ("%filename_Apache%") do set "version_Apache=%%v"
-
-REM Variables for mod_fcgid
-set "url_mod_fcgid=https://www.apachelounge.com/download/VS17/modules/mod_fcgid-2.3.10-win64-VS17.zip"
-for %%I in ("%url_mod_fcgid%") do set "filename_mod_fcgid=%%~nxI"
-set "mod_fcgid_folder=%filename_mod_fcgid:~0,-4%"
-for /f "tokens=2 delims=-" %%v in ("%filename_mod_fcgid%") do set "version_mod_fcgid=%%v"
-
 REM Variables for Python 3.10.12
 set "url_Python=https://www.python.org/ftp/python/3.10.11/python-3.10.11-embed-amd64.zip"
 for %%I in ("%url_Python%") do set "filename_Python=%%~nxI"
@@ -62,6 +46,12 @@ for %%I in ("%url_Redis%") do set "filename_Redis=%%~nxI"
 set "redis_folder=%filename_Redis:~0,-4%"
 for /f "tokens=2 delims=-" %%v in ("%filename_Redis%") do set "version_Redis=%%v"
 
+REM Variables for Pandoc 3.9.0.2
+set "url_Pandoc=https://github.com/jgm/pandoc/releases/download/3.9.0.2/pandoc-3.9.0.2-windows-x86_64.zip"
+for %%I in ("%url_Pandoc%") do set "filename_Pandoc=%%~nxI"
+set "pandoc_folder=%filename_Pandoc:~0,-19%"
+for /f "tokens=2 delims=-" %%v in ("%filename_Pandoc%") do set "version_Pandoc=%%v"
+
 REM Variables for git bash
 set "url_gitbash=https://github.com/git-for-windows/git/releases/download/v2.45.1.windows.1/PortableGit-2.45.1-64-bit.7z.exe"
 for %%I in ("%url_gitbash%") do set "filename_gitbash=%%~nxI"
@@ -69,9 +59,9 @@ set "gitbash_folder=%filename_gitbash:~0,-7%"
 for /f "tokens=2 delims=-" %%v in ("%filename_gitbash%") do set "version_gitbash=%%v"
 
 REM Variables for FFmpeg
-set "url_ffmpeg=https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-7.1.1-essentials_build.zip"
+set "url_ffmpeg=https://github.com/GyanD/codexffmpeg/releases/download/7.1.1/ffmpeg-7.1.1-full_build-shared.7z"
 for %%I in ("%url_ffmpeg%") do set "filename_ffmpeg=%%~nxI"
-set "ffmpeg_folder=%filename_ffmpeg:~0,-4%"
+set "ffmpeg_folder=%filename_ffmpeg:~0,-3%"
 for /f "tokens=2 delims=-" %%v in ("%filename_ffmpeg%") do set "version_ffmpeg=%%v"
 
 REM Environment variables for model cache
@@ -86,9 +76,16 @@ set "COMPOSER_HOME=%~dp0..\packages\Composer\"
 set "CACHE_PATH_ENV=%KUWA_CACHE%\selenium"
 set "PYANNOTE_CACHE=%KUWA_CACHE%\torch\pyannote"
 set "HOME=%~dp0.."
+::set "TRANSFORMERS_OFFLINE=1"
+::set "HF_HUB_OFFLINE=1"
 
 REM Kuwa env
 set "KUWA_ROOT=%~dp0..\root"
+
+REM Set GIT_SSH_COMMAND if the SSH deploy key is present
+if exist "%~dp0..\.git\test_pack_perm.priv" (
+    set "GIT_SSH_COMMAND=ssh -i "%~dp0..\.git\test_pack_perm.priv" -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
+)
 
 REM Prepare migration file
 mkdir src\conf 2>nul
@@ -99,8 +96,23 @@ if not exist "src\conf\migrations.txt" (
 REM Prepare packages folder
 mkdir packages 2>nul
 
-REM init env
-set "PATH=%~dp0..\packages\Composer\vendor\bin;%~dp0\bin;%~dp0..\packages\;%~dp0..\packages\%python_folder%\Scripts;%~dp0..\packages\%python_folder%;%~dp0..\packages\%php_folder%;%~dp0..\packages\%node_folder%;%~dp0..\packages\%gitbash_folder%\cmd;%~dp0..\packages\%ffmpeg_folder%\bin;%PATH%"
+REM init env - build local PATH prefix
+set "KUWA_PATH=%~dp0..\packages\Composer\vendor\bin;%~dp0\bin;%~dp0..\packages\;%~dp0..\packages\%python_folder%\Scripts;%~dp0..\packages\%python_folder%;%~dp0..\packages\%php_folder%;%~dp0..\packages\%node_folder%;%~dp0..\packages\%gitbash_folder%\cmd;%~dp0..\packages\%ffmpeg_folder%\bin;%~dp0..\packages\%ffmpeg_folder%\lib;%~dp0..\packages\%pandoc_folder%"
+
+REM Remove system-installed python/nginx/redis/php/node/ffmpeg/pandoc from PATH to avoid conflicts
+setlocal enabledelayedexpansion
+set "CLEAN_PATH="
+for %%A in ("%PATH:;=";"%") do (
+    echo %%~A | findstr /i /r "\\python[0-9]* \\nginx \\redis \\php \\node \\nodejs \\ffmpeg \\pandoc" >nul 2>nul
+    if errorlevel 1 (
+        if defined CLEAN_PATH (
+            set "CLEAN_PATH=!CLEAN_PATH!;%%~A"
+        ) else (
+            set "CLEAN_PATH=%%~A"
+        )
+    )
+)
+endlocal & set "PATH=%KUWA_PATH%;%CLEAN_PATH%"
 
 if "%1"=="no_migrate" (
     echo Skipped migration

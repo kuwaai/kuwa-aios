@@ -1,0 +1,11 @@
+version: 1
+access_code: '.model/google/gemma-3-1b'
+
+# Simple declarative executor (mirrors docker/compose/gemma3-1b.yaml).
+# Put the .gguf in this folder and adjust --model_path / extra args in command.
+executor:
+  type: llamacpp         # kuwa-executor <type>
+  name: Gemma 3 1B       # model display name
+  order: 311003          # model ordering
+  image: gemma-3-1b.png  # model image (relative to this folder)
+  command: ["--ngl", "-1", "--model_path", "gemma-3-1b-it-q4_0.gguf"]

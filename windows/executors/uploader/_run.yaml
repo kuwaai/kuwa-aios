@@ -1,0 +1,10 @@
+version: 1
+access_code: '.tool/kuwa/uploader'
+
+# Simple declarative executor (mirrors docker/compose/uploader.yaml).
+executor:
+  source: uploader       # src/executor/<source>/main.py (Python executor)
+  name: Uploader         # model display name
+  order: 999020          # model ordering
+  image: upload.png      # model image (relative to this folder)
+  command: []

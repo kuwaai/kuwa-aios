@@ -1,0 +1,11 @@
+version: 1
+access_code: '.model/taide/taide-lx'
+
+# Simple declarative executor (mirrors docker compose taide config).
+# Put the .gguf in this folder and adjust --model_path / extra args in command.
+executor:
+  type: llamacpp                 # kuwa-executor <type>
+  name: 🇹🇼 TAIDE LX-8B            # model display name
+  order: 100001                  # model ordering
+  image: TAIDE.png               # model image (relative to this folder)
+  command: ["--ngl", "-1", "--model_path", "Llama-3.1-TAIDE-LX-8B-Chat-Q4_K_M.gguf", "--system_prompt", "你是一個來自台灣的AI助理，你的名字是 TAIDE，樂於以台灣人的立場幫助使用者，會用繁體中文回答問題。"]

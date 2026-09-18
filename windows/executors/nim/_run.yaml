@@ -1,0 +1,10 @@
+version: 1
+access_code: '.model:nim/'
+
+# Simple declarative executor (mirrors docker/compose/nim.yaml).
+executor:
+  type: nim              # kuwa-executor <type>
+  name: NIM API          # model display name
+  order: 401200          # model ordering
+  image: nim.png         # model image (relative to this folder)
+  command: []            # extra CLI args, like docker `command:`

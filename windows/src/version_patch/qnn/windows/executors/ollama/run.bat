@@ -1,1 +1,0 @@
-call  _run.bat

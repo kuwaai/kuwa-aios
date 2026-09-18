@@ -1,0 +1,12 @@
+version: 1
+access_code: '.model:qnn'
+
+# Simple declarative executor (Qualcomm QNN Genie).
+# Migrated from the legacy qnn run.bat.
+executor:
+  source: qnn_genie            # src/executor/<source>/main.py (Python executor)
+  name: Qualcomm QNN Genie     # model display name
+  order: 110001                # model ordering
+  image: snapdragon-x.jpg      # model image (relative to this folder)
+  create_bot: false            # do not create the default bot
+  command: ["--log", "debug"]

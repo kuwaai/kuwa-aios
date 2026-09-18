@@ -117,9 +117,9 @@ REM Save configuration to run.bat
 del run.bat
 echo set "EXECUTOR_ACCESS_CODE=!EXECUTOR_ACCESS_CODE!"> run.bat
 
-REM model:config
+REM model:config (via POST /api/models/configure, not the old artisan CLI)
 echo pushd ..\..\..\src\multi-chat>>run.bat
-set command=php artisan model:config "!EXECUTOR_ACCESS_CODE!" "!EXECUTOR_NAME!"
+set command=node "..\..\windows\src\model-config-api.js" "!EXECUTOR_ACCESS_CODE!" "!EXECUTOR_NAME!"
 if DEFINED image_path (
     set command=!command! --image "!image_path!"
 )

@@ -1,0 +1,12 @@
+version: 1
+access_code: '.tool/kuwa/search-qa'
+
+# Simple declarative executor (mirrors docker/compose/search.yaml).
+# Set your Google API key / CSE id in command below.
+executor:
+  source: docqa          # src/executor/<source>
+  script: searchqa.py    # Python entry point
+  name: Search QA        # model display name
+  order: 990020          # model ordering
+  image: SearchQA.png    # model image (relative to this folder)
+  command: ["--google_api_key", "YOUR_GOOGLE_API_KEY", "--google_cse_id", "YOUR_GOOGLE_CSE_ID"]

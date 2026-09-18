@@ -1,0 +1,12 @@
+version: 1
+access_code: '.tool.mcp'
+
+# Simple declarative executor (mirrors docker/compose/mcp_client.yaml).
+executor:
+  source: mcp/client         # src/executor/<source>
+  script: mcp-client.py      # Python entry point
+  name: MCP Client           # model display name
+  order: 999030              # model ordering
+  image: mcp.png             # model image (relative to this folder)
+  create_bot: false          # do not create the default bot
+  command: ["--mcp_server_cmd", "python", "--mcp_server_args", "-m mcp_server_time --local-timezone=Asia/Taipei", "--log", "debug"]

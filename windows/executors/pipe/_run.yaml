@@ -1,0 +1,23 @@
+version: 1
+access_code: '.tool/kuwa/pipe'
+
+# katana (https://github.com/projectdiscovery/katana) is what actually crawls
+# the web for the "Browse URL"/"Web Search" pipe bots below (see
+# src/tools/browseurl/main.py, src/tools/websearch/main.py); downloaded on
+# demand into windows/packages (see src/launcher/dependency/katana_latest.js).
+dependencies:
+  - katana_latest
+
+# Simple declarative executor (mirrors docker/compose/pipe.yaml).
+executor:
+  source: pipe           # src/executor/<source>/main.py (Python executor)
+  name: Pipe             # model display name
+  order: 999999          # model ordering
+  image: pipe.png        # model image (relative to this folder)
+  count: 5               # number of executor processes
+  command: ["--log", "debug"]
+  # Every "pipe program" bot lives under bots/ as its own .bot file. Which
+  # ones actually get imported/enabled at launcher startup is controlled by
+  # this folder's bots.yaml (copied from _bots.yaml on first run - edit the
+  # runtime bots.yaml, not the template, to customize your selection).
+  bots_dir: bots

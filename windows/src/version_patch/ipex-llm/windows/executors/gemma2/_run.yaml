@@ -1,0 +1,10 @@
+version: 1
+access_code: 'gemma2-2b-instruct'
+
+# Simple declarative executor (migrated from the legacy ipex-llm run.bat).
+# Put the .gguf in this folder and adjust --model_path / extra args in command.
+executor:
+  type: llamacpp                    # kuwa-executor <type>
+  name: Gemma2 2B Instruct          # model display name
+  image: gemma.png                  # model image (relative to this folder)
+  command: ["--ngl", "-1", "--model_path", "gemma-2-2b-it-Q8_0.gguf", "--repeat_penalty", "1.0"]

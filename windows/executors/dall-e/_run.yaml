@@ -1,0 +1,11 @@
+version: 1
+access_code: '.model:openai/dall-e'
+
+# Simple declarative executor (mirrors docker/compose/dall-e.yaml).
+executor:
+  source: image_generation   # src/executor/<source>
+  script: dall_e.py          # Python entry point
+  name: DALL-E               # model display name
+  order: 421000              # model ordering
+  image: dall-e.png          # model image (relative to this folder)
+  command: []

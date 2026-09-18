@@ -1,0 +1,10 @@
+version: 1
+access_code: '.model/microsoft/phi-4-multimodal'
+
+# Simple declarative executor (HuggingFace backend).
+executor:
+  type: huggingface              # kuwa-executor <type>
+  name: Phi 4 Multimodal         # model display name
+  order: 301100                  # model ordering
+  image: phi4.png                # model image (relative to this folder)
+  command: ["--model_path", ".", "--log", "debug", "--trust_remote_code"]

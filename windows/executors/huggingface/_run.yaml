@@ -1,0 +1,10 @@
+version: 1
+access_code: 'huggingface'
+
+# Simple declarative executor. Put the model + tokenizer in this folder, or set
+# --model_path to a local path / HuggingFace repo id.
+executor:
+  type: huggingface          # kuwa-executor <type>
+  name: HuggingFace Model    # model display name
+  image: huggingface.svg     # model image (relative to this folder)
+  command: ["--model_path", "."]

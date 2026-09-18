@@ -27,9 +27,9 @@ if "!set_version!"=="" (
 		)
 		rem Set the variable based on the CUDA version
 		if !major:~1! geq 12 (
-			set "version=cu121"
+			set "version=cu128"
 		) else (
-			set "version=cu118"
+			echo [WARNING] CUDA < 12.0 are not supported.
 		)
 	)
 ) else (

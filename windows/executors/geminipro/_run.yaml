@@ -1,0 +1,11 @@
+version: 1
+access_code: '.model:google/gemini'
+
+# Simple declarative executor (mirrors docker/compose/gemini.yaml).
+# Add your Google API token / extra parameters to `command`.
+executor:
+  type: geminipro        # kuwa-executor <type>
+  name: Gemini           # model display name
+  order: 401000          # model ordering
+  image: geminipro.png   # model image (relative to this folder)
+  command: []            # extra CLI args, like docker `command:`

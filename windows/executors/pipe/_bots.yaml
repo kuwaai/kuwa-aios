@@ -1,0 +1,21 @@
+# Selects which bots (under this folder) the "Pipe" executor imports and
+# registers at launcher startup. Copied to the (gitignored, user-editable)
+# `bots.yaml` on first run - edit THAT file to customize, not this template.
+#
+# - List the `.bot` filenames (relative to this folder) you want enabled.
+# - Use `*` (or leave the list empty) to enable every `.bot` file found here.
+# - Lines starting with '#' are comments.
+- calculator.bot
+- construct-rag.bot
+- file-viewer.bot
+- iconv.bot
+- media-converter.bot
+- mermaid-tool.bot
+- python.bot
+- system-info.bot
+- token-counter.bot
+- pandoc.bot
+- proofreader.bot
+- punctuator.bot
+- browse-url.bot
+- web-search.bot

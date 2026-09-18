@@ -1,0 +1,9 @@
+version: 1
+access_code: 'painter'
+
+# Simple declarative executor.
+executor:
+  source: image_generation   # src/executor/<source>/main.py (Python executor)
+  name: Painter              # model display name
+  image: painter.png         # model image (relative to this folder)
+  command: []

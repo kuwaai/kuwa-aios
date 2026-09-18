@@ -1,0 +1,12 @@
+version: 1
+access_code: '.model:openai/gpt'
+
+# Simple declarative executor (mirrors docker/compose/chatgpt.yaml).
+# Add your OpenAI API token / extra parameters to `command` (e.g.
+# ["--api_key", "<token>"]). Leave it empty to use a per-bot token.
+executor:
+  type: chatgpt          # kuwa-executor <type>
+  name: ChatGPT          # model display name
+  order: 401100          # model ordering
+  image: chatgpt.png     # model image (relative to this folder)
+  command: []            # extra CLI args, like docker `command:`

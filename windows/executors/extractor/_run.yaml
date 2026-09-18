@@ -1,0 +1,11 @@
+version: 1
+access_code: '.tool/turu/extractor'
+
+# Simple declarative executor (mirrors docker/compose/extractor.yaml).
+executor:
+  source: extractor      # src/executor/<source>/main.py (Python executor)
+  name: Extractor        # model display name
+  order: 990000          # model ordering
+  image: filter.png      # model image (relative to this folder)
+  count: 5               # number of executor processes
+  command: ["--log", "info"]

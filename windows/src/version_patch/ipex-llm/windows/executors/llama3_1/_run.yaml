@@ -1,0 +1,10 @@
+version: 1
+access_code: 'llama3.1-8b-instruct'
+
+# Simple declarative executor (migrated from the legacy ipex-llm run.bat).
+# Put the .gguf in this folder and adjust --model_path / extra args in command.
+executor:
+  type: llamacpp                    # kuwa-executor <type>
+  name: LLaMA3.1 8B Instruct        # model display name
+  image: llama3_1.jpeg              # model image (relative to this folder)
+  command: ["--ngl", "-1", "--model_path", "llama3_1-8b-q4_k_m.gguf", "--stop", "<|eot_id|>"]

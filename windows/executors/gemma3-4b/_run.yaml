@@ -1,0 +1,11 @@
+version: 1
+access_code: '.model/google/gemma'
+
+# Simple declarative executor (HuggingFace backend).
+# Put the model + tokenizer in this folder, or set --model_path to a repo id.
+executor:
+  type: huggingface      # kuwa-executor <type>
+  name: Gemma 3 4B       # model display name
+  order: 301000          # model ordering
+  image: gemma-3-4b.png  # model image (relative to this folder)
+  command: ["--model_path", ".", "--log", "debug"]

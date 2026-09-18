@@ -1,0 +1,5 @@
+version: 1
+access_code: '.model/openai/whisper'
+dependencies:
+  - ffmpeg_latest
+run: run.js

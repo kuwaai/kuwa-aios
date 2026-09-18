@@ -14,10 +14,10 @@ Please follow the steps below to install:
 ```bat
 git clone https://github.com/kuwaai/kuwa-aios.git
 cd kuwa-aios/windows
-"build & start.bat"
+"launcher.bat"
 ```
 - Enter the `stop` command to close the system. Directly closing the window may fail to release memory usage. If you accidentally closed the window, please refer to the third item in [FAQs](#faq).
-- You can directly run `start.bat` for subsequent startup. If there is an update or the project path is moved, please rerun `build.bat` or `build & start.bat`.
+- Run `launcher.bat` for subsequent startup. Use `repair.bat build` after an update or when the project path is moved.
 
 ### Detailed Installation Steps
 
@@ -27,15 +27,15 @@ cd kuwa-aios/windows
    cd kuwa-aios/windows
    ```
 
-2. **Download the related packages and set up quickly:**
+2. **Start the launcher and download the related packages:**
    ```bat
-   .\build.bat
+   .\launcher.bat
    ```
 
 3. **Start the application:**
-   - Run `start.bat` to start the application. Note: If you have any of the following services running (nginx, php, php-cgi, python, redis-server), this executable will terminate them when closed. Please also make sure that ports 80, 9000, and 6379 are not being used.
+   - Run `launcher.bat` to start the application. Note: If you have any of the following services running (nginx, php, php-cgi, python, redis-server), the launcher manages them. Please also make sure that ports 80, 9000, and 6379 are not being used.
    ```bat
-   .\start.bat
+   .\launcher.bat
    ```
    - At this point, you should be asked to create an administrator account (you will need to enter a name, email address, and password). If it does not pop up or you enter it incorrectly or fail to create it, please see [here](#faq).
 
@@ -45,7 +45,7 @@ cd kuwa-aios/windows
 5. **How to close the program:**
    - Please try not to force close the .bat file (including using the red cross to close it directly). Currently, due to the .bat file, it cannot automatically close all open programs to release resources in these situations.
 
-   - **Therefore, please develop the habit of entering `stop` when executing `start.bat` to close the program.**
+   - **Therefore, please develop the habit of entering `stop` when executing `launcher.bat` to close the program.**
 
 6. **Set up models:**
    - By default, ChatGPT and Gemini are preset when the program is just started. Both models are connected to the API, so you need to apply for the corresponding API Key. If you want to start your own model or connect to other APIs, you need to set up executors. However, since this part is extensive, please refer to the tutorial guide [here](./executors/README.md).
@@ -54,14 +54,14 @@ cd kuwa-aios/windows
 
 1. **Q: I was not asked to create an administrator account, the administrator account creation failed, or I entered it incorrectly...**
    
-   A: Please open `tool.bat`, then enter `seed` to open the administrator account creation interface. Enter `quit` to close after creation.
+   A: Please open `launcher.bat` with the `seed` argument to open the administrator account creation interface.
 
-2. **Q: After moving the entire project, I got a bunch of errors when executing start.bat, and the webpage was 404/500 and could not be accessed.**
+2. **Q: After moving the entire project, I got a bunch of errors when executing launcher.bat, and the webpage was 404/500 and could not be accessed.**
 
-   A: Since some parts of the project must use absolute paths, if the path to the project directory has changed (a change in the name of the parent folder or the moving of the entire project), you will need to rerun `build.bat` to update the absolute path, and so does the model in the workers folder. It is recommended to rerun `init.bat` to avoid errors.
+   A: Since some parts of the project must use absolute paths, if the path to the project directory has changed, run `repair.bat build` to rebuild the installation and launcher paths.
 
-3. **Q: I accidentally closed the entire start.bat program by directly clicking the red cross; the background program was not closed, and the memory resources are still occupied. What should I do?**
+3. **Q: I accidentally closed the launcher window by directly clicking the red cross; the background program was not closed, and the memory resources are still occupied. What should I do?**
 
-   A: Due to the .bat file, it cannot close all programs when you click the red cross. You can open `tool.bat` and enter `stop` to terminate all related programs.
+   A: Open `launcher.bat`, enter `stop`, and press Enter to terminate all related programs.
 
 Please feel free to contact us if you encounter any problems during the installation.

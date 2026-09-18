@@ -1,0 +1,12 @@
+version: 1
+access_code: '.tool/kuwa/rag'
+
+# Simple declarative executor (mirrors docker/compose/rag.yaml).
+executor:
+  source: docqa          # src/executor/<source>
+  script: docqa.py       # Python entry point
+  name: RAG              # model display name
+  order: 990000          # model ordering
+  image: loupe.png       # model image (relative to this folder)
+  bot: doc-qa.bot        # bot definition to import (relative to this folder)
+  command: ["--mmr_k", "6", "--mmr_fetch_k", "12", "--limit", "3072"]

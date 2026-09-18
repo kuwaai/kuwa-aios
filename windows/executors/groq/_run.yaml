@@ -1,0 +1,12 @@
+version: 1
+access_code: '.model:groq/'
+
+# Simple declarative executor (served through the OpenAI-compatible chatgpt
+# executor; mirrors docker/compose/groq.yaml).
+executor:
+  type: chatgpt          # kuwa-executor <type>
+  name: Groq API         # model display name
+  order: 401300          # model ordering
+  image: groq.png        # model image (relative to this folder)
+  create_bot: false      # do not create the default bot
+  command: ["--base_url", "https://api.groq.com/openai/v1/", "--model", "meta-llama/llama-4-maverick-17b-128e-instruct", "--context_window", "131072", "--use_third_party_api_key"]
