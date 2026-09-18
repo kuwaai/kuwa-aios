@@ -10,6 +10,6 @@
         <a class="group inline-flex items-center hover:text-gray-700 dark:hover:text-white focus:rounded-sm focus:outline-red-500"
             href="https://kuwaai.tw/" target="_blank">Kuwa</a>
         <span class="text-black dark:text-white flex justify-end text-sm">{{ __('welcome.version') }}
-            {{ config('app.Version') }}</span>
+            {{ \App\Services\BuildInfoService::getVersion() }}</span>
     </div>
 </div>

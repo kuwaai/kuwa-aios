@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SystemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,3 +38,5 @@ Route::middleware('ipCheck','auth:sanctum')->group(function () {
 Route::middleware('ipCheck')->get('islogin', function (Request $request) {
     return ['logged_in' => $request->user() ? true : false];
 });
+
+Route::middleware('ipCheck')->get('system/build-info', [SystemController::class, 'api_get_build_info']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Str;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
@@ -18,6 +19,23 @@ use Symfony\Component\Process\Process;
 
 class SystemController extends Controller
 {
+    public function api_get_build_info(): JsonResponse
+    {
+        try {
+            return response()->json(\App\Services\BuildInfoService::getBuildInfo());
+        } catch (\Throwable $exception) {
+            \Log::error('Failed to get build info: ' . $exception->getMessage());
+
+            return response()->json([
+                'version' => config('app.Version', 'Unknown'),
+                'buildNumber' => 'dev',
+                'commitCount' => 0,
+                'commitHash' => 'unknown',
+                'buildTimestamp' => 'unknown',
+            ]);
+        }
+    }
+
     public static function updateSystemSetting($key, $value)
     {
         SystemSetting::updateOrCreate(['key' => $key], ['value' => $value ?? '']);

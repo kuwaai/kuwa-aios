@@ -2,7 +2,7 @@
     "private": true,
     "scripts": {
         "dev": "vite",
-        "build": "vite build"
+        "build": "node scripts/generate-build-info.js && vite build"
     },
     "devDependencies": {
         "@tailwindcss/postcss": "^4.2.1",
