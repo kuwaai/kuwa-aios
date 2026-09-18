@@ -7,8 +7,8 @@ packages = ["src/kuwa"]
 
 [tool.hatch.version]
 source = "vcs"
+fallback-version = "0.4.3"
 raw-options = {root = "../../"}
-fallback-version = "0.1.0"
 
 [tool.hatch.metadata]
 allow-direct-references = true
@@ -40,7 +40,11 @@ dependencies=[
   "flask-sse>=1.0.0",
   "huggingface-hub[cli]>=0.30.2",
   "requests>=2.32.3",
-  "uvicorn~=0.29.0",
+  "uvicorn>=0.29.0",
+  "fastapi",
+  "httpx",
+  "python-multipart",
+  "prometheus-client"
 ]
 
 [project.urls]
@@ -49,3 +53,22 @@ dependencies=[
 
 [project.scripts]
 kuwa-kernel = "kuwa.kernel.main:main"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov"
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["test"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.hatch.envs.test]
+features = ["test"]
+
+[tool.hatch.envs.test.scripts]
+run = "pytest"
