@@ -102,6 +102,7 @@ class ExecutorMetrics:
         self.executor_name = executor_name
 
         for name, spec in self.metrics_template.items():
+            spec = spec.copy()
             assert "type" in spec
             type_class = getattr(prometheus_client, spec.pop("type"))
             description = spec.pop("description", "")

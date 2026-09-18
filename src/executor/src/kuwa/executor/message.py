@@ -3,6 +3,7 @@ from enum import Enum
 from .util import is_rfc3339
 import datetime
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
@@ -141,6 +142,41 @@ class ProgressChunk(BaseChunk):
                 "total": self.total,
                 "desc": self.desc,
                 "postfix": self.postfix,
+            },
+        }
+
+    def calculate_cost(self):
+        return 0
+
+
+class StatusEnum(Enum):
+    NEW = "NEW" # The job has been created but not yet queued in the kernel.
+    QUEUEING = "QUEUEING" # The job is being queued in the kernel, but has not yet been assigned to an executor.
+    PROCESSING = "PROCESSING" # The kernel has assigned the job to an executor, and the executor is processing it.
+    FINISHED = "FINISHED" # The executor has finished processing the job, but the kernel has not yet released it.
+    TERMINATED = "TERMINATED" # The kernel has released the job and the executor.
+
+
+class StatusChunk(BaseChunk):
+    def __init__(
+        self,
+        status: StatusEnum,
+        timestamp: float | None = None,
+        details: dict | None = None,
+        cost: int | None = None,
+    ):
+        super().__init__(cost)
+        self.status = status
+        self.timestamp = timestamp if timestamp is not None else time.time()
+        self.details = details if details is not None else {}
+
+    def __jsonencode__(self):
+        return {
+            "type": "status",
+            "status": {
+                "status": self.status.value,
+                "timestamp": self.timestamp,
+                "details": self.details,
             },
         }
 

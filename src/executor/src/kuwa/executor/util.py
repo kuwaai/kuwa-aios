@@ -159,7 +159,10 @@ def is_rfc3339(timestamp_string):
 
     # Basic structure is valid, perform further checks for leap years and valid date ranges.
     year, month, day = map(int, match.group(1).split("T")[0].split("-"))
-    hour, minute, second = map(int, match.group(1).split("T")[1].split(":")[:3])
+    time_part = match.group(1).split("T")[1].split(":")
+    hour = int(time_part[0])
+    minute = int(time_part[1])
+    second = int(time_part[2].split(".")[0])
 
     if not (
         1 <= month <= 12

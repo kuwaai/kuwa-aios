@@ -44,14 +44,17 @@ class LLMExecutor(BaseExecutor):
 
 def to_openai_chat_format(history: list[dict]):
     """
-    Convert the chat history from Kuwa's format to OpenAI's format.
+    Convert Kuwa's legacy history format or pass through OpenAI-style history.
     """
     history = [
-        {
-            "role": "assistant" if i["isbot"] else "user",
-            "content": i["msg"] if i["msg"] is not None else "",
-        }
-        for i in history
+        ({
+            "role": item["role"],
+            "content": item.get("content") if item.get("content") is not None else "",
+        } if "role" in item else {
+            "role": "assistant" if item["isbot"] else "user",
+            "content": item["msg"] if item["msg"] is not None else "",
+        })
+        for item in history
     ]
     return history
 

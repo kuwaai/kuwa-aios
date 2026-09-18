@@ -20,6 +20,14 @@ def format_chat_history(chat_history, target_role, **kwargs):
 
 
 class TestToOpenAiChatFormat(unittest.TestCase):
+    def test_openai_history(self):
+        openai_history = [
+            {"role": "user", "content": "hi"},
+            {"role": "assistant", "content": "hello"},
+        ]
+
+        self.assertEqual(to_openai_chat_format(openai_history), openai_history)
+
     def test_alternative(self):
         kuwa_history = [
             {"isbot": False, "msg": "hello1"},
