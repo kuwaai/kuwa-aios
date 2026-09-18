@@ -77,14 +77,13 @@ Name: "models\gemma_3_1b_it_q4_0"; Description: "Gemma3 1B QAT Q4"; Types: full 
 
 [Files]
 Source: "..\..\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; \
-    Excludes: "gemma3-4b\run.bat,gemma3-1b\run.bat,taide\run.bat,package.zip,*.gguf,windows\packages\*,windows-setup-files\*.exe,windows-setup-files\*.bin,node_modules\*,vendor\*"; \
+    Excludes: "package.zip,*.gguf,windows\packages\*,windows-setup-files\*.exe,windows-setup-files\*.bin,node_modules\*,vendor\*"; \
     Permissions: users-full; Components: "product\Kuwa"
 
 Source: "..\..\.git\*"; DestDir: "{app}\.git"; Flags: ignoreversion recursesubdirs createallsubdirs; \
     Permissions: users-full; Components: "product\Kuwa"
 
 Source: "..\..\windows\executors\gemma3-1b\gemma-3-1b-it-q4_0.gguf"; DestDir: "{app}\windows\executors\gemma3-1b\"; Flags: ignoreversion; Components: "models\gemma_3_1b_it_q4_0"
-Source: "..\..\windows\executors\gemma3-1b\run.bat"; DestDir: "{app}\windows\executors\gemma3-1b\"; Flags: ignoreversion; Components: "models\gemma_3_1b_it_q4_0"
 
 Source: "{tmp}\packages\*"; DestDir: "{app}\windows\packages\"; Flags: external; Components: "product\Kuwa"
 

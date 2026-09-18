@@ -79,17 +79,15 @@ Name: "models\llama3_point_1_taide_lx_8_q4_km"; Description: "Llama3.1 TAIDE LX-
 
 [Files]
 Source: "..\..\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; \
-    Excludes: "gemma3-4b\run.bat,gemma3-1b\run.bat,taide\run.bat,*.gguf,windows-setup-files\*.exe,windows\packages\*,windows-setup-files\*.bin,node_modules\*,vendor\*"; \
+    Excludes: "*.gguf,windows-setup-files\*.exe,windows\packages\*,windows-setup-files\*.bin,node_modules\*,vendor\*"; \
     Permissions: users-full; Components: "product\Kuwa"
 
 Source: "..\..\.git\*"; DestDir: "{app}\.git"; Flags: ignoreversion recursesubdirs createallsubdirs; \
     Permissions: users-full; Components: "product\Kuwa"
 
 Source: "..\..\windows\executors\gemma3-1b\gemma-3-1b-it-q4_0.gguf"; DestDir: "{app}\windows\executors\gemma3-1b\"; Flags: ignoreversion; Components: "models\gemma_3_1b_it_q4_0"
-Source: "..\..\windows\executors\gemma3-1b\run.bat"; DestDir: "{app}\windows\executors\gemma3-1b\"; Flags: ignoreversion; Components: "models\gemma_3_1b_it_q4_0"
 
 Source: "..\..\windows\executors\taide\Llama-3.1-TAIDE-LX-8B-Chat-Q4_K_M.gguf"; DestDir: "{app}\windows\executors\taide\"; Flags: ignoreversion; Components: "models\llama3_point_1_taide_lx_8_q4_km"
-Source: "..\..\windows\executors\taide\run.bat"; DestDir: "{app}\windows\executors\taide\"; Flags: ignoreversion; Components: "models\llama3_point_1_taide_lx_8_q4_km"
 
 [Icons]
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"

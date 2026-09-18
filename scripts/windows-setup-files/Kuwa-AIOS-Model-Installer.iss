@@ -70,9 +70,6 @@ Name: "models\gemma_3_4b_it"; Description: "Gemma 3 4B"; Types: custom; ExtraDis
 Source: "{tmp}\models\taide\Llama-3.1-TAIDE-LX-8B-Chat-Q4_K_M.gguf"; DestDir: "{app}\windows\executors\taide\"; Flags: external;Components: "models\llama3_point_1_taide_lx_8_q4_km"
 Source: "{tmp}\models\gemma3-4b\*"; DestDir: "{app}\windows\executors\gemma3-4b\"; Flags: external;Components: "models\gemma_3_4b_it";
 ; Source: "{tmp}\models\phi4\*"; DestDir: "{app}\windows\executors\phi4\"; Flags: external;Components: "models\phi4_multimodal_it";
-Source: "..\..\windows\executors\taide\run.bat"; DestDir: "{app}\windows\executors\taide\"; Flags: ignoreversion; Components: "models\llama3_point_1_taide_lx_8_q4_km";
-Source: "..\..\windows\executors\gemma3-4b\run.bat"; DestDir: "{app}\windows\executors\gemma3-4b\"; Flags: ignoreversion; Components: "models\gemma_3_4b_it";
-; Source: "..\..\windows\executors\phi4\run.bat"; DestDir: "{app}\windows\executors\phi4\"; Flags: ignoreversion; Components: "models\phi4_multimodal_it";
 
 [Icons]
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
