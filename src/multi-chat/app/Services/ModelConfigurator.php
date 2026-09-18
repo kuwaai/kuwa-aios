@@ -172,20 +172,14 @@ class ModelConfigurator
     public static function syncModelPermission(int $modelId): void
     {
         $permName = 'MODEL_' . $modelId;
-        $perm = Permissions::where('name', '=', $permName)->first();
-        if ($perm) {
-            return;
-        }
-        $perm = new Permissions();
-        $perm->fill(['name' => $permName]);
-        $perm->save();
-
-        $targetPermID = Permissions::where('name', '=', 'MANAGE_WRITE_MODELS')->first()->id;
+        $perm = Permissions::firstOrCreate(['name' => $permName]);
+        $targetPermIDs = Permissions::whereIn('name', ['MANAGE_WRITE_MODELS', 'tab_Manage'])->pluck('id');
+        if ($targetPermIDs->isEmpty()) return;
         $groups = GroupPermissions::pluck('group_id')->toArray();
         $currentTimestamp = now();
         foreach ($groups as $group) {
-            GroupPermissions::where('group_id', $group)->where('perm_id', '=', $perm->id)->delete();
-            if (GroupPermissions::where('group_id', $group)->where('perm_id', '=', $targetPermID)->exists()) {
+            if (GroupPermissions::where('group_id', $group)->whereIn('perm_id', $targetPermIDs)->exists()
+                && !GroupPermissions::where('group_id', $group)->where('perm_id', $perm->id)->exists()) {
                 GroupPermissions::insert([
                     'group_id' => $group,
                     'perm_id' => $perm->id,

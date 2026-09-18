@@ -564,6 +564,36 @@ class KuwaClient {
 
         return this._makeFetchRequest(url, "POST", headers, JSON.stringify(requestBody));
     }
+
+    async updateProject(rebuildOnly = false) {
+        if (!this.authToken) {
+            throw new Error("Client is not authenticated.");
+        }
+
+        const url = `${this.baseUrl}/api/system/updateProject`;
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.authToken}`,
+        };
+        const response = await fetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ rebuildOnly }),
+        });
+        const contentType = response.headers.get('Content-Type') || '';
+
+        if (contentType.includes('text/event-stream')) {
+            const tokenUrl = `${url}?token=${encodeURIComponent(this.authToken)}`;
+            return new EventSource(tokenUrl);
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+            throw new Error(data.error || data.message || 'Failed to trigger update');
+        }
+        if (data.logsUrl) return new EventSource(data.logsUrl);
+        throw new Error(data.error || 'No update log stream URL returned');
+    }
 }
 
 /**

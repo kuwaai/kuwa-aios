@@ -137,7 +137,7 @@
                     </div>
                     <!-- System Bots Tab Content -->
                     @if (request()->user()->hasPerm('Store_read_discover_system_bots'))
-                        <div class="{{ session('last_bot_tab') == 'system' ? 'hidden' : '' }} flex flex-1"
+                        <div class="{{ session('last_bot_tab') == 'system' ? '' : 'hidden' }} flex flex-1"
                             id="system" role="tabpanel" aria-labelledby="system-tab">
                             @if ($system_bots->count() > 0)
                                 <x-store.bot-showcase :bots="$system_bots" :extra="'official_bots-'" />
