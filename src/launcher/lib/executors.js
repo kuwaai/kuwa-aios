@@ -204,6 +204,45 @@ function ensureFileFromTemplate(templatePath, targetPath) {
   }
 }
 
+// Convert legacy executor folders before the launcher filters the enabled list.
+// Existing YAML/JS executors are left untouched so user configuration wins.
+function migrateLegacyExecutors(executorsDir) {
+  if (!fs.existsSync(executorsDir)) return [];
+
+  const migratorDir = path.join(executorsDir, 'migrate');
+  const templateYaml = path.join(migratorDir, '_run.yaml');
+  const templateJs = path.join(migratorDir, 'run.js');
+  if (!fs.existsSync(templateYaml) || !fs.existsSync(templateJs)) return [];
+
+  const migrated = [];
+  for (const entry of fs.readdirSync(executorsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory() || entry.name === 'migrate') continue;
+
+    const folderPath = path.join(executorsDir, entry.name);
+    const files = fs.readdirSync(folderPath);
+    const hasLegacyBatch = files.some((file) => file.toLowerCase().endsWith('.bat'));
+    const hasNewConfig = files.some((file) => ['run.yaml', '_run.yaml', 'run.js'].includes(file));
+    if (!hasLegacyBatch || hasNewConfig) continue;
+
+    try {
+      fs.copyFileSync(templateYaml, path.join(folderPath, '_run.yaml'));
+      fs.copyFileSync(templateJs, path.join(folderPath, 'run.js'));
+      fs.writeFileSync(
+        path.join(folderPath, 'run.yaml'),
+        `version: 1\naccess_code: '${entry.name}'\nrun: run.js\n`,
+      );
+      migrated.push(entry.name);
+    } catch (error) {
+      console.log(`Could not migrate legacy executor ${entry.name}: ${error.message}`);
+    }
+  }
+
+  if (migrated.length > 0) {
+    console.log(`Migrated legacy executors: ${migrated.join(', ')}`);
+  }
+  return migrated;
+}
+
 function readRunConfig(folderPath) {
   const runYamlPath = path.join(folderPath, 'run.yaml');
   const templatePath = path.join(folderPath, '_run.yaml');
@@ -296,6 +335,7 @@ function loadExecutorSelectionConfig(executorsDir) {
 function listExecutorFolders(executorsDir) {
   let folders = [];
   if (fs.existsSync(executorsDir)) {
+    migrateLegacyExecutors(executorsDir);
     folders = fs.readdirSync(executorsDir)
       .filter((f) => fs.statSync(path.join(executorsDir, f)).isDirectory());
   }
@@ -482,6 +522,7 @@ async function importBot(botFilePath, webPath, { maxRetries = 5, initialDelay = 
 module.exports = {
   getBotAccessCode,
   listExecutorFolders,
+  migrateLegacyExecutors,
   readRunConfig,
   runExecutorWorker,
   importBot,
