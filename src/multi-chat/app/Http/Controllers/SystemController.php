@@ -36,6 +36,59 @@ class SystemController extends Controller
         }
     }
 
+    public function api_update_project(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || !$user->hasPerm('MANAGE_WRITE_SETTINGS')) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
+        $updateScript = base_path('app/Console/update-project.php');
+        if (File::exists($updateScript)) {
+            return response()->stream(
+                function () use ($updateScript) {
+                    ignore_user_abort(true);
+                    header('Content-Type: text/event-stream');
+                    header('Cache-Control: no-cache');
+                    header('X-Accel-Buffering: no');
+
+                    $process = new Process(['php', $updateScript]);
+                    $process->setTimeout(null);
+                    $process->start();
+
+                    foreach ($process as $type => $data) {
+                        $status = $type === Process::OUT ? 'success' : 'error';
+                        echo 'data: ' . json_encode(['status' => $status, 'output' => $data]) . "\n\n";
+                        ob_flush();
+                        flush();
+                    }
+                },
+                200,
+                [
+                    'Content-Type' => 'text/event-stream',
+                    'Cache-Control' => 'no-cache',
+                    'X-Accel-Buffering' => 'no',
+                ],
+            );
+        }
+
+        $stdinCode = $request->boolean('rebuildOnly') ? '7' : '15';
+        $kuwaRoot = config('app.KUWA_ROOT');
+        $stdinFile = $kuwaRoot . DIRECTORY_SEPARATOR . 'dev' . DIRECTORY_SEPARATOR . 'update_stdin';
+        $devDir = dirname($stdinFile);
+
+        if (!is_dir($devDir)) {
+            mkdir($devDir, 0755, true);
+        }
+
+        file_put_contents($stdinFile, $stdinCode);
+
+        return response()->json([
+            'ok' => true,
+            'logsUrl' => 'http://127.0.0.1:9417/api/logs/build?waitReset=1',
+        ]);
+    }
+
     public static function updateSystemSetting($key, $value)
     {
         SystemSetting::updateOrCreate(['key' => $key], ['value' => $value ?? '']);

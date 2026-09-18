@@ -34,6 +34,8 @@ Route::middleware('ipCheck','auth:sanctum')->group(function () {
 
         return $filteredUserData;
     });
+
+    Route::post('system/updateProject', [SystemController::class, 'api_update_project']);
 });
 Route::middleware('ipCheck')->get('islogin', function (Request $request) {
     return ['logged_in' => $request->user() ? true : false];
