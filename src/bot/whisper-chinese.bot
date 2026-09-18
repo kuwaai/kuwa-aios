@@ -11,7 +11,7 @@ KUWABOT name "Whisper (中文)"
 KUWABOT description "上傳一個語音檔，輸出逐字搞"
 KUWABOT base ".model/openai/whisper"
 SYSTEM "加入標點符號。"
-PARAMETER whisper_model medium #base, large-v1, large-v2, large-v3, medium,  small, tiny
+#PARAMETER whisper_model medium #base, large-v1, large-v2, large-v3, medium,  small, tiny
 PARAMETER whisper_enable_timestamp False #Do not prepend the text a timestamp
 PARAMETER whisper_enable_diarization True
 PARAMETER whisper_diar_thold_sec 2

@@ -10,7 +10,7 @@ KUWABOT version 0.3.3
 KUWABOT name "Whisper (English)"
 KUWABOT description "Upload an audio file, output word by word."
 KUWABOT base ".model/openai/whisper"
-PARAMETER whisper_model medium #base, large-v1, large-v2, large-v3, medium,  small, tiny
+#PARAMETER whisper_model medium #base, large-v1, large-v2, large-v3, medium,  small, tiny
 PARAMETER whisper_enable_diarization True
 PARAMETER whisper_diar_thold_sec 1
 PARAMETER whisper_enable_timestamp False #Do not prepend the text a timestamp

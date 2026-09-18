@@ -251,9 +251,9 @@ async function startServers(cfg) {
   // Apply any pending database migrations on EVERY startup — not just on a
   // fresh package.zip extraction (see setup.js). New releases ship new
   // migrations, and a plain `start` on an already-installed copy would
-  // otherwise never run them. The `turu_bot` system account (seeded by
-  // 2026_07_06_000000_seed_turu_system_account.php) is exactly such a case:
-  // without it `php artisan turu:system-token` returns nothing, every
+  // otherwise never run them. The `kuwa_bot` system account (seeded by
+    // the system-account migrations are exactly such a case:
+  // without it `php artisan kuwa:system-token` returns nothing, every
   // executor's modelConfig() short-circuits with "no system API token
   // available", so NO model/LLM records are created and every bot that
   // references them fails to import ("Base executor ... not found"). `migrate`
@@ -320,17 +320,17 @@ async function startServers(cfg) {
     }
   }
 
-  // Fetch a fresh API token for the hidden `turu_bot` system account (see
-  // `php artisan turu:system-token`) ONCE here, and hand it to every executor
+  // Fetch a fresh API token for the hidden `kuwa_bot` system account (see
+  // `php artisan kuwa:system-token`) ONCE here, and hand it to every executor
   // worker thread. Executors then configure their models via
   // `POST /api/models/configure` \u2014 the `model:config` artisan command has
   // been removed entirely, so this is the only way models get configured.
   // The API route goes through the already-running web server instead of
   // spawning a new `php artisan` process per executor. Every call to
-  // `turu:system-token` ROTATES the token (revokes any previous one), so
+  // `kuwa:system-token` ROTATES the token (revokes any previous one), so
   // this must only be called ONCE per launcher run.
   console.log('Fetching a system API token for model configuration...');
-  const apiToken = runCapture('php artisan turu:system-token', { cwd: webPath });
+  const apiToken = runCapture('php artisan kuwa:system-token', { cwd: webPath });
   if (apiToken) {
     console.log('System API token acquired; executors will configure models via the API.');
   } else {

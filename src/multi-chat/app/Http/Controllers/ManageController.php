@@ -20,9 +20,45 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use OpenApi\Attributes as OA;
 use DB;
+use App\Services\ModelConfigurator;
 
 class ManageController extends Controller
 {
+    public function api_configure_model(Request $request)
+    {
+        $token = str_replace('Bearer ', '', $request->header('Authorization', ''));
+        $result = DB::table('personal_access_tokens')->join('users', 'tokenable_id', '=', 'users.id')->select('users.id')->where('token', $token)->first();
+        if (!$result) return response()->json(['status' => 'error', 'message' => 'Authentication failed'], 401);
+        Auth::setUser(User::find($result->id));
+        if (!Auth::user()->hasPerm('MODEL_CONFIGURE')) return response()->json(['status' => 'error', 'message' => 'Permission denied'], 403);
+
+        $validator = Validator::make($request->all(), [
+            'access_code' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
+            'image' => ['nullable', 'image'],
+            'order' => ['nullable', 'integer'],
+            'modelfile' => ['nullable', 'string'],
+            'do_not_create_bot' => ['nullable', 'boolean'],
+            'force' => ['nullable', 'boolean'],
+        ]);
+        if ($validator->fails()) return response()->json(['status' => 'error', 'message' => $validator->errors()], 422);
+
+        try {
+            $configured = ModelConfigurator::configure([
+                'access_code' => $request->input('access_code'),
+                'name' => $request->input('name'),
+                'image' => $request->file('image'),
+                'order' => $request->filled('order') ? (int) $request->input('order') : null,
+                'modelfile' => $request->filled('modelfile') ? $request->input('modelfile') : null,
+                'do_not_create_bot' => filter_var($request->input('do_not_create_bot', false), FILTER_VALIDATE_BOOLEAN),
+                'force' => filter_var($request->input('force', false), FILTER_VALIDATE_BOOLEAN),
+            ]);
+        } catch (\RuntimeException $exception) {
+            return response()->json(['status' => 'error', 'message' => $exception->getMessage()], 422);
+        }
+        return response()->json(['status' => 'success', ...$configured]);
+    }
+
     public function group_create(Request $request): RedirectResponse
     {
         if ($request->input('name')) {

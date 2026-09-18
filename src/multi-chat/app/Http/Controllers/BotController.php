@@ -51,7 +51,7 @@ class BotController extends Controller
             // Array of command keywords
             $commandKeywords = [
                 'FROM', 'PROCESS-BOT', 'ADAPTER', 'LICENSE', 'TEMPLATE', 'SYSTEM', 'PARAMETER', 'MESSAGE',
-                'BEFORE-PROMPT', 'AFTER-PROMPT', 'PROMPTS', 'AUTO-PROMPTS', 'START-PROMPTS', 'WELCOME', 'NEXT', 'BEFORE-RESPONSE', 'AFTER-RESPONSE',
+                'BEFORE-PROMPT', 'AFTER-PROMPT', 'PROMPTS', 'AUTO-PROMPTS', 'START-PROMPTS', 'WELCOME',
                 'INPUT-BOT', 'INPUT-PREFIX', 'INPUT-SUFFIX',
                 'OUTPUT-BOT', 'OUTPUT-PREFIX', 'OUTPUT-SUFFIX',
                 'SCRIPT'

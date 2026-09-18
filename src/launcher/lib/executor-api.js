@@ -357,7 +357,7 @@ function createApi(workerData, parentPort) {
 
   // The `model:config` artisan command has been removed entirely — every
   // caller now goes through the API. Without a system API token (e.g. this
-  // install hasn't run `php artisan migrate` / the turu_system seed migration
+  // install hasn't run `php artisan migrate` / the system-account seed migration
   // yet), there is no way to configure the model at all, so fail loudly
   // instead of trying a CLI command that no longer exists.
   async function modelConfig(code, displayName, options = {}) {

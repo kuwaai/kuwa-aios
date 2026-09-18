@@ -39,7 +39,7 @@ class ImportBot extends Command
         $model = $this->findModel($botfile['base'], $botfile['name'], $this->option('retry'));
         if (!$model) {
             error_log('The bot "'.$botfile['name'].'" cannot be imported because base executor "'.$botfile['base'].'" does not exist.');
-            return;
+            return 1;
         }
         $model_id = $model->id;
         $visibility = 0; // System bot
@@ -69,7 +69,7 @@ class ImportBot extends Command
         $bot->save();
 
         print('Bot "'.$botfile['name']. '" imported successfully.'."\n");
-    
+        return 0;
     }
     private function findModel($access_code, $bot_name, $retry)
     {
@@ -85,9 +85,20 @@ class ImportBot extends Command
             // Calculate exponential backoff delay
             $delay = $baseDelay * pow(2, $attempt);
 
-            // Log the error and retry information
+            // Log the error and retry information. Explicitly flush STDERR
+            // right after: this process is spawned with its stdio piped
+            // (see executors.js's importBot()), and on Windows a FILE*
+            // redirected to a pipe (rather than a real console) is fully
+            // buffered by the C runtime instead of line-buffered - without
+            // this flush every retry line sits in that buffer and only
+            // reaches the launcher all at once when the whole command
+            // exits, which makes the exponential backoff look broken/
+            // instantaneous in the log (all lines get stamped with ~the
+            // same timestamp) even though the usleep() below is genuinely
+            // pausing in real time.
             error_log(sprintf('[%s] Base executor "%s" not found. Retry in %g seconds...', $bot_name, $access_code, $delay));
-            sleep($delay);
+            fflush(STDERR);
+            usleep((int) ($delay * 1_000_000));
         }
         return $model; 
     }
@@ -180,6 +191,10 @@ class ImportBot extends Command
             'headers' => [],
             'body' => '',
         ];
+
+        // Normalize line endings to CRLF for consistent parsing
+        $rawHttpRequest = str_replace("\r\n", "\n", $rawHttpRequest);
+        $rawHttpRequest = str_replace("\n", "\r\n", $rawHttpRequest);
 
         // Split headers and body
         list($headerLines, $parsedHttpRequest['body']) = explode("\r\n\r\n", $rawHttpRequest, 2);

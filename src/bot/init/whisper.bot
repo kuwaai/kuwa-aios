@@ -12,7 +12,7 @@ KUWABOT version 0.3.3
 KUWABOT name "Whisper"
 KUWABOT description "Generate Transcription"
 KUWABOT base ".model/openai/whisper"
-PARAMETER whisper_model medium #base, large-v1, large-v2, large-v3, medium,  small, tiny
+#PARAMETER whisper_model medium #base, large-v1, large-v2, large-v3, medium,  small, tiny
 PARAMETER whisper_compute_type float32
 PARAMETER whisper_enable_diarization False
 PARAMETER whisper_diar_thold_sec 1

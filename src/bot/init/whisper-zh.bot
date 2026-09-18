@@ -1,24 +1,25 @@
-Subject: Exported bot "Whisper%20(%E4%B8%AD%E6%96%87)"
-Date: Fri, 11 Apr 2025 19:49:47 +0800
-Content-Type: multipart/related; boundary="kuwad54nn"; type=application/vnd.kuwabot
+Subject: Exported bot "Whisper%20(Taiwan)"
+Date: Wed, 25 Mar 2026 16:36:18 +0800
+Content-Type: multipart/related; boundary="kuwab5qf9"; type=application/vnd.kuwabot
 Content-Transfer-Encoding: quoted-printable
 
---kuwad54nn
+--kuwab5qf9
 Content-Type: application/vnd.kuwabot;
-Content-Language: zh
+Content-Language: en-US
 
 #!
 KUWABOT version 0.3.3
 KUWABOT name "Whisper (Taiwan)"
 KUWABOT description "Generate Transcription (Demo to support Traditional Chinese)."
 KUWABOT base ".model/openai/whisper"
-PARAMETER whisper_model small #base, large-v1, large-v2, large-v3, medium,  small, tiny
-PARAMETER whisper_compute_type float32
-PARAMETER whisper_enable_timestamp False #Do not prepend the text a timestamp
-PARAMETER whisper_enable_diarization False
-PARAMETER whisper_diar_thold_sec 2
-PARAMETER whisper_language "zh"#for auto-detection, set to None, "" or "auto"
-PARAMETER whisper_n_threads None #Number of threads to allocate for the inferencedefault to min(4, available hardware_concurrency)
+#SYSTEM "加入標點符號" #Custom vocabulary or prompting
+#PARAMETER whisper_model "thuniverse/Breeze-ASR-25-ct2" #Model name. Choses: large-v1, large-v2, large-v3, medium, base, small, tiny
+PARAMETER whisper_enable_timestamp True #Prepend the text a timestamp
+PARAMETER whisper_enable_diarization True #Label the speaker
+PARAMETER whisper_compute_type int8
+PARAMETER whisper_diar_thold_sec 2 #Time before speakers are tagged in paragraphs that are longer than. (in seconds)
+PARAMETER whisper_language zh #The language of the audio
+PARAMETER whisper_n_threads None #Number of threads to allocate for the inference. default to min(4, available hardware_concurrency)
 PARAMETER whisper_n_max_text_ctx 16384 #max tokens to use from past text as prompt for the decoder
 PARAMETER whisper_offset_ms 0 #start offset in ms
 PARAMETER whisper_duration_ms 0 #audio duration to process in ms
@@ -48,6 +49,6 @@ PARAMETER whisper_length_penalty -1.0 #length_penalty
 PARAMETER whisper_temperature_inc 0.2 #temperature_inc
 PARAMETER whisper_entropy_thold 2.4 #similar to OpenAI's "compression_ratio_threshold"
 PARAMETER whisper_logprob_thold -1.0 #logprob_thold
-PARAMETER whisper_no_speech_thold 0.6 #no_speech_thold
+PARAMETER whisper_no_speech_thold 1 #no_speech_thold
 
---kuwad54nn--
+--kuwab5qf9--

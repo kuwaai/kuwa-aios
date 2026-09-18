@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\ManageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,7 @@ Route::middleware('ipCheck','auth:sanctum')->group(function () {
 
     Route::post('system/updateProject', [SystemController::class, 'api_update_project']);
 });
+Route::middleware('ipCheck')->post('models/configure', [ManageController::class, 'api_configure_model']);
 Route::middleware('ipCheck')->get('islogin', function (Request $request) {
     return ['logged_in' => $request->user() ? true : false];
 });
