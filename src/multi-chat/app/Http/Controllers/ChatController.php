@@ -109,7 +109,7 @@ class ChatController extends Controller
             $tmp = Histories::find($history_id);
             if ($tmp) {
                 $tmp = Chats::find($tmp->chat_id)->roomID;
-                if (($tmp != null && Auth::user()->hasPerm('Room_update_feedback')) || ($tmp == null && Auth::user()->hasPerm('Chat_update_feedback'))) {
+                if (($tmp != null && Auth::user()->hasPerm('ROOM_UPDATE_FEEDBACK')) || ($tmp == null && Auth::user()->hasPerm('CHAT_UPDATE_FEEDBACK'))) {
                     $nice = $request->input('type') == '1';
                     $detail = $request->input('feedbacks');
                     $flag = $request->input('feedback');

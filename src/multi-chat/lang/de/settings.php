@@ -34,4 +34,8 @@ return [
     'label.upload_max_size_mb' => 'Dateigrößenbeschränkung für Uploads (MB)',
     'label.upload_allowed_extensions' => 'Erlaubte Dateierweiterungen für Uploads (* bedeutet beliebige Erweiterung)',
     'label.upload_max_file_count' => 'Gesamtzahl der Upload-Dateien (-1 bedeutet keine Begrenzung)',
+
+    'update.waitingServer' => '⏳ Warten auf Server-Neustart... Die Seite wird automatisch neu geladen.',
+    'update.serverBack' => '✅ Server ist zurück! Wird neu geladen...',
+    'update.startingServices' => '⏳ Build abgeschlossen! Dienste werden gestartet... Die Seite wird automatisch neu geladen, sobald alles bereit ist.',
 ];

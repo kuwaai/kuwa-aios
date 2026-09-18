@@ -440,33 +440,32 @@ class RoomController extends Controller
     )]
     public function api_create_room(Request $request)
     {
-        $result = DB::table('personal_access_tokens')
-            ->join('users', 'tokenable_id', '=', 'users.id')
-            ->select('tokenable_id', 'users.id', 'users.name')
-            ->where('token', str_replace('Bearer ', '', $request->header('Authorization')))
-            ->first();
-        if ($result) {
-            $user = $result;
-            if (User::find($user->id)->hasPerm('Room_update_new_chat')) {
-                Auth::setUser(User::find($user->id));
-                $room_id = $this->create_room($request);
-                return response()->json(['status' => 'success', 'result' => $room_id], 200, [], JSON_UNESCAPED_UNICODE);
-            } else {
-                $errorResponse = [
-                    'status' => 'error',
-                    'message' => 'You have no permission to use this Kuwa API',
-                ];
-
-                return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
-            }
-        } else {
-            $errorResponse = [
-                'status' => 'error',
-                'message' => 'Authentication failed',
-            ];
-
-            return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
+        if (!Auth::user()->hasPerm('Room_update_new_chat')) {
+            return response()->json(['status' => 'error', 'message' => 'You have no permission to use this Kuwa API'], 403, [], JSON_UNESCAPED_UNICODE);
         }
+
+        $botIds = $request->input('llm', $request->input('llms', $request->input('bot_ids', [])));
+        if (is_string($botIds)) {
+            $botIds = json_decode($botIds, true) ?: array_filter(array_map('trim', explode(',', $botIds)));
+        }
+        $botIds = array_values(array_unique(array_map('intval', (array) $botIds)));
+        if (!$botIds) {
+            return response()->json(['status' => 'error', 'message' => 'At least one bot is required.'], 422, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        $accessibleBotIds = Bots::whereIn('model_id', DB::table('group_permissions')
+            ->join('permissions', 'group_permissions.perm_id', '=', 'permissions.id')
+            ->where('group_permissions.group_id', Auth::user()->group_id)
+            ->where('permissions.name', 'like', 'MODEL_%')
+            ->pluck(DB::raw('substring(permissions.name, 7)')))
+            ->pluck('id')->map(fn ($id) => (int) $id)->all();
+        if (array_diff($botIds, $accessibleBotIds)) {
+            return response()->json(['status' => 'error', 'message' => 'One or more selected bots are unavailable.'], 403, [], JSON_UNESCAPED_UNICODE);
+        }
+
+        $request->merge(['llm' => $botIds]);
+        $room_id = $this->create_room($request);
+        return response()->json(['status' => 'success', 'result' => $room_id, 'room_id' => $room_id], 200, [], JSON_UNESCAPED_UNICODE);
     }
     #[OA\Get(
         path: '/api/user/read/rooms',
@@ -477,32 +476,87 @@ class RoomController extends Controller
     )]
     public function api_read_rooms(Request $request)
     {
-        $result = DB::table('personal_access_tokens')
-            ->join('users', 'tokenable_id', '=', 'users.id')
-            ->select('tokenable_id', 'users.id', 'users.name')
-            ->where('token', str_replace('Bearer ', '', $request->header('Authorization')))
-            ->first();
-        if ($result) {
-            $user = $result;
-            if (User::find($user->id)->hasPerm('tab_Room')) {
-                return response()->json(['status' => 'success', 'result' => Chatroom::getRawChatRoomData($user->id)], 200, [], JSON_UNESCAPED_UNICODE);
-            } else {
-                $errorResponse = [
-                    'status' => 'error',
-                    'message' => 'You have no permission to use this Kuwa API',
-                ];
-
-                return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
-            }
+        if (!Auth::user()->hasPerm('tab_Room')) {
+            return response()->json(['status' => 'error', 'message' => 'You have no permission to use this Kuwa API'], 403, [], JSON_UNESCAPED_UNICODE);
         } else {
-            $errorResponse = [
-                'status' => 'error',
-                'message' => 'Authentication failed',
-            ];
-
-            return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
+            return response()->json(['status' => 'success', 'result' => Chatroom::getRawChatRoomData(Auth::id())], 200, [], JSON_UNESCAPED_UNICODE);
         }
     }
+    public function api_read_room(Request $request, int $room_id)
+    {
+        $room = ChatRoom::where('id', $room_id)->where('user_id', Auth::id())->firstOrFail();
+        return response()->json(['status' => 'success', 'result' => [
+            'room' => $room,
+            'chats' => Chats::where('roomID', $room_id)->get(),
+        ]], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function api_get_messages(Request $request, int $room_id)
+    {
+        abort_unless(ChatRoom::where('id', $room_id)->where('user_id', Auth::id())->exists(), 404);
+        $chatIds = Chats::where('roomID', $room_id)->pluck('id');
+        return response()->json(['status' => 'success', 'result' => Histories::whereIn('chat_id', $chatIds)->orderBy('created_at')->get()], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function api_send_message(Request $request, int $room_id)
+    {
+        abort_unless(Auth::user()?->hasPerm('Room_update_send_message'), 403);
+        abort_unless(ChatRoom::where('id', $room_id)->where('user_id', Auth::id())->exists(), 404);
+        $input = trim((string) $request->input('input', $request->input('message', '')));
+        $selectedLLMs = array_values(array_filter((array) $request->input('chatsTo', $request->input('chats_to', []))));
+        $chats = Chats::where('roomID', $room_id)->get();
+        if (!$input || !$selectedLLMs) {
+            return response()->json(['status' => 'error', 'message' => 'A message and at least one bot are required.'], 422);
+        }
+        $allowedBotIds = $chats->pluck('bot_id')->map(fn ($id) => (string) $id)->all();
+        $selectedLLMs = array_values(array_filter($selectedLLMs, fn ($id) => in_array((string) $id, $allowedBotIds, true)));
+        abort_if(!$selectedLLMs, 422, 'No selected bot belongs to this room.');
+        $chained = filter_var($request->input('chain', false), FILTER_VALIDATE_BOOLEAN);
+        $start = now();
+        $historyIds = [];
+        ChatRoom::where('id', $room_id)->update(['updated_at' => $start]);
+        foreach ($chats as $chat) {
+            if (!in_array((string) $chat->bot_id, array_map('strval', $selectedLLMs), true)) continue;
+            $bot = Bots::findOrFail($chat->bot_id);
+            if ($this->processBotConfig($chained, $chat->bot_id, 'auto', $room_id, $input . "\n") !== null) continue;
+            $userHistory = new Histories();
+            $userHistory->fill(['msg' => $input, 'chat_id' => $chat->id, 'isbot' => false, 'created_at' => $start, 'updated_at' => $start]);
+            $userHistory->save();
+            $historyInput = $chained
+                ? Histories::where('chat_id', $chat->id)->select('msg', 'isbot')->orderBy('created_at')->orderBy('id', 'desc')->get()->toJson()
+                : json_encode([['msg' => $input, 'isbot' => false]]);
+            $history = new Histories();
+            $history->fill(['msg' => '* ...thinking... *', 'chained' => $chained, 'chat_id' => $chat->id, 'isbot' => true, 'created_at' => $start->copy()->addSecond(), 'updated_at' => $start->copy()->addSecond()]);
+            $history->save();
+            RequestChat::dispatch($historyInput, LLMs::findOrFail($bot->model_id)->access_code, Auth::id(), $history->id, App::getLocale(), null, json_decode($bot->config ?? '')->modelfile ?? null);
+            Redis::rpush('usertask_' . Auth::id(), $history->id);
+            $historyIds[] = $history->id;
+        }
+        return response()->json(['status' => 'success', 'result' => ['room_id' => $room_id, 'history_ids' => $historyIds]], 202, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function api_abort_room(Request $request, int $room_id)
+    {
+        abort_unless(ChatRoom::where('id', $room_id)->where('user_id', Auth::id())->exists(), 404);
+        $route = $request->route();
+        $route->setParameter('room_id', $room_id);
+        $request->setRouteResolver(fn () => $route);
+        return $this->abort($request);
+    }
+
+    public function api_rename_room(Request $request, int $room_id)
+    {
+        abort_unless(ChatRoom::where('id', $room_id)->where('user_id', Auth::id())->exists(), 404);
+        ChatRoom::where('id', $room_id)->update(['name' => (string) $request->input('name')]);
+        return response()->json(['status' => 'success', 'result' => $room_id], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function api_delete_room_by_id(Request $request, int $room_id)
+    {
+        $request->merge(['id' => $room_id]);
+        return $this->api_delete_room($request);
+    }
+
     #[OA\Delete(
         path: '/api/user/delete/room/message',
         summary: 'Delete a message',
@@ -662,6 +716,7 @@ class RoomController extends Controller
                     }
                 }
             }
+
         }
         return redirect()
             ->route('room.chat', $Room->id)
@@ -791,49 +846,20 @@ class RoomController extends Controller
     )]
     public function api_delete_room(Request $request)
     {
-        $result = DB::table('personal_access_tokens')
-            ->join('users', 'tokenable_id', '=', 'users.id')
-            ->select('tokenable_id', 'users.id', 'users.name')
-            ->where('token', str_replace('Bearer ', '', $request->header('Authorization')))
-            ->first();
-
-        if ($result) {
-            $user = $result;
-            if (User::find($user->id)->hasPerm('Room_delete_chatroom')) {
-                Auth::setUser(User::find($user->id));
-                $ids = $this->delete($request);
-
-                return response()->json(
-                    [
-                        'status' => session('success') ? 'success' : 'failed',
-                        'llms' => $ids,
-                    ],
-                    200,
-                    [],
-                    JSON_UNESCAPED_UNICODE,
-                );
-            } else {
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'message' => 'You have no permission to use this Kuwa API',
-                    ],
-                    401,
-                    [],
-                    JSON_UNESCAPED_UNICODE,
-                );
-            }
-        } else {
-            return response()->json(
-                [
-                    'status' => 'error',
-                    'message' => 'Authentication failed',
-                ],
-                401,
-                [],
-                JSON_UNESCAPED_UNICODE,
-            );
+        if (!Auth::user()->hasPerm('Room_delete_chatroom')) {
+            return response()->json(['status' => 'error', 'message' => 'You have no permission to use this Kuwa API'], 403, [], JSON_UNESCAPED_UNICODE);
         }
+        $room = ChatRoom::find($request->input('id'));
+        if (!$room || $room->user_id !== Auth::id()) {
+            return response()->json(['status' => 'failed'], 404, [], JSON_UNESCAPED_UNICODE);
+        }
+        $ids = Chats::where('roomID', $room->id)->pluck('bot_id')->all();
+        Chats::where('roomID', $room->id)->each(function ($chat) {
+            Histories::where('chat_id', $chat->id)->delete();
+            $chat->delete();
+        });
+        $room->delete();
+        return response()->json(['status' => 'success', 'llms' => $ids], 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     public function delete(Request $request)

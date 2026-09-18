@@ -57,6 +57,7 @@ return new class extends Migration
             $group->is_system = true;
             $group->save();
         }
+        DB::table('groups')->where('id', $group->id)->update(['is_system' => true]);
 
         if (!GroupPermissions::where('group_id', $group->id)->where('perm_id', $perm->id)->exists()) {
             GroupPermissions::insert([

@@ -34,4 +34,8 @@ return [
     'label.upload_max_size_mb' => 'Maximální velikost nahrávaného souboru (MB)',
     'label.upload_allowed_extensions' => 'Povolené přípony nahrávaných souborů (* znamená libovolná přípona)',
     'label.upload_max_file_count' => 'Maximální počet nahraných souborů (-1 znamená neomezeno)',
+
+    'update.waitingServer' => '⏳ Čekání na návrat serveru... Stránka se automaticky obnoví.',
+    'update.serverBack' => '✅ Server je zpět! Načítání...',
+    'update.startingServices' => '⏳ Sestavení dokončeno! Spouštění služeb... Stránka se automaticky obnoví, jakmile bude vše připraveno.',
 ];

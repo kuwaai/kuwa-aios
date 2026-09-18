@@ -34,4 +34,8 @@ return [
     'label.upload_max_size_mb' => 'Limite de taille de fichier à télécharger (MB)',
     'label.upload_allowed_extensions' => 'Extensions de fichier autorisées pour le téléchargement (* signifie toutes les extensions)',
     'label.upload_max_file_count' => 'Limite du nombre total de fichiers à télécharger (-1 signifie pas de limite)',
+
+    'update.waitingServer' => '⏳ En attente du retour en ligne du serveur... La page se rechargera automatiquement.',
+    'update.serverBack' => '✅ Le serveur est de retour ! Rechargement...',
+    'update.startingServices' => '⏳ Construction terminée ! Démarrage des services... La page se rechargera automatiquement lorsque tout sera prêt.',
 ];

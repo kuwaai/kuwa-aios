@@ -34,4 +34,8 @@ return [
     'label.upload_max_size_mb' => '파일 업로드 크기 제한 (MB)',
     'label.upload_allowed_extensions' => '허용된 업로드 파일 확장자 (*는 모든 확장자를 의미합니다)',
     'label.upload_max_file_count' => '업로드 파일 개수 제한 (-1은 제한 없음을 의미합니다)',
+
+    'update.waitingServer' => '⏳ 서버가 다시 온라인 상태가 되기를 기다리는 중... 페이지가 자동으로 새로고침됩니다.',
+    'update.serverBack' => '✅ 서버가 복구되었습니다! 새로고침 중...',
+    'update.startingServices' => '⏳ 빌드 완료! 서비스를 시작하는 중... 준비가 되면 페이지가 자동으로 새로고침됩니다.',
 ];

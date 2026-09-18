@@ -49,8 +49,8 @@
             </button>
         </div>
         <hr class="border-black dark:border-gray-300 mb-2">
-        <div class="flex-1 overflow-y-auto scrollbar">
-            @foreach (App\Models\Groups::get() as $group)
+        <div id="group-list" class="flex-1 overflow-y-auto scrollbar">
+            @foreach (App\Models\Groups::where('is_system', false)->get() as $group)
                 <div class="mb-2 border border-black dark:border-white border-1 rounded-lg overflow-hidden">
                     <script>
                         $groups[{{ $group->id }}] = {!! json_encode(
@@ -449,6 +449,57 @@
 
 <script>
     $last_group = undefined
+
+    async function refreshGroupsFromApi() {
+        try {
+            const response = await client.listGroups();
+            const groups = Array.isArray(response.data) ? response.data : (response.result || []);
+            const list = $('#group-list').empty();
+            Object.keys($groups).forEach(key => delete $groups[key]);
+            groups.forEach(group => {
+                $groups[group.id] = [group.name, group.describe || '', group.permissions || [], group.invite_token || ''];
+                $('<div class="mb-2 border border-black dark:border-white border-1 rounded-lg overflow-hidden">')
+                    .append($('<button type="button" class="flex menu-btn items-center justify-center w-full h-12 dark:hover:bg-gray-600 hover:bg-gray-200 transition duration-300">')
+                        .attr('onclick', `edit_group(${group.id})`)
+                        .append($('<p class="flex-1 text-center text-gray-700 dark:text-white">').text(group.name)))
+                    .appendTo(list);
+            });
+        } catch (error) {
+            console.error('Failed to load groups from API:', error);
+        }
+    }
+
+    async function submitGroupForm(form, groupId = null) {
+        const data = Object.fromEntries(new FormData(form).entries());
+        data.permissions = Array.from(form.querySelectorAll('input[name="permissions[]"]:checked')).map(input => Number(input.value));
+        try {
+            if (groupId) await client.updateGroup(groupId, data);
+            else await client.createGroup(data);
+            await refreshGroupsFromApi();
+            location.reload();
+        } catch (error) {
+            console.error('Failed to save group:', error);
+        }
+        return false;
+    }
+
+    $('#create_group_form, #edit_group_form').on('submit', function (event) {
+        event.preventDefault();
+        return submitGroupForm(this, this.id === 'edit_group_form' ? Number($('#edit_group_id').val()) : null);
+    });
+
+    $('#delete_group_modal form').on('submit', async function (event) {
+        event.preventDefault();
+        try {
+            await client.deleteGroup(Number($(this).find('input[name="id"]').val()));
+            await refreshGroupsFromApi();
+            location.reload();
+        } catch (error) {
+            console.error('Failed to delete group:', error);
+        }
+    });
+
+    refreshGroupsFromApi();
 
     function delete_group(index) {
         $('#delete_group_modal h3 >span').text($groups[index][0]);

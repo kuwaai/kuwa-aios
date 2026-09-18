@@ -24,6 +24,79 @@ use App\Services\ModelConfigurator;
 
 class ManageController extends Controller
 {
+    public function api_list_groups(Request $request)
+    {
+        abort_unless($request->user()?->hasPerm('tab_Manage'), 403);
+        $query = Groups::query()->where('is_system', false);
+        if ($search = trim((string) $request->query('search', ''))) {
+            $query->where(fn ($q) => $q->where('name', 'like', "%{$search}%")->orWhere('describe', 'like', "%{$search}%"));
+        }
+        $groups = $query->withCount(['users as members'])->orderBy('name')->get()->map(function ($group) {
+            $group->permissions = GroupPermissions::where('group_id', $group->id)->orderBy('perm_id')->pluck('perm_id')->values();
+            return $this->groupApiPayload($group);
+        });
+        return response()->json(['status' => 'success', 'data' => $groups], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function api_get_group(Request $request, int $id)
+    {
+        abort_unless($request->user()?->hasPerm('tab_Manage'), 403);
+        $group = Groups::where('is_system', false)->findOrFail($id);
+        return response()->json(['status' => 'success', 'data' => [
+            'group' => $this->groupApiPayload($group),
+            'permissions' => GroupPermissions::where('group_id', $group->id)->pluck('perm_id')->values(),
+        ]], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function api_create_group(Request $request)
+    {
+        abort_unless($request->user()?->hasPerm('tab_Manage'), 403);
+        $data = $request->validate(['name' => ['required', 'string', 'max:255'], 'describe' => ['nullable', 'string'], 'invite_code' => ['nullable', 'string', 'max:255'], 'permissions' => ['array'], 'permissions.*' => ['integer']]);
+        $group = Groups::create(['name' => $data['name'], 'describe' => $data['describe'] ?? null, 'invite_token' => $data['invite_code'] ?? null, 'is_system' => false]);
+        $this->syncGroupPermissions($group, $data['permissions'] ?? []);
+        return response()->json(['status' => 'success', 'data' => $this->groupApiPayload($group->fresh())], 201, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function api_update_group(Request $request, int $id)
+    {
+        abort_unless($request->user()?->hasPerm('tab_Manage'), 403);
+        $group = Groups::where('is_system', false)->findOrFail($id);
+        $data = $request->validate(['name' => ['sometimes', 'required', 'string', 'max:255'], 'describe' => ['nullable', 'string'], 'invite_code' => ['nullable', 'string', 'max:255'], 'permissions' => ['array'], 'permissions.*' => ['integer']]);
+        $group->fill(['name' => $data['name'] ?? $group->name, 'describe' => $data['describe'] ?? $group->describe, 'invite_token' => $data['invite_code'] ?? $group->invite_token]);
+        $group->save();
+        if (array_key_exists('permissions', $data)) $this->syncGroupPermissions($group, $data['permissions']);
+        return response()->json(['status' => 'success', 'data' => $this->groupApiPayload($group->fresh())], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function api_delete_group(Request $request, int $id)
+    {
+        abort_unless($request->user()?->hasPerm('tab_Manage'), 403);
+        $group = Groups::where('is_system', false)->findOrFail($id);
+        User::where('group_id', $group->id)->update(['group_id' => null]);
+        GroupPermissions::where('group_id', $group->id)->delete();
+        $group->delete();
+        return response()->json(['status' => 'success'], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    private function syncGroupPermissions(Groups $group, array $permissionIds): void
+    {
+        GroupPermissions::where('group_id', $group->id)->delete();
+        $now = now();
+        $ids = Permissions::whereIn('id', $permissionIds)->pluck('id');
+        if ($ids->isNotEmpty()) {
+            GroupPermissions::insert($ids->map(fn ($id) => ['group_id' => $group->id, 'perm_id' => $id, 'created_at' => $now, 'updated_at' => $now])->all());
+        }
+    }
+
+    private function groupApiPayload(Groups $group): array
+    {
+        return [
+            ...$group->only(['id', 'name', 'describe', 'invite_token', 'created_at', 'updated_at', 'is_system']),
+            'members' => $group->members ?? $group->users()->count(),
+            'permissions' => $group->permissions ?? GroupPermissions::where('group_id', $group->id)->orderBy('perm_id')->pluck('perm_id')->values(),
+        ];
+    }
+
     public function api_configure_model(Request $request)
     {
         $token = str_replace('Bearer ', '', $request->header('Authorization', ''));
@@ -100,6 +173,9 @@ class ManageController extends Controller
         $id = $request->input('id');
         if ($id) {
             $group = Groups::find($id);
+            if (!$group || $group->is_system) {
+                return Redirect::route('manage.home')->with('last_tab', 'groups')->with('status', 'error');
+            }
             $name = $request->input('name');
             $describe = $request->input('describe');
             $group->fill(['name' => $name, 'describe' => $describe, 'invite_token' => $request->input('invite_code')]);
@@ -138,6 +214,9 @@ class ManageController extends Controller
         $id = $request->input('id');
         if ($id) {
             $group = Groups::find($id);
+            if (!$group || $group->is_system) {
+                return Redirect::route('manage.home')->with('last_tab', 'groups')->with('status', 'error');
+            }
             User::where('group_id', '=', $id)->update(['group_id' => null]);
             $group->delete();
             $log = new Logs();
@@ -156,6 +235,9 @@ class ManageController extends Controller
     public function user_update(Request $request): RedirectResponse
     {
         $user = User::find($request->input('id'));
+        if (!$user || $user->isSystemAccount()) {
+            return Redirect::route('manage.home')->with('last_tab', 'users')->with('status', 'error');
+        }
         if ($request->input('group')) {
             $group_id = Groups::where('name', '=', $request->input('group'))->first()->id;
         } else {
@@ -220,6 +302,9 @@ class ManageController extends Controller
         $id = $request->input('id');
         if ($id) {
             $user = User::find($id);
+            if (!$user || $user->isSystemAccount()) {
+                return Redirect::route('manage.home')->with('last_tab', 'users')->with('status', 'error');
+            }
             $group_id = $user->group_id;
             $user->delete();
             return Redirect::route('manage.home')

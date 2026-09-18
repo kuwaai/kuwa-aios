@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="overflow-hidden h-full">
 @php
     $languages = config('app.LANGUAGES');
@@ -403,8 +403,16 @@
 
 <body class="font-sans antialiased h-full">
     <script id="remove-once" type="text/javascript">
-        const client = new KuwaClient("{{ Auth::user()->tokens()->where('name', 'API_Token')->first()->token ?? '' }}",
-            "{{ url('/') }}");
+        @php
+            $sessionApiToken = session('kuwa_static_api_token');
+            if (!$sessionApiToken) {
+                $user = Auth::user();
+                $user->tokens()->where('name', 'static_token')->delete();
+                $sessionApiToken = $user->createToken('static_token', ['access_api'])->plainTextToken;
+                session(['kuwa_static_api_token' => $sessionApiToken]);
+            }
+        @endphp
+        const client = new KuwaClient(@json($sessionApiToken), @json(url('/')));
 
         $(document).ready(function() {
             $('#remove-once').remove();
@@ -517,7 +525,7 @@
         </main>
     </div>
     @if (Auth::user()->hasPerm('tab_Manage'))
-        <div id="confirmUpdateModal" class="hidden fixed z-20 inset-0 overflow-y-auto bg-gray-800 bg-opacity-75">
+        <div id="confirmUpdateModal" class="hidden fixed z-[90] inset-0 overflow-y-auto bg-black/40 dark:bg-black/60 backdrop-blur-[1px]">
             <div class="flex items-center justify-center min-h-screen">
                 <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg max-w-md w-full">
                     <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">
@@ -539,19 +547,17 @@
                 </div>
             </div>
         </div>
-        <div id="outputModal" class="hidden fixed z-10 inset-0 overflow-y-auto bg-gray-800 bg-opacity-75">
+        <div id="outputModal" class="hidden fixed z-[90] inset-0 overflow-y-auto bg-black/40 dark:bg-black/60 backdrop-blur-[1px]">
             <div class="flex items-center justify-center min-h-screen">
-                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg max-w-3xl w-full">
+                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg max-w-6xl w-full max-h-[94vh]">
                     <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">
                         {{ __('settings.header.updateWeb') }}
                     </h2>
                     <div id="commandOutput"
-                        class="bg-gray-100 scrollbar-y-auto scrollbar dark:bg-gray-700 p-4 rounded-lg text-sm h-96 overflow-x-hidden text-gray-900 dark:text-gray-200 whitespace-normal">
+                        class="bg-gray-100 scrollbar-y-auto scrollbar dark:bg-gray-700 p-4 rounded-lg text-sm h-[72vh] max-h-[calc(94vh-150px)] min-h-[360px] overflow-y-auto overflow-x-hidden text-gray-900 dark:text-gray-200 whitespace-normal">
                     </div>
-                    <div id="refreshPage" onclick='location.reload()'
-                        class="mt-4 cursor-pointer hidden inline-block bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none">
-                        {{ __('settings.button.refresh') }}
-                    </div>
+                    <p id="updateStatusMsg" class="mt-4 text-sm text-gray-500 dark:text-gray-400 hidden">
+                    </p>
                 </div>
             </div>
         </div>
@@ -566,7 +572,7 @@
                 $('#confirmUpdateModal').addClass('hidden');
             });
 
-            $('#confirmUpdate').click(function() {
+            async function doUpdate(rebuildOnly) {
                 $('#confirmUpdateModal').addClass('hidden');
                 $('#commandOutput').empty().append(
                     $('<pre class="whitespace-normal text-blue-500 font-semibold"></pre>').text(
@@ -575,54 +581,133 @@
 
                 $('#outputModal').removeClass('hidden');
 
-                const eventSource = new EventSource("{{ route('manage.setting.updateWeb') }}");
-                let lastMessage = '';
-
                 // ANSI parser instance
                 const ansi_up = new AnsiUp();
                 ansi_up.use_classes = true;
 
                 function createPreElement(message, customClass = '') {
                     const html = ansi_up.ansi_to_html(message);
-                    return $('<pre class="whitespace-normal ansi"></pre>')
+                    return $('<pre class="whitespace-pre-wrap ansi"></pre>')
                         .html(html)
                         .addClass(customClass);
                 }
 
-                eventSource.onmessage = function(event) {
-                    const response = JSON.parse(event.data);
-                    lastMessage = response.output;
+                let currentEventSource = null;
 
-                    const preElement = createPreElement(lastMessage);
-                    $('#commandOutput').append(preElement);
-                };
-
-                eventSource.onerror = function() {
-                    eventSource.close();
-                    paintLastMessage();
-                };
-
-                eventSource.onclose = function() {
-                    paintLastMessage();
-                };
-
-                function paintLastMessage() {
-                    const isSuccess = lastMessage === 'Update completed successfully!';
-                    const statusClass = isSuccess ? 'text-green-500' : 'text-red-500';
-
-                    $('#commandOutput pre:last').remove();
-                    const finalElement = createPreElement(lastMessage, statusClass);
-                    $('#commandOutput').append(finalElement);
-
-                    $("#refreshPage").removeClass('hidden');
+                function showStatus(msg) {
+                    $('#updateStatusMsg').text(msg).removeClass('hidden');
                 }
 
-                $('#closeModal').click(function() {
-                    $('#outputModal').addClass('hidden');
-                    eventSource.close();
-                });
+                function startPollingServer() {
+                    showStatus(@json(__('settings.update.waitingServer')));
+                    const poll = setInterval(async () => {
+                        try {
+                            const resp = await fetch('/api/health', { method: 'GET', cache: 'no-store' });
+                            if (resp.ok) {
+                                clearInterval(poll);
+                                showStatus(@json(__('settings.update.serverBack')));
+                                setTimeout(() => location.reload(), 1000);
+                            }
+                        } catch {}
+                    }, 3000);
+                }
+
+                function streamStartLogs() {
+                    showStatus(@json(__('settings.update.startingServices')));
+                    const startEs = new EventSource('http://127.0.0.1:9417/api/logs/start');
+                    currentEventSource = startEs;
+                    startEs.onmessage = function(event) {
+                        const data = JSON.parse(event.data);
+                        if (data.text !== undefined) {
+                            if (data.reset) {
+                                $('#commandOutput').empty();
+                            }
+                            const preElement = createPreElement(data.text);
+                            $('#commandOutput').append(preElement);
+                            const output = document.getElementById('commandOutput');
+                            if (output) output.scrollTop = output.scrollHeight;
+
+                            // Detect Nginx started ??services are ready
+                            if (data.text.includes('Nginx started')) {
+                                startEs.close();
+                                startPollingServer();
+                            }
+                        }
+                    };
+                    startEs.onerror = function() {
+                        startEs.close();
+                        // SSE disconnected ??fall back to polling
+                        startPollingServer();
+                    };
+                }
+
+                try {
+                    // Use the existing global client object
+                    if (!client) {
+                        $('#commandOutput').empty().append(
+                            $('<pre class="whitespace-pre-wrap text-red-500 font-semibold"></pre>').text(
+                                'Error: Client not available.')
+                        );
+                        startPollingServer();
+                        return;
+                    }
+
+                    const eventSource = await client.updateProject(rebuildOnly);
+                    currentEventSource = eventSource;
+
+                    eventSource.onmessage = function(event) {
+                        const data = JSON.parse(event.data);
+
+                        // Handle launcher format: {text, reset?}
+                        if (data.text !== undefined) {
+                            if (data.reset) {
+                                $('#commandOutput').empty();
+                            }
+                            const preElement = createPreElement(data.text);
+                            $('#commandOutput').append(preElement);
+                            // Auto-scroll
+                            const output = document.getElementById('commandOutput');
+                            if (output) output.scrollTop = output.scrollHeight;
+                        }
+                        // Handle legacy Docker/PHP format: {status, output}
+                        else if (data.output !== undefined) {
+                            const preElement = createPreElement(data.output);
+                            $('#commandOutput').append(preElement);
+                        }
+
+                        // Check for build complete ??switch to start.js logs
+                        if (data.text && data.text.includes('Build complete')) {
+                            eventSource.close();
+                            streamStartLogs();
+                        }
+                    };
+
+                    eventSource.onerror = function() {
+                        eventSource.close();
+                        // Build SSE disconnected ??likely server restarting, start polling
+                        startPollingServer();
+                    };
+
+                    $('#closeModal').click(function() {
+                        $('#outputModal').addClass('hidden');
+                        if (currentEventSource) currentEventSource.close();
+                    });
+                } catch (error) {
+                    $('#commandOutput').empty().append(
+                        $('<pre class="whitespace-pre-wrap text-red-500 font-semibold"></pre>').text(
+                            'Error: ' + error.message)
+                    );
+                    startPollingServer();
+                }
+            }
+
+            $('#confirmUpdate').on('mouseup', function(e) {
+                if (e.button === 0) { doUpdate(false); }
+                else if (e.button === 2) { doUpdate(true); }
             });
+            $('#confirmUpdate').on('contextmenu', function(e) { e.preventDefault(); });
         @endif
+
 
         function chatroom_filter(filter, container) {
             container.find('> div').toggle(!filter);

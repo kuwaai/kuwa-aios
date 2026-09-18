@@ -34,4 +34,8 @@ return [
     'label.upload_max_size_mb' => 'Upload File Size Limit (MB)',
     'label.upload_allowed_extensions' => 'Allowed Upload Extensions (* means any extension)',
     'label.upload_max_file_count' => 'Upload File Count Limit (-1 means no limit)',
+
+    'update.waitingServer' => '⏳ Waiting for server to come back online... The page will reload automatically.',
+    'update.serverBack' => '✅ Server is back! Reloading...',
+    'update.startingServices' => '⏳ Build complete! Starting services... The page will reload automatically when ready.',
 ];

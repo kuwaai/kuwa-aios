@@ -39,7 +39,7 @@ class SystemController extends Controller
     public function api_update_project(Request $request)
     {
         $user = $request->user();
-        if (!$user || !$user->hasPerm('MANAGE_WRITE_SETTINGS')) {
+        if (!$user || !$user->hasPerm('tab_Manage')) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
@@ -72,7 +72,11 @@ class SystemController extends Controller
             );
         }
 
-        $stdinCode = $request->boolean('rebuildOnly') ? '7' : '15';
+        // Non-Docker: trigger build.js through update_stdin.
+        // 15 (01111) performs the normal build and git stash/pull.
+        // 7  (00111) performs a rebuild only and skips all git updates.
+        $rebuildOnly = $request->boolean('rebuildOnly', false);
+        $stdinCode = $rebuildOnly ? '7' : '15';
         $kuwaRoot = config('app.KUWA_ROOT');
         $stdinFile = $kuwaRoot . DIRECTORY_SEPARATOR . 'dev' . DIRECTORY_SEPARATOR . 'update_stdin';
         $devDir = dirname($stdinFile);
@@ -101,6 +105,11 @@ class SystemController extends Controller
         }
 
         return SystemSetting::where('key', 'cache_update_check')->select('value', 'updated_at')->get()->first()->toarray();
+    }
+
+    public function api_check_update(Request $request)
+    {
+        return response()->json(self::checkUpdate($request), 200, [], JSON_UNESCAPED_UNICODE);
     }
     public static function getMachineCode()
     {

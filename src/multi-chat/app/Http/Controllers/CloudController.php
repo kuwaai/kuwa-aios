@@ -90,15 +90,8 @@ class CloudController extends Controller
 
     public function api_read_cloud(Request $request, $paths = null)
     {
-        $result = DB::table('personal_access_tokens')
-            ->join('users', 'tokenable_id', '=', 'users.id')
-            ->select('tokenable_id', 'users.id', 'users.name')
-            ->where('token', str_replace('Bearer ', '', $request->header('Authorization')))
-            ->first();
-        if ($result) {
-            $user = $result;
-            if (User::find($user->id)->hasPerm('tab_Cloud')) {
-                Auth::setUser(User::find($user->id));
+        $user = $request->user();
+        if ($user && $user->hasPerm('tab_Cloud')) {
                 $authUserId = auth()->id();
                 $path = $this->resolvePath($paths);
                 $user_dir = $this->resolvePath('/homes/' . $authUserId);
@@ -154,21 +147,8 @@ class CloudController extends Controller
                 }
 
                 return response()->json(['status' => 'success', 'result' => compact('query_path', 'explorer')], 200, [], JSON_UNESCAPED_UNICODE);
-            } else {
-                $errorResponse = [
-                    'status' => 'error',
-                    'message' => 'You have no permission to use this Kuwa API',
-                ];
-
-                return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
-            }
         } else {
-            $errorResponse = [
-                'status' => 'error',
-                'message' => 'Authentication failed',
-            ];
-
-            return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
+            return response()->json(['status' => 'error', 'message' => 'You have no permission to use this Kuwa API'], 403, [], JSON_UNESCAPED_UNICODE);
         }
     }
 
@@ -194,17 +174,8 @@ class CloudController extends Controller
     )]
     public function api_delete_cloud(Request $request, $paths = null)
     {
-        $result = DB::table('personal_access_tokens')
-            ->join('users', 'tokenable_id', '=', 'users.id')
-            ->select('tokenable_id', 'users.id', 'users.name')
-            ->where('token', str_replace('Bearer ', '', $request->header('Authorization')))
-            ->first();
-
-        if ($result) {
-            $user = $result;
-
-            if (User::find($user->id)->hasPerm('tab_Cloud')) {
-                Auth::setUser(User::find($user->id));
+        $user = $request->user();
+        if ($user && $user->hasPerm('tab_Cloud')) {
                 $authUserId = auth()->id();
                 $path = $this->resolvePath($paths);
                 $user_dir = $this->resolvePath('/homes/' . $authUserId);
@@ -249,24 +220,13 @@ class CloudController extends Controller
                         JSON_UNESCAPED_UNICODE,
                     );
                 }
-            } else {
-                return response()->json(
-                    [
-                        'status' => 'error',
-                        'message' => 'You have no permission to use this Kuwa API',
-                    ],
-                    401,
-                    [],
-                    JSON_UNESCAPED_UNICODE,
-                );
-            }
         } else {
             return response()->json(
                 [
                     'status' => 'error',
-                    'message' => 'Authentication failed',
+                    'message' => 'You have no permission to use this Kuwa API',
                 ],
-                401,
+                403,
                 [],
                 JSON_UNESCAPED_UNICODE,
             );

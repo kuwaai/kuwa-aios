@@ -73,15 +73,8 @@ class ProfileController extends Controller
     )]
     public function api_upload_file(Request $request)
     {
-        $result = DB::table('personal_access_tokens')
-            ->join('users', 'tokenable_id', '=', 'users.id')
-            ->select('tokenable_id', 'users.id', 'users.name')
-            ->where('token', str_replace('Bearer ', '', $request->header('Authorization')))
-            ->first();
-        if ($result) {
-            $user = $result;
-            Auth::setUser(User::find($user->id));
-            if (User::find($user->id)->hasPerm('Cloud_update_upload_files')) {
+        $user = $request->user();
+        if ($user && $user->hasPerm('Cloud_update_upload_files')) {
                 $controller = new RoomController();
                 $upload_result = $controller->upload_file($request);
                 if ($upload_result['succeed']){
@@ -89,21 +82,8 @@ class ProfileController extends Controller
                 }else{
                     return response()->json(['status' => 'failed', 'result' => $upload_result['msg']], 422, [], JSON_UNESCAPED_UNICODE);
                 }
-            } else {
-                $errorResponse = [
-                    'status' => 'error',
-                    'message' => 'You have no permission to use Chat API',
-                ];
-
-                return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
-            }
         } else {
-            $errorResponse = [
-                'status' => 'error',
-                'message' => 'Authentication failed',
-            ];
-
-            return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
+            return response()->json(['status' => 'error', 'message' => 'You have no permission to use Chat API'], 403, [], JSON_UNESCAPED_UNICODE);
         }
     }
     public static function isIPInCIDRList($ipAddress, $cidrList)
@@ -450,13 +430,7 @@ class ProfileController extends Controller
             }, $botFile);
         }
 
-        $jsonData['messages'] = array_map(function($x){
-            return [
-                'isbot' => $x['role'] === 'user' ? false : true,
-                'msg' => $x['content']
-            ];
-        },$jsonData['messages']);
-        $messages_json = json_encode($jsonData['messages']);
+        $messages_json = json_encode($jsonData['messages'], JSON_UNESCAPED_UNICODE);
         $lang = $jsonData['lang'] ?? key(config('app.LANGUAGES'));
 
         if ($messages_json === false && json_last_error() !== JSON_ERROR_NONE) {

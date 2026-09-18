@@ -1,8 +1,8 @@
 @if (
     (request()->routeIs('chat.*') &&
-        request()->user()->hasPerm('Chat_update_detail_feedback')) ||
+        request()->user()->hasPerm('CHAT_UPDATE_DETAIL_FEEDBACK')) ||
         (request()->routeIs('room.*') &&
-            request()->user()->hasPerm('Room_update_detail_feedback')))
+            request()->user()->hasPerm('ROOM_UPDATE_DETAIL_FEEDBACK')))
 <div id="feedback_modal" data-modal-backdrop="static"
     data-modal-backdrop-classes="bg-gray-900 bg-opacity-50 dark:bg-opacity-80 fixed inset-0 z-40"
     tabindex="-1" aria-hidden="true"
@@ -115,10 +115,10 @@
         });
         $("#feedback_form input:eq(1)").val(id) //History id
         $("#feedback_form input:eq(2)").val(type) //feedback type
-        $("#feedback svg").eq(type - 1).parent().show();
+        $("#feedback_modal svg").eq(type - 1).parent().show();
         $(obj).parent().find(">button:not(:first)").removeClass("text-green-600 text-red-600").addClass("text-black")
         $(obj).toggleClass("text-black " + (type == 1 ? "text-green-600" : "text-red-600"))
-        $("#feedback svg").eq(type % 2).parent().hide();
+        $("#feedback_modal svg").eq(type % 2).parent().hide();
         $("#feedback_form >div:not(:last)").hide()
         $("#feedback_form >div:not(:last) >input").prop("disabled", true)
         $("#feedback_form >div." + ["good", "bad"][type - 1]).show()

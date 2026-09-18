@@ -315,14 +315,8 @@ class BotController extends Controller
     )]
     public function api_read_bots(Request $request)
     {
-        $result = DB::table('personal_access_tokens')
-            ->join('users', 'tokenable_id', '=', 'users.id')
-            ->select('tokenable_id', 'users.id', 'users.name', 'group_id')
-            ->where('token', str_replace('Bearer ', '', $request->header('Authorization')))
-            ->first();
-        if ($result) {
-            $user = $result;
-            if (User::find($user->id)->hasPerm(['tab_Room', 'tab_Store'])) {
+        $user = $request->user();
+        if ($user && $user->hasPerm(['tab_Room', 'tab_Store'])) {
                 $result = Bots::getBots($user->group_id)->toarray();
                 foreach ($result as &$item) {
                     if (!empty($item['image'])) {
@@ -344,21 +338,8 @@ class BotController extends Controller
                     [],
                     JSON_UNESCAPED_UNICODE,
                 );
-            } else {
-                $errorResponse = [
-                    'status' => 'error',
-                    'message' => 'You have no permission to use this Kuwa API',
-                ];
-
-                return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
-            }
         } else {
-            $errorResponse = [
-                'status' => 'error',
-                'message' => 'Authentication failed',
-            ];
-
-            return response()->json($errorResponse, 401, [], JSON_UNESCAPED_UNICODE);
+            return response()->json(['status' => 'error', 'message' => 'You have no permission to use this Kuwa API'], 403, [], JSON_UNESCAPED_UNICODE);
         }
     }
 

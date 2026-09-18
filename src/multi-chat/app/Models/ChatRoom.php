@@ -13,7 +13,41 @@ class ChatRoom extends Model
     use HasFactory;
     use SoftDeletes;
     protected $table = 'chatrooms';
-    protected $fillable = ['name', 'user_id', 'updated_at'];
+    protected $fillable = ['name', 'user_id', 'updated_at', 'status'];
+
+    public function getStatusEntries(): array
+    {
+        $entries = [];
+        foreach (preg_split('/\r\n|\r|\n/', (string) $this->status) as $line) {
+            $line = trim($line);
+            if ($line === '') {
+                continue;
+            }
+            $decoded = json_decode($line, true);
+            if (is_array($decoded) && isset($decoded['bot_id'])) {
+                $entries[$decoded['bot_id']] = $decoded;
+            }
+        }
+        return $entries;
+    }
+
+    public function setBotStatus(int $botId, string $status, ?string $timestamp = null, bool $save = true): array
+    {
+        $entries = $this->getStatusEntries();
+        $entries[$botId] = [
+            'status' => $status,
+            'timestamp' => $timestamp ?? now()->toDateTimeString(),
+            'bot_id' => $botId,
+        ];
+        $this->status = implode("\n", array_map(
+            fn (array $entry): string => json_encode($entry, JSON_UNESCAPED_UNICODE),
+            $entries
+        ));
+        if ($save) {
+            $this->save();
+        }
+        return $entries;
+    }
     public static function getChatRoomsWithIdentifiers(int $userId)
     {
         $query = self::leftJoin('chats', 'chatrooms.id', '=', 'chats.roomID')->where('chats.user_id', $userId)->select('chatrooms.*', DB::raw('count(chats.id) as counts'))->groupBy('chatrooms.id')->selectSub(self::buildIdentifierSubquery(), 'identifier');

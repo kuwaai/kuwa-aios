@@ -127,8 +127,36 @@
 
 <x-room.prompt-area.chat-script :llms="$llms" :tasks="$tasks" />
 <script>
-    function abortGenerate() {
-        $.get("{{ route('room.abort', request()->route('room_id')) }}");
+    async function sendRoomMessage(form) {
+        const roomId = Number(form.elements.room_id.value);
+        const message = form.elements.input.value;
+        const chatsTo = Array.from(form.querySelectorAll('input[name="chatsTo[]"]:not(:disabled)'))
+            .map(input => Number(input.value));
+        const chain = form.querySelector('#chain_toggle')?.checked ?? false;
+        const file = form.querySelector('#upload')?.files?.[0];
+
+        try {
+            let content = message;
+            if (file) {
+                const uploaded = await client.uploadFile(file);
+                content = `${uploaded.result || uploaded.url || ''}\n${content}`.trim();
+            }
+            await client.sendMessage(roomId, content, chatsTo, [], chain);
+        } catch (error) {
+            console.error('Failed to send room message:', error);
+            showErrorMsg(error.message || '{{ __('chat.placeholder.please_refresh') }}');
+            form.reset();
+            $('#chat_input').prop('readonly', false).val('');
+            $('#submit_msg').show();
+        }
+    }
+
+    async function abortGenerate() {
+        try {
+            await client.abortRoom({{ request()->route('room_id') }});
+        } catch (error) {
+            console.error('Failed to abort room:', error);
+        }
         return false;
     }
 </script>

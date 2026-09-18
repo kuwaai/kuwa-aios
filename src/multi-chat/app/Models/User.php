@@ -40,7 +40,6 @@ class User extends Authenticatable implements MustVerifyEmail, LdapAuthenticatab
         'google_token',
         'third_party_token',
         'nim_token',
-        'is_sso',
         'disabled',
         'reason',
         'password_updated_at',
@@ -59,7 +58,6 @@ class User extends Authenticatable implements MustVerifyEmail, LdapAuthenticatab
     protected $casts = [
         'email_verified_at' => 'datetime',
         'require_change_password' => 'boolean',
-        'is_sso' => 'boolean',
         'password_updated_at' => 'datetime',
         'password_history' => 'array',
     ];
@@ -91,10 +89,9 @@ class User extends Authenticatable implements MustVerifyEmail, LdapAuthenticatab
         return false;
     }
 
-    public static function getEnabledUsers(bool $isSso = false){
+    public static function getEnabledUsers(){
         return User::join('groups','groups.id','=','users.group_id')
             ->where('users.disabled', '=', false)
-            ->where('users.is_sso', '=', $isSso)
             ->where('groups.disabled','=',false)
             ->where('groups.is_system', '=', false)
             ->count();

@@ -16,7 +16,7 @@ use RuntimeException;
 
 /**
  * Creates (or, with force=true, updates) a base model, syncs its MODEL_<id>
- * permission into every group that already holds MANAGE_WRITE_MODELS, and
+    * permission into every group that already holds tab_Manage, and
  * optionally creates a matching default prompt bot for it.
  *
  * Shared by the `POST /api/models/configure` API route
@@ -160,7 +160,7 @@ class ModelConfigurator
 
     /**
      * Create the MODEL_<id> permission (if it doesn't already exist) and grant it to
-     * every group that currently holds MANAGE_WRITE_MODELS — matching how every other
+    * every group that currently holds tab_Manage — matching how every other
      * group with full access to manage models automatically gains access to newly
      * added models.
      *
@@ -173,7 +173,7 @@ class ModelConfigurator
     {
         $permName = 'MODEL_' . $modelId;
         $perm = Permissions::firstOrCreate(['name' => $permName]);
-        $targetPermIDs = Permissions::whereIn('name', ['MANAGE_WRITE_MODELS', 'tab_Manage'])->pluck('id');
+        $targetPermIDs = Permissions::where('name', 'tab_Manage')->pluck('id');
         if ($targetPermIDs->isEmpty()) return;
         $groups = GroupPermissions::pluck('group_id')->toArray();
         $currentTimestamp = now();

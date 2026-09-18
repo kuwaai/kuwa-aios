@@ -38,19 +38,34 @@ class KuwaClient {
         try {
             const response = await fetch(url, {
                 method: method,
-                headers: headers,
+                headers: {
+                    "Accept": "application/json",
+                    ...headers,
+                },
                 body: body,
-                credentials: 'omit' // This is critical: prevents the browser from sending cookies.
+                credentials: 'same-origin',
+                cache: 'no-store'
             });
 
-            const responseData = await response.json();
+            const rawText = await response.text();
+            let responseData = {};
+            if (rawText) {
+                try {
+                    responseData = JSON.parse(rawText);
+                } catch (parseError) {
+                    if (!response.ok) {
+                        throw parseError;
+                    }
+                }
+            }
 
             if (!response.ok) {
-                // Extract a meaningful error message from the API response, or use the HTTP status.
-                const errorDetails = responseData.result || `HTTP error! Status: ${response.status}`;
+                const errorDetails = responseData.message || responseData.result || `HTTP error! Status: ${response.status}`;
                 const error = new Error(errorDetails);
+                error.status = response.status;
+                error.response = responseData;
                 onError?.(error);
-                throw error; // Reject the promise for the calling function.
+                throw error;
             }
 
             onSuccess?.(responseData);
@@ -58,7 +73,7 @@ class KuwaClient {
 
         } catch (err) {
             // This block catches fetch network errors, JSON parsing errors, or the re-thrown error above.
-            const error = new Error('Request failed: ' + err.message);
+            const error = err instanceof Error ? err : new Error('Request failed: ' + err.message);
             onError?.(error);
             throw error;
         }
@@ -177,12 +192,34 @@ class KuwaClient {
      * @throws {Error} Throws if the API request fails.
      */
     async listBots(callbacks = {}) {
-        const url = `${this.baseUrl}/api/user/read/bots`;
+        const url = `${this.baseUrl}/api/bots`;
         const headers = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${this.authToken}`,
         };
         return this._makeFetchRequest(url, "GET", headers, null, callbacks);
+    }
+
+    async listGroups(params = {}) {
+        const query = new URLSearchParams(params).toString();
+        const url = `${this.baseUrl}/api/groups${query ? `?${query}` : ''}`;
+        return this._makeFetchRequest(url, "GET", { "Content-Type": "application/json", "Authorization": `Bearer ${this.authToken}` });
+    }
+
+    async getGroup(groupId) {
+        return this._makeFetchRequest(`${this.baseUrl}/api/groups/${groupId}`, "GET", { "Content-Type": "application/json", "Authorization": `Bearer ${this.authToken}` });
+    }
+
+    async createGroup(groupData) {
+        return this._makeFetchRequest(`${this.baseUrl}/api/groups`, "POST", { "Content-Type": "application/json", "Authorization": `Bearer ${this.authToken}` }, JSON.stringify(groupData));
+    }
+
+    async updateGroup(groupId, updateData) {
+        return this._makeFetchRequest(`${this.baseUrl}/api/groups/${groupId}`, "PATCH", { "Content-Type": "application/json", "Authorization": `Bearer ${this.authToken}` }, JSON.stringify(updateData));
+    }
+
+    async deleteGroup(groupId) {
+        return this._makeFetchRequest(`${this.baseUrl}/api/groups/${groupId}`, "DELETE", { "Content-Type": "application/json", "Authorization": `Bearer ${this.authToken}` });
     }
 
     /**
@@ -223,12 +260,16 @@ class KuwaClient {
      * @throws {Error} Throws if the API request fails.
      */
     async listRooms(callbacks = {}) {
-        const url = `${this.baseUrl}/api/user/read/rooms`;
+        const url = `${this.baseUrl}/api/rooms`;
         const headers = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${this.authToken}`,
         };
-        return this._makeFetchRequest(url, "GET", headers, null, callbacks);
+        const response = await this._makeFetchRequest(url, "GET", headers, null, callbacks);
+        if (Array.isArray(response)) return { result: response };
+        if (Array.isArray(response.result)) return response;
+        if (Array.isArray(response.data)) return { ...response, result: response.data };
+        return { ...response, result: [] };
     }
 
     /**
@@ -239,7 +280,8 @@ class KuwaClient {
      * @throws {Error} Throws if the API request fails.
      */
     async listCloud(path = '', callbacks = {}) {
-        const url = `${this.baseUrl}/api/user/read/cloud${path}`;
+        const normalizedPath = path ? `/${String(path).replace(/^\/+/, '')}` : '';
+        const url = `${this.baseUrl}/api/cloud${normalizedPath}`;
         const headers = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${this.authToken}`,
@@ -273,16 +315,67 @@ class KuwaClient {
      * @returns {Promise<object>} A promise resolving with the details of the newly created room.
      * @throws {Error} Throws if the API request fails.
      */
-    async createRoom(bot_ids, callbacks = {}) {
-        const url = `${this.baseUrl}/api/user/create/room`;
+    async createRoom(bot_ids, room_name = "New Chatroom", first_message = null, chats_to = null) {
+        const url = `${this.baseUrl}/api/rooms`;
         const headers = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${this.authToken}`,
         };
         const requestBody = {
-            llm: bot_ids
+            llm: bot_ids,
+            name: room_name,
+            first_message,
+            chats_to: chats_to || bot_ids
         };
-        return this._makeFetchRequest(url, "POST", headers, JSON.stringify(requestBody), callbacks);
+        return this._makeFetchRequest(url, "POST", headers, JSON.stringify(requestBody));
+    }
+
+    async getRoom(room_id) {
+        const url = `${this.baseUrl}/api/rooms/${room_id}`;
+        return this._makeFetchRequest(url, "GET", {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.authToken}`,
+        });
+    }
+
+    async sendMessage(room_id, message, chatsTo, attachments = [], chain = false, options = {}) {
+        const url = `${this.baseUrl}/api/rooms/${room_id}/message`;
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.authToken}`,
+        };
+        const requestBody = {
+            input: message,
+            chatsTo,
+            attachments,
+            chain,
+            ...options,
+        };
+        return this._makeFetchRequest(url, "POST", headers, JSON.stringify(requestBody));
+    }
+
+    async abortRoom(room_id) {
+        const url = `${this.baseUrl}/api/rooms/${room_id}/abort`;
+        return this._makeFetchRequest(url, "POST", {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.authToken}`,
+        });
+    }
+
+    async renameRoom(room_id, name) {
+        const url = `${this.baseUrl}/api/rooms/${room_id}`;
+        return this._makeFetchRequest(url, "PATCH", {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.authToken}`,
+        }, JSON.stringify({ name }));
+    }
+
+    async listMessage(room_id) {
+        const url = `${this.baseUrl}/api/rooms/${room_id}/message`;
+        return this._makeFetchRequest(url, "GET", {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.authToken}`,
+        });
     }
     /**
      * Uploads a file to the user's cloud storage with progress tracking.
@@ -294,7 +387,7 @@ class KuwaClient {
      * @throws {Error} Throws if the upload fails.
      */
     async uploadFile(file, callbacks = {}) {
-        const url = `${this.baseUrl}/api/user/upload/file`;
+        const url = `${this.baseUrl}/api/cloud`;
         const headers = {
             "Authorization": `Bearer ${this.authToken}`,
         };
@@ -350,15 +443,12 @@ class KuwaClient {
      * @throws {Error} Throws if the API request fails.
      */
     async deleteRoom(room_id, callbacks = {}) {
-        const url = `${this.baseUrl}/api/user/delete/room/`;
+        const url = `${this.baseUrl}/api/rooms/${room_id}`;
         const headers = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${this.authToken}`,
         };
-        const requestBody = {
-            id: room_id
-        };
-        return this._makeFetchRequest(url, "DELETE", headers, JSON.stringify(requestBody), callbacks);
+        return this._makeFetchRequest(url, "DELETE", headers, null, callbacks);
     }
 
     /**
@@ -450,7 +540,8 @@ class KuwaClient {
      * @throws {Error} Throws if the API request fails.
      */
     async deleteCloud(path = '', callbacks = {}) {
-        const url = `${this.baseUrl}/api/user/delete/cloud${path}`;
+        const normalizedPath = path ? `/${String(path).replace(/^\/+/, '')}` : '';
+        const url = `${this.baseUrl}/api/cloud${normalizedPath}`;
         const headers = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${this.authToken}`,
@@ -577,8 +668,12 @@ class KuwaClient {
         };
         const response = await fetch(url, {
             method: "POST",
-            headers,
+            headers: {
+                "Accept": "application/json",
+                ...headers,
+            },
             body: JSON.stringify({ rebuildOnly }),
+            credentials: 'same-origin',
         });
         const contentType = response.headers.get('Content-Type') || '';
 
@@ -593,6 +688,17 @@ class KuwaClient {
         }
         if (data.logsUrl) return new EventSource(data.logsUrl);
         throw new Error(data.error || 'No update log stream URL returned');
+    }
+
+    async checkUpdate(forced = false) {
+        const url = `${this.baseUrl}/api/system/checkUpdate`;
+        const headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.authToken}`,
+        };
+        return this._makeFetchRequest(url, "POST", headers, JSON.stringify({
+            forced: forced ? 'true' : 'false',
+        }));
     }
 }
 

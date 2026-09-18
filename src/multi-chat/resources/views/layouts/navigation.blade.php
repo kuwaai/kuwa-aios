@@ -142,12 +142,27 @@
                     <div class="flex justify-center items-center min-h-screen updateBtn hidden">
                         <button id="updateAvailableBtn" data-tooltip-target="tooltip-default" type="button"
                             onclick='updateWeb()'
+                            oncontextmenu='event.preventDefault(); updateWeb();'
                             class="text-green-500 hover:text-green-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg p-2 flex items-center transition-transform transform hover:scale-110">
                             <i class="fa fa-download text-2xl"></i>
                         </button>
                         <div id="tooltip-default" role="tooltip"
                             class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
                             Update Available
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center items-center min-h-screen updateBtn hidden">
+                        <button id="updateLatestBtn" data-tooltip-target="tooltip-latest" type="button"
+                            onclick='checkUpdate(".updateBtn", "#spinnerDiv", true)'
+                            oncontextmenu='event.preventDefault(); updateWeb();'
+                            class="text-green-500 hover:text-green-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg p-2 flex items-center transition-transform transform hover:scale-110">
+                            <i class="fa fa-check-circle text-2xl"></i>
+                        </button>
+                        <div id="tooltip-latest" role="tooltip"
+                            class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+                            Up to date
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
                     </div>
@@ -189,40 +204,39 @@
                     </div>
 
                     <script>
-                        function checkUpdate(buttonSelector, spinnerSelector, routeUrl, forced = false) {
-                            $(buttonSelector).addClass('hidden');
-                            $(spinnerSelector).removeClass('hidden');
+                        function setUpdateStatus(status) {
+                            $('#updateAvailableBtn, #updateLatestBtn').closest('.updateBtn').addClass('hidden');
+                            $('#updateFailedBtn, #spinnerDiv').closest('.updateBtn').addClass('hidden');
+                            if (status === 'update-available') $('#updateAvailableBtn').closest('.updateBtn').removeClass('hidden');
+                            if (status === 'no-update') $('#updateLatestBtn').closest('.updateBtn').removeClass('hidden');
+                            if (status === 'failed') $('#updateFailedBtn').closest('.updateBtn').removeClass('hidden');
+                            if (status === 'checking') $('#spinnerDiv').removeClass('hidden');
+                        }
 
-                            $.ajax({
-                                url: routeUrl,
-                                type: 'POST',
-                                data: {
-                                    _token: '{{ csrf_token() }}',
-                                    forced: forced
-                                },
-                                success: function(response) {
-                                    if (response.value === 'update-available') {
-                                        $('#updateAvailableBtn').parent().removeClass('hidden');
-                                    } else if (response.value === 'no-update') {} else {
-                                        $('#updateFailedBtn').parent().removeClass('hidden');
-                                        $('#updateFailedBtn').next().find('span').text(response.value);
-                                    }
-
-                                    $(spinnerSelector).addClass('hidden');
-                                },
-                                error: function(xhr, status, error) {
-                                    console.error('Error:', error);
-
-                                    $('#updateFailedBtn').parent().removeClass('hidden');
-                                    $(spinnerSelector).addClass('hidden');
+                        async function checkUpdate(buttonSelector, spinnerSelector, forced = false) {
+                            try {
+                                setUpdateStatus('checking');
+                                const response = await client.checkUpdate(forced);
+                                if (response.value === 'update-available') {
+                                    setUpdateStatus('update-available');
+                                } else if (response.value === 'no-update') {
+                                    setUpdateStatus('no-update');
+                                    let tooltip = 'Up to date';
+                                    if (response.commit) tooltip += '<br><span style="font-size:0.85em">Commit: ' + String(response.commit).substring(0, 20) + '</span>';
+                                    $('#tooltip-latest').html(tooltip + '<div class="tooltip-arrow" data-popper-arrow></div>');
+                                } else {
+                                    setUpdateStatus('failed');
                                 }
-                            });
+                            } catch (error) {
+                                console.error('Error checking update:', error);
+                                setUpdateStatus('failed');
+                            }
                         }
 
                         $('#updateFailedBtn').on('click', function() {
                             checkUpdate('.updateBtn', '#spinnerDiv', '{{ route('manage.setting.checkUpdate') }}', true);
                         });
-                        checkUpdate('.updateBtn', '#spinnerDiv', '{{ route('manage.setting.checkUpdate') }}', false)
+                        checkUpdate('.updateBtn', '#spinnerDiv', false)
                     </script>
 
                     <div class="flex justify-center items-center min-h-screen workerBtn hidden">

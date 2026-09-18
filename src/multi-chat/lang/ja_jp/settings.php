@@ -34,4 +34,8 @@ return [
     'label.upload_max_size_mb' => 'アップロードファイルサイズ制限(MB)',
     'label.upload_allowed_extensions' => 'アップロードが許可される拡張子 (*は任意の拡張子)',
     'label.upload_max_file_count' => 'アップロードファイル総数制限 (-1は制限なし)',
+
+    'update.waitingServer' => '⏳ サーバーがオンラインに戻るのを待っています... ページは自動的にリロードされます。',
+    'update.serverBack' => '✅ サーバーが復旧しました！リロード中...',
+    'update.startingServices' => '⏳ ビルド完了！サービスを起動中... 準備ができ次第、ページが自動的にリロードされます。',
 ];

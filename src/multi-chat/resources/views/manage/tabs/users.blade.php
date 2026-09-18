@@ -13,8 +13,11 @@
 @php
     if (session('fuzzy_search')) {
         $case_insensitive_like = config('database.default') === "pgsql" ? 'ilike' : 'like';
-        $fuzzy_result = App\Models\User::where('name', $case_insensitive_like, '%' . session('fuzzy_search') . '%')
-            ->orWhere('email', $case_insensitive_like, '%' . session('fuzzy_search') . '%')
+        $fuzzy_result = App\Models\User::where(function ($query) use ($case_insensitive_like) {
+                $query->where('name', $case_insensitive_like, '%' . session('fuzzy_search') . '%')
+                    ->orWhere('email', $case_insensitive_like, '%' . session('fuzzy_search') . '%');
+            })
+            ->whereHas('group', fn ($query) => $query->where('is_system', false))
             ->orderby('name')
             ->get();
     } else {
@@ -115,7 +118,7 @@
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="{{ __('users.placeholder.group_name') }}">
                     <datalist id="joinable_groups">
-                        @foreach (App\Models\Groups::orderby('name')->get() as $group)
+                        @foreach (App\Models\Groups::where('is_system', false)->orderby('name')->get() as $group)
                             <option value="{{ $group->name }}">
                         @endforeach
                     </datalist>
@@ -279,7 +282,7 @@
                     </div>
                     <hr class="mb-2">
                     <div class="flex-1 overflow-y-auto scrollbar">
-                        @foreach (App\Models\Groups::leftjoin('users', 'group_id', '=', 'groups.id')->selectRaw('groups.name as name, groups.id as id, count(users.id) as members')->groupby('groups.id')->get() as $group)
+                          @foreach (App\Models\Groups::where('groups.is_system', false)->leftjoin('users', 'group_id', '=', 'groups.id')->selectRaw('groups.name as name, groups.id as id, count(users.id) as members')->groupby('groups.id')->get() as $group)
                             <script>
                                 $groupnames[{{ $group->id }}] = "{{ $group->name }}"
                             </script>
@@ -319,7 +322,7 @@
 
 
                         <div class="flex-1 overflow-y-auto scrollbar">
-                            @foreach (App\Models\User::where('group_id', '=', session('list_group') == -1 ? null : session('list_group'))->orderby('name')->get() as $user)
+                              @foreach (App\Models\User::where('group_id', '=', session('list_group') == -1 ? null : session('list_group'))->whereHas('group', fn ($query) => $query->where('is_system', false))->orderby('name')->get() as $user)
                                 <script>
                                     $users[{{ $user->id }}] = {!! json_encode(
                                         [
@@ -387,7 +390,7 @@
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 placeholder="{{ __('users.placeholder.group_name') }}">
                             <datalist id="joinable_groups">
-                                @foreach (App\Models\Groups::orderby('name')->get() as $group)
+                                  @foreach (App\Models\Groups::where('is_system', false)->orderby('name')->get() as $group)
                                     <option value="{{ $group->name }}">
                                 @endforeach
                             </datalist>

@@ -448,11 +448,12 @@
 
                     client.listRooms()
                         .then(rooms => {
+                            const roomItems = Array.isArray(rooms?.result) ? rooms.result : [];
                             generateDropdown(botData)
                             if (selected != '') method = groupByIdentifier
                             else if (method == 'groupByIdentifier') method = groupByIdentifier
                             else if (method == 'groupByTime') method = groupByTime
-                            refreshChatRoomList(method(validateIdentifiers(rooms.result, selected)),
+                            refreshChatRoomList(method(validateIdentifiers(roomItems, selected)),
                                 {{ request()->user()->hasPerm('Room_delete_chatroom') }}, botData, method ==
                                 groupByTime);
                             $('#groupingSelector input').attr('readonly', false).attr('disabled', false)

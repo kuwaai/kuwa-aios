@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\SystemSetting;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
@@ -23,10 +24,37 @@ class CheckUpdate implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $ignore;
+    protected $env;
 
     public function __construct($ignore = false)
     {
         $this->ignore = $ignore;
+        $this->env = [
+            'PATH' => SystemSetting::where('key', 'updateweb_path')->value('value') ?: getenv('PATH'),
+            'GIT_SSH_COMMAND' => SystemSetting::where('key', 'updateweb_git_ssh_command')->value('value') ?? '',
+        ];
+    }
+
+    /**
+     * Execute a shell command and throw an exception on failure.
+     *
+     * @param string $command
+     * @param int $timeout Timeout in seconds (null for no timeout)
+     * @return string
+     * @throws ProcessFailedException
+     */
+    private function executeCommand(string $command, int $timeout = null): string
+    {
+        $process = Process::fromShellCommandline($command)
+            ->setEnv($this->env)
+            ->setTimeout($timeout);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        return trim($process->getOutput());
     }
 
     public function handle()
@@ -36,102 +64,63 @@ class CheckUpdate implements ShouldQueue
         try {
             $checkUpdateScript = base_path('app/Console/check-update.php');
 
-            $env = [
-                'PATH' => SystemSetting::where('key', 'updateweb_path')->value('value') ?: getenv('PATH'),
-                'GIT_SSH_COMMAND' => SystemSetting::where('key', 'updateweb_git_ssh_command')->value('value') ?? '',
-            ];
-
             if (File::exists($checkUpdateScript)) {
-                $process = Process::fromShellCommandline('php ' . $checkUpdateScript)
-                    ->setEnv($env)
-                    ->setTimeout(null);
-                $process->setTimeout(null);
-                $process->run();
-
-                if (!$process->isSuccessful()) {
-                    $errorMessage = $process->getErrorOutput();
-                    $errorMessage = $this->parseMessage($errorMessage);
-                    SystemSetting::where('key', 'cache_update_check')->update(['value' => $errorMessage]);
-                    return;
-                }
-
-                $output = $process->getOutput();
+                $output = $this->executeCommand('php ' . $checkUpdateScript, 30);
                 SystemSetting::where('key', 'cache_update_check')->update(['value' => $output]);
                 return;
             }
 
             chdir(base_path());
-            $env = [
-                'PATH' => SystemSetting::where('key', 'updateweb_path')->value('value') ?: getenv('PATH'),
-                'GIT_SSH_COMMAND' => SystemSetting::where('key', 'updateweb_git_ssh_command')->value('value') ?? '',
-            ];
 
-            $updateProcess = Process::fromShellCommandline('git remote update')->setEnv($env)->setTimeout(null);
-            $updateProcess->run();
+            // Get the actual upstream branch to determine remote and branch name
+            // e.g., "origin/main" or "upstream/develop"
+            $upstreamBranch = $this->executeCommand('git rev-parse --abbrev-ref --symbolic-full-name @{u}', 10);
+            
+            // Parse remote and branch from upstream (e.g., "origin/main" -> remote: "origin", branch: "main")
+            $parts = explode('/', $upstreamBranch, 2);
+            $remoteName = $parts[0] ?? 'origin';
+            $remoteBranch = $parts[1] ?? 'main';
 
-            if (!$updateProcess->isSuccessful()) {
-                $errorMessage = $updateProcess->getErrorOutput();
-                $errorMessage = $this->parseMessage($errorMessage);
-                SystemSetting::where('key', 'cache_update_check')->update(['value' => $errorMessage]);
-                return;
+            // Fetch from the actual remote and branch being tracked
+            try {
+                $this->executeCommand('git fetch ' . $remoteName . ' ' . $remoteBranch, 15);
+            } catch (\Exception $e) {
+                // If fetch fails or times out, continue with local comparison
+                \Log::warning("CheckUpdate: git fetch failed: " . $e->getMessage());
             }
-
-            $localCommitProcess = Process::fromShellCommandline('git rev-parse @')->setEnv($env)->setTimeout(null);
-            $localCommitProcess->run();
-
-            if (!$localCommitProcess->isSuccessful()) {
-                $errorMessage = $localCommitProcess->getErrorOutput();
-                $errorMessage = $this->parseMessage($errorMessage);
-                SystemSetting::where('key', 'cache_update_check')->update(['value' => $errorMessage]);
-                return;
-            }
-            $localCommit = trim($localCommitProcess->getOutput());
-
-            $upstreamCommitProcess = Process::fromShellCommandline('git rev-parse @{u}')->setEnv($env)->setTimeout(null);
-            $upstreamCommitProcess->run();
-
-            if (!$upstreamCommitProcess->isSuccessful()) {
-                $errorMessage = $upstreamCommitProcess->getErrorOutput();
-                $errorMessage = $this->parseMessage($errorMessage);
-                SystemSetting::where('key', 'cache_update_check')->update(['value' => $errorMessage]);
-                return;
-            }
-            $upstreamCommit = trim($upstreamCommitProcess->getOutput());
-
-            $baseCommitProcess = Process::fromShellCommandline('git merge-base @ @{u}')->setEnv($env)->setTimeout(null);
-            $baseCommitProcess->run();
-
-            if (!$baseCommitProcess->isSuccessful()) {
-                $errorMessage = $baseCommitProcess->getErrorOutput();
-                $errorMessage = $this->parseMessage($errorMessage);
-                SystemSetting::where('key', 'cache_update_check')->update(['value' => $errorMessage]);
-                return;
-            }
-            $baseCommit = trim($baseCommitProcess->getOutput());
+            
+            // Get commits for comparison
+            $localCommit = $this->executeCommand('git rev-parse @', 10);
+            $upstreamCommit = $this->executeCommand('git rev-parse @{u}', 10);
+            $baseCommit = $this->executeCommand('git merge-base @ @{u}', 10);
 
             $url = 'https://update.kuwaai.org/check_update/' . substr($baseCommit, 0, 8) . '/' . SystemController::getMachineCode();
-            $getUpdateUrl = Process::fromShellCommandline('curl -s ' . escapeshellarg($url))
-                ->setEnv($env)
-                ->setTimeout(null);
-            $getUpdateUrl->run();
+
+            try {
+               $t1 = microtime(true);
+                $this->executeCommand('curl -s ' . escapeshellarg($url), 10);
+                $t2 = microtime(true);
+                \Log::info("CheckUpdate: curl check took " . number_format($t2 - $t1, 3) . "s");
+            } catch (\Exception $e) {
+                \Log::warning("CheckUpdate: curl failed: " . $e->getMessage());
+            }
 
             if ($localCommit === $upstreamCommit) {
                 $status = 'no-update';
             } elseif ($localCommit === $baseCommit) {
                 $status = 'update-available';
-            } elseif ($upstreamCommit === $baseCommit) {
-                $status = 'no-update';
             } else {
-                $status = 'update-available';
+                $status = 'no-update';
             }
             SystemSetting::where('key', 'cache_update_check')->update(['value' => $status]);
+
+        } catch (ProcessFailedException $e) {
+            $errorMessage = $this->parseMessage($e->getProcess()->getErrorOutput());
+            SystemSetting::where('key', 'cache_update_check')->update(['value' => $errorMessage]);
         } catch (\Exception $e) {
-            $errorMessage = $e->getMessage();
-            $errorMessage = $this->parseMessage($errorMessage);
+            $errorMessage = $this->parseMessage($e->getMessage());
             SystemSetting::where('key', 'cache_update_check')->update(['value' => $errorMessage]);
         }
-
-        return;
     }
 
     private function parseMessage($buffer)

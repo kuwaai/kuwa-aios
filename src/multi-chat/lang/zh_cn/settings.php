@@ -34,4 +34,8 @@ return [
     'label.upload_max_size_mb' => '上傳檔案大小限制(MB)',
     'label.upload_allowed_extensions' => '允許上傳的副檔名 (* 表示任意副檔名)',
     'label.upload_max_file_count' => '上傳檔案總數限制 (-1 表示不限制數量)',
+
+    'update.waitingServer' => '⏳ 等待服务器重新上线... 页面将自动重新加载。',
+    'update.serverBack' => '✅ 服务器已恢复！正在重新加载...',
+    'update.startingServices' => '⏳ 构建完成！正在启动服务... 页面将在服务就绪后自动重新加载。',
 ];
