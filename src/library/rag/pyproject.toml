@@ -8,6 +8,7 @@ packages = ["src/kuwa"]
 [tool.hatch.version]
 source = "vcs"
 raw-options = {root = "../../../"}
+fallback-version = "0.4.2"
 
 [tool.hatch.build.hooks.vcs]
 version-file = "src/kuwa/rag/_version.py"

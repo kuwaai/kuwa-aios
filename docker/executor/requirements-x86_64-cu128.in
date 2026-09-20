@@ -1,7 +1,7 @@
 llama-cpp-python @ https://github.com/kuwaai/llama-cpp-python/releases/download/v0.3.8-cu121/llama_cpp_python-0.3.8-cp310-cp310-linux_x86_64.whl
 
---index-url=https://download.pytorch.org/whl/cu121
+--index-url=https://download.pytorch.org/whl/cu128
 --extra-index-url=https://pypi.org/simple
-torch==2.3.0
-torchvision==0.18.0
-torchaudio==2.3.0
+torch==2.8.0
+torchvision==0.23.0
+torchaudio==2.8.0

@@ -11,9 +11,8 @@ platforms = [
     "windows-cu118",
     "windows-cu121",
     "windows-ipex-llm",
-    "windows-qnn",
     "docker-x86_64-cpu",
-    "docker-x86_64-cu121",
+    "docker-x86_64-cu128",
     "docker-aarch64-cpu",
 ]
 common_sources = [
@@ -39,18 +38,13 @@ platform_sources = {
     "windows-ipex-llm": [
         "windows/src/version_patch/ipex-llm/windows/src/requirements.in",
     ],
-    "windows-qnn": [
-        "windows/src/version_patch/cpu/windows/src/requirements.in",
-        "src/executor/qnn_genie/requirements.in",
-        "src/executor/speech_recognition/requirements-onnx.in",
-    ],
     "docker-x86_64-cpu": [
         "docker/executor/multi-chat-client/requirements.in",
         "docker/executor/requirements-x86_64-cpu.in",
     ],
-    "docker-x86_64-cu121": [
+    "docker-x86_64-cu128": [
         "docker/executor/multi-chat-client/requirements.in",
-        "docker/executor/requirements-x86_64-cu121.in",
+        "docker/executor/requirements-x86_64-cu128.in",
     ],
     "docker-aarch64-cpu": [
         "docker/executor/multi-chat-client/requirements.in",
@@ -62,9 +56,8 @@ output_paths = {
     "windows-cu118": "windows/src/version_patch/cu118/windows/src/requirements.txt.lock",
     "windows-cu121": "windows/src/version_patch/cu121/windows/src/requirements.txt.lock",
     "windows-ipex-llm": "windows/src/version_patch/ipex-llm/windows/src/requirements.txt.lock",
-    "windows-qnn": "windows/src/version_patch/qnn/windows/src/requirements.txt.lock",
     "docker-x86_64-cpu": "docker/executor/requirements-x86_64-cpu.txt.lock",
-    "docker-x86_64-cu121": "docker/executor/requirements-x86_64-cu121.txt.lock",
+    "docker-x86_64-cu128": "docker/executor/requirements-x86_64-cu128.txt.lock",
     "docker-aarch64-cpu": "docker/executor/requirements-aarch64-cpu.txt.lock",
 }
 default_cmd_opts = [
@@ -75,15 +68,6 @@ default_cmd_opts = [
     "3.10.11",
 ]
 platform_cmd_opts = {
-    "windows-qnn": [
-        "--color",
-        "always",
-        "--annotation-style=line",
-        "--python-version",
-        "3.10.11",
-        "--no-emit-package",
-        "onnxruntime",
-    ],
     "docker-x86_64-cpu": [
         "--color",
         "always",
@@ -99,7 +83,7 @@ platform_cmd_opts = {
         "--python-platform",
         "x86_64-manylinux_2_28",
     ],
-    "docker-x86_64-cu121": [
+    "docker-x86_64-cu128": [
         "--color",
         "always",
         "--annotation-style=line",
@@ -109,7 +93,7 @@ platform_cmd_opts = {
         "kuwa-kernel",
         "--emit-index-url",
         "--torch-backend",
-        "cu121",
+        "cu128",
         "--python-platform",
         "x86_64-manylinux_2_28",
     ],

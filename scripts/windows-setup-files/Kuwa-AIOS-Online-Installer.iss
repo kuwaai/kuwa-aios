@@ -14,6 +14,8 @@
 #ifndef Branch
   #define Branch "main"
 #endif
+#define Gemma4ModelURL "https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B_q4_0-it.gguf?download=true"
+#define PortableGitURL "https://github.com/git-for-windows/git/releases/download/v2.45.1.windows.1/PortableGit-2.45.1-64-bit.7z.exe"
 
 [Setup]
 AppId={{B37EB0AF-B52C-4200-B80F-671FBCE385DC}
@@ -101,10 +103,18 @@ Filename: "{app}\windows\launcher.bat"; WorkingDir: "{app}\windows"; Flags: post
 
 [Code]
 var
+  DownloadPage: TDownloadWizardPage;
   AccountPage: TInputQueryWizardPage;
   AutoLoginCheckBox: TNewCheckBox;
   Username, Password, ConfirmPass: String;
   AutoLoginValue: String;
+
+function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
+begin
+  if Progress = ProgressMax then
+    Log(Format('Successfully downloaded file to {tmp}: %s', [FileName]));
+  Result := True;
+end;
 
 function DeleteInstalledFilesExcept(const Directory, KeepFile: String): Boolean;
 var
@@ -140,34 +150,71 @@ begin
       ExpandConstant('{app}\src\multi-chat\database\database.sqlite'));
 end;
 
-function CloneRepository(const AppDir: String): Boolean;
+function PrepareGit(var GitPath: String): Boolean;
 var
-  ArchiveFile, ExtractDir, RepoDir, Url, Args: String;
+  PortableGitArchive, PortableGitDir, Args: String;
   RC: Integer;
 begin
   Result := False;
-  ArchiveFile := ExpandConstant('{tmp}\kuwa-repository.zip');
-  ExtractDir := ExpandConstant('{tmp}\kuwa-repository');
-  RepoDir := ExtractDir + '\kuwa-aios-{#Branch}';
-  Url := '{#RepoHTTPSURL}';
-  if (Length(Url) >= 4) and (Copy(Url, Length(Url) - 3, 4) = '.git') then
-    Delete(Url, Length(Url) - 3, 4);
-  Url := Url + '/archive/refs/heads/{#Branch}.zip';
-  ForceDirectories(ExtractDir);
-  if not Exec(ExpandConstant('{sys}\curl.exe'), '-L --fail --silent --show-error "' + Url + '" -o "' + ArchiveFile + '"', '', SW_HIDE, ewWaitUntilTerminated, RC) or (RC <> 0) then
-    Exit;
-  if not Exec(ExpandConstant('{sys}\tar.exe'), '-xf "' + ArchiveFile + '" -C "' + ExtractDir + '"', '', SW_HIDE, ewWaitUntilTerminated, RC) or (RC <> 0) then
-    Exit;
-  if not DirExists(RepoDir) then
+  GitPath := ExpandConstant('{autopf}\Git\cmd\git.exe');
+  if FileExists(GitPath) then
   begin
-    DeleteFile(ArchiveFile);
+    Result := True;
     Exit;
   end;
+
+  GitPath := ExpandConstant('{pf}\Git\cmd\git.exe');
+  if FileExists(GitPath) then
+  begin
+    Result := True;
+    Exit;
+  end;
+
+  PortableGitArchive := ExpandConstant('{tmp}\PortableGit-2.45.1-64-bit.7z.exe');
+  PortableGitDir := ExpandConstant('{tmp}\PortableGit-2.45.1-64-bit');
+  if not FileExists(PortableGitArchive) then
+    if not Exec(ExpandConstant('{sys}\curl.exe'), '-L --fail --silent --show-error "{#PortableGitURL}" -o "' + PortableGitArchive + '"', '', SW_HIDE, ewWaitUntilTerminated, RC) or (RC <> 0) then
+      Exit;
+
+  if not DirExists(PortableGitDir) then
+  begin
+    ForceDirectories(PortableGitDir);
+    Args := '-o"' + PortableGitDir + '" -y';
+    if not Exec(PortableGitArchive, Args, '', SW_HIDE, ewWaitUntilTerminated, RC) or (RC <> 0) then
+      Exit;
+  end;
+
+  GitPath := PortableGitDir + '\cmd\git.exe';
+  Result := FileExists(GitPath);
+end;
+
+function CloneRepository(const AppDir: String): Boolean;
+var
+  CloneDir, RepoDir, Url, GitPath, Args: String;
+  RC: Integer;
+begin
+  Result := False;
+  CloneDir := ExpandConstant('{tmp}\kuwa-git-clone');
+  RepoDir := CloneDir;
+  Url := '{#RepoHTTPSURL}';
+  if not PrepareGit(GitPath) then
+    Exit;
+
+  DelTree(CloneDir, True, True, True);
+  if not Exec(GitPath, 'clone --branch "{#Branch}" --depth 1 "' + Url + '" "' + CloneDir + '"', '', SW_HIDE, ewWaitUntilTerminated, RC) or (RC <> 0) then
+    Exit;
+
+  if not DirExists(RepoDir + '\.git') then
+  begin
+    DelTree(CloneDir, True, True, True);
+    Exit;
+  end;
+
   ForceDirectories(AppDir);
-  Args := '/c xcopy /E /I /Y "' + RepoDir + '\*" "' + AppDir + '\"';
+  Args := '/c robocopy "' + RepoDir + '" "' + AppDir + '" /E /COPY:DAT /DCOPY:DAT /R:0 /W:0 /NFL /NDL /NJH /NJS /NP';
   Result := Exec(ExpandConstant('{sys}\cmd.exe'), Args, '', SW_HIDE, ewWaitUntilTerminated, RC) and
-    (RC <= 1) and FileExists(AppDir + '\windows\launcher.bat');
-  DeleteFile(ArchiveFile);
+    (RC <= 7) and FileExists(AppDir + '\windows\launcher.bat') and
+    FileExists(AppDir + '\.git\HEAD');
 end;
 
 procedure InitializeWizard;
@@ -188,19 +235,34 @@ begin
   AutoLoginCheckBox.Width := 300;
   AutoLoginCheckBox.Caption := 'Single User Mode';
   AutoLoginCheckBox.Checked := False; 
+  DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
+  DownloadPage.ShowBaseNameInsteadOfUrl := True;
 end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   InitFile: String;
   InitContent: String;
   Email: String;
+  ModelPath: String;
 begin
   if CurStep = ssPostInstall then
   begin
     if not CloneRepository(ExpandConstant('{app}')) then
     begin
-      MsgBox('Kuwa repository clone failed. Check the repository URL, branch, and Git access.', mbError, MB_OK);
+      MsgBox('Kuwa repository clone failed. Git metadata could not be installed. Check the repository URL, branch, and network access.', mbError, MB_OK);
       Abort;
+    end;
+
+    ModelPath := ExpandConstant('{app}\windows\executors\gemma4-e2b\gemma-4-E2B_q4_0-it.gguf');
+    ForceDirectories(ExtractFileDir(ModelPath));
+    if not FileExists(ModelPath) then
+    begin
+      if not FileExists(ExpandConstant('{tmp}\models\gemma-4-E2B_q4_0-it.gguf')) or
+         not CopyFile(ExpandConstant('{tmp}\models\gemma-4-E2B_q4_0-it.gguf'), ModelPath, False) then
+      begin
+        MsgBox('Gemma 4 E2B model installation failed.', mbError, MB_OK);
+        Abort;
+      end;
     end;
 
     Email := AccountPage.Values[0];
@@ -245,7 +307,37 @@ begin
 end;
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
-  if CurPageID = AccountPage.ID then
+  if CurPageID = wpReady then
+  begin
+    DownloadPage.Clear;
+    if WizardIsComponentSelected('models\gemma_4_e2b_q4_0') and
+       not FileExists(ExpandConstant('{tmp}\models\gemma-4-E2B_q4_0-it.gguf')) then
+    begin
+      DownloadPage.Add(
+        '{#Gemma4ModelURL}',
+        'models\gemma-4-E2B_q4_0-it.gguf',
+        ''
+      );
+      DownloadPage.Show;
+      try
+        try
+          DownloadPage.Download;
+          Result := True;
+        except
+          if DownloadPage.AbortedByUser then
+            Log('Download aborted by user.')
+          else
+            SuppressibleMsgBox(AddPeriod(GetExceptionMessage), mbCriticalError, MB_OK, IDOK);
+          Result := False;
+        end;
+      finally
+        DownloadPage.Hide;
+      end;
+    end
+    else
+      Result := True;
+  end
+  else if CurPageID = AccountPage.ID then
   begin
     Username := AccountPage.Values[0];
     Password := AccountPage.Values[1];

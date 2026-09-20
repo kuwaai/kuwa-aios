@@ -1,6 +1,6 @@
 langchain
 langchain-community
-torch==2.3.0
+torch>=2.3.0
 accelerate
 transformers
 sentence-transformers

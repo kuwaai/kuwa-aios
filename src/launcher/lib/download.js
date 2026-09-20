@@ -70,7 +70,9 @@ async function downloadExtractAsync(url, checkLocation, extractDest, archiveName
 
   if (!fileExists(absArchive)) {
     logToFile(`Downloading packages/${archiveName}...`);
-    const dlCode = await runAsync(`curl -L -s --fail --retry 3 --retry-delay 2 -o "${absArchive}" "${url}"`);
+    const dlCode = await runAsync(
+      `curl -L -s --fail --connect-timeout 30 --speed-limit 1024 --speed-time 30 --retry 3 --retry-delay 2 --retry-connrefused -o "${absArchive}" "${url}"`
+    );
     if (dlCode !== 0 || !fileExists(absArchive)) {
       logToFile(`Download of ${archiveName} failed (exit code ${dlCode}).`);
       if (fileExists(absArchive)) fs.unlinkSync(absArchive);

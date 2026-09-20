@@ -2,6 +2,6 @@ llama-cpp-python @ https://github.com/kuwaai/llama-cpp-python/releases/download/
 
 --index-url=https://download.pytorch.org/whl/cpu
 --extra-index-url=https://pypi.org/simple
-torch==2.3.0
-torchvision==0.18.0
-torchaudio==2.3.0
+torch==2.8.0
+torchvision==0.23.0
+torchaudio==2.8.0

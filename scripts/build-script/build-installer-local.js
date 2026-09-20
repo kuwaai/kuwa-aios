@@ -22,18 +22,12 @@ const CACHE_FOLDER = path.join(SCRIPT_DIR, 'cache');
 const OUTPUT_DIR   = path.join(SCRIPT_DIR, 'build');
 
 const REPO_URL     = runCapture(['git', 'remote', 'get-url', 'origin'], { cwd: SCRIPT_DIR }) || die('Could not determine git remote URL');
-const PUBLIC_REPO_URL = runCapture(['git', 'remote', 'get-url', 'public'], { cwd: SCRIPT_DIR }) || REPO_URL;
-const toHttpsRepoUrl = (remoteUrl) => {
-  if (remoteUrl.startsWith('git@github.com:')) {
-    return `https://github.com/${remoteUrl.slice('git@github.com:'.length)}`;
-  }
-  return remoteUrl;
-};
 const REPO_SSH_URL = (() => {
   const m = REPO_URL.match(/^https?:\/\/github\.com\/([^/]+\/[^/?#]+?)(?:\.git)?(?:[/?#].*)?$/);
   return m ? `git@github.com:${m[1]}.git` : REPO_URL;
 })();
-const ONLINE_REPO_HTTPS_URL = toHttpsRepoUrl(PUBLIC_REPO_URL);
+const ONLINE_REPO_HTTPS_URL = 'https://github.com/kuwaai/kuwa-aios.git';
+const ONLINE_REPO_BRANCH = 'main';
 const MODEL_URL    = 'https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B_q4_0-it.gguf?download=true';
 const MODEL_DIR    = path.join(CACHE_FOLDER, 'gemma4-e2b');
 const MODEL_FILE   = path.join(MODEL_DIR, 'gemma-4-E2B_q4_0-it.gguf');
@@ -364,9 +358,9 @@ async function main() {
   ensureDir(TEMP_FOLDER); ensureDir(CACHE_FOLDER); ensureDir(OUTPUT_DIR); updateGitignore(); log('');
   if (!fs.existsSync(ISS_COMPILER)) die('Inno Setup 7 or 6 not found. Set INNO_SETUP_COMPILER or install from: https://jrsoftware.org/isdl.php');
   ok(`Inno Setup compiler found: ${ISS_COMPILER}`); log('');
-  const onlineDefines = [`/DRepoURL=${REPO_SSH_URL}`, `/DRepoHTTPSURL=${ONLINE_REPO_HTTPS_URL}`, `/DBranch=${branch}`];
+  const onlineDefines = [`/DRepoURL=${REPO_SSH_URL}`, `/DRepoHTTPSURL=${ONLINE_REPO_HTTPS_URL}`, `/DBranch=${ONLINE_REPO_BRANCH}`];
   info('Compiling Online installer (no dependencies)...');
-  log(`  RepoURL : ${REPO_SSH_URL}`); log(`  Branch  : ${branch}`);
+  log(`  RepoURL : ${ONLINE_REPO_HTTPS_URL}`); log(`  Branch  : ${ONLINE_REPO_BRANCH}`);
   await compileInstaller(ISS_FILE_ONLINE, onlineDefines); saveOutput(ISS_FILE_ONLINE); log('');
   info('Stage 1/4 — Cloning repository...'); await cloneOrReuse(branch); log('');
   info('Stage 2/4 — Downloading model & preparing files (parallel)...');
