@@ -18,7 +18,7 @@ from huggingface_hub import snapshot_download
 from tokenizers import Tokenizer
 from diffusers import DPMSolverMultistepScheduler
 import os
-import subprocess
+import subprocess  # nosec B404 - used with shell=False and a list of args below
 import glob
 from PIL import Image
 import tempfile
@@ -209,14 +209,19 @@ class QnnStableDiffusionApp:
         input_list_filepath = f"{tmp_dirpath}\\input_list.txt"
         with open(input_list_filepath, "w") as f:
             f.write(input_list_text)
-        input_list_filepath = input_list_filepath.replace(" ", "\ ")
 
-        # Execute qnn-net-run on shell
-        cmd = f'"{self.qnn_binaries_path}\\qnn-net-run.exe" --retrieve_context "{model_context}" --backend "{self.qnn_binaries_path}\\QnnHtp.dll" \
-        --input_list "{input_list_filepath}" --output_dir "{tmp_dirpath}"'  # + " --log_level verbose"
+        # Execute qnn-net-run without invoking a shell, passing args as a list
+        # to prevent shell metacharacter/command injection via crafted inputs.
+        cmd = [
+            f"{self.qnn_binaries_path}\\qnn-net-run.exe",
+            "--retrieve_context", model_context,
+            "--backend", f"{self.qnn_binaries_path}\\QnnHtp.dll",
+            "--input_list", input_list_filepath,
+            "--output_dir", tmp_dirpath,
+        ]  # + ["--log_level", "verbose"]
         try:
             print(cmd)
-            log = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+            log = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=False)
             print(log.decode())
         except subprocess.CalledProcessError as e:
             print(e.output.decode())
