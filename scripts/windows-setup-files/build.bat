@@ -23,7 +23,7 @@ if /I "%1"=="install" (
     call "%ROOT_DIR%\windows\src\download_extract.bat" "https://github.com/redis-windows/redis-windows/releases/download/6.0.20/Redis-6.0.20-Windows-x64-msys2.zip" "%ROOT_DIR%\windows\packages\Redis-6.0.20-Windows-x64-msys2" "%ROOT_DIR%\windows\packages" "redis.zip"
     call "%ROOT_DIR%\windows\src\download_extract.bat" "https://github.com/git-for-windows/git/releases/download/v2.45.1.windows.1/PortableGit-2.45.1-64-bit.7z.exe" "%ROOT_DIR%\windows\packages\PortableGit-2.45.1-64-bit\usr\bin\bash.exe" "%ROOT_DIR%\windows\packages" "gitbash.7z.exe"
     call "%ROOT_DIR%\windows\src\download_extract.bat" "https://github.com/GyanD/codexffmpeg/releases/download/7.1.1/ffmpeg-7.1.1-full_build-shared.7z" "%ROOT_DIR%\windows\packages\ffmpeg-7.1.1-full_build-shared\bin\ffmpeg.exe" "%ROOT_DIR%\windows\packages" "ffmpeg.7z"
-    if not exist "%ROOT_DIR%\windows\executors\gemma3-1b\gemma-3-1b-it-q4_0.gguf" curl -L --fail --silent --show-error -o "%ROOT_DIR%\windows\executors\gemma3-1b\gemma-3-1b-it-q4_0.gguf" "https://huggingface.co/tetf/gemma-3-1b-it-qat-q4_0-GGUF/resolve/main/gemma-3-1b-it-q4_0.gguf?download=true"
+    if not exist "%ROOT_DIR%\windows\executors\gemma4-e2b\gemma-4-E2B_q4_0-it.gguf" curl -L --fail --silent --show-error -o "%ROOT_DIR%\windows\executors\gemma4-e2b\gemma-4-E2B_q4_0-it.gguf" "https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B_q4_0-it.gguf?download=true"
     if errorlevel 1 exit /b 1
     echo Runtime package installation completed.
     exit /b 0

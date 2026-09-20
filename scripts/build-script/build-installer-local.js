@@ -27,9 +27,10 @@ const REPO_SSH_URL = (() => {
   return m ? `git@github.com:${m[1]}.git` : REPO_URL;
 })();
 const ONLINE_REPO_HTTPS_URL = 'https://github.com/kuwaai/kuwa-aios.git';
-const MODEL_URL    = 'https://huggingface.co/tetf/gemma-3-1b-it-qat-q4_0-GGUF/resolve/main/gemma-3-1b-it-q4_0.gguf?download=true';
-const MODEL_DIR    = path.join(CACHE_FOLDER, 'gemma3-1b');
-const MODEL_FILE   = path.join(MODEL_DIR, 'gemma-3-1b-it-q4_0.gguf');
+const MODEL_URL    = 'https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B_q4_0-it.gguf?download=true';
+const MODEL_DIR    = path.join(CACHE_FOLDER, 'gemma4-e2b');
+const MODEL_FILE   = path.join(MODEL_DIR, 'gemma-4-E2B_q4_0-it.gguf');
+// Online .iss lives in the local workspace — no git clone required to compile it.
 const ISS_DIR_ONLINE  = path.join(SCRIPT_DIR, '..', 'windows-setup-files');
 const ISS_FILE_ONLINE = path.join(ISS_DIR_ONLINE, 'Kuwa-AIOS-Online-Installer.iss');
 const ISS_DIR_FULL    = path.join(TEMP_FOLDER, 'scripts', 'windows-setup-files');
@@ -134,7 +135,7 @@ function downloadFile(url, dest) {
 
 async function ensureModel() {
   if (fs.existsSync(MODEL_FILE)) { ok('Model file already cached'); return; }
-  info('Downloading Gemma-3B model (this may take a while, ~2.5 GB)...');
+  info('Downloading Gemma 4 E2B model (this may take a while, ~3.4 GB)...');
   ensureDir(MODEL_DIR);
   await downloadFile(MODEL_URL, MODEL_FILE);
   ok('Downloaded model file');
@@ -211,10 +212,16 @@ async function cloneOrReuse(branch) {
 
 function copyModel() {
   info('Copying cached model to build folder...');
-  const dst = path.join(TEMP_FOLDER, 'windows', 'executors', 'gemma3-1b', 'gemma-3-1b-it-q4_0.gguf');
-  ensureDir(path.dirname(dst));
-  fs.copyFileSync(MODEL_FILE, dst);
-  ok('Model copied');
+  const executorDir = path.join(TEMP_FOLDER, 'windows', 'executors', 'gemma4-e2b');
+  const workspaceExecutorDir = path.resolve(SCRIPT_DIR, '..', '..', 'windows', 'executors', 'gemma4-e2b');
+  const modelDestination = path.join(executorDir, 'gemma-4-E2B_q4_0-it.gguf');
+  const runConfigSource = path.join(workspaceExecutorDir, '_run.yaml');
+  const runConfigDestination = path.join(executorDir, '_run.yaml');
+  if (!fs.existsSync(runConfigSource)) die(`Gemma 4 executor config not found: ${runConfigSource}`);
+  ensureDir(executorDir);
+  fs.copyFileSync(MODEL_FILE, modelDestination);
+  fs.copyFileSync(runConfigSource, runConfigDestination);
+  ok('Gemma 4 model and executor config copied');
 }
 
 function copyRunBats() {

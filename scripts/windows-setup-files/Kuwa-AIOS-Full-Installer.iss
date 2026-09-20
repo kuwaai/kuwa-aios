@@ -75,7 +75,7 @@ Name: "product\Kuwa"; Description: "Kuwa"; Types:  full compact custom ;Flags: f
 //Name: "product\langflow"; Description: "Langflow"; Types: full custom;ExtraDiskSpaceRequired:536870912;
 
 Name: "models"; Description: "Model Selection"; Types: full custom;Flags: fixed;
-Name: "models\gemma_3_1b_it_q4_0"; Description: "Gemma3 1B QAT Q4"; Types: full compact custom;
+Name: "models\gemma_4_e2b_q4_0"; Description: "Gemma4 E2B Q4"; Types: full compact custom; ExtraDiskSpaceRequired:3570000000;
 Name: "models\llama3_point_1_taide_lx_8_q4_km"; Description: "Llama3.1 TAIDE LX-8_Q4_KM"; Types: custom; ExtraDiskSpaceRequired:5261727040;
 
 [Files]
@@ -85,7 +85,8 @@ Source: "..\..\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createa
 
 Source: "package.zip"; DestDir: "{app}"; Flags: ignoreversion; Components: "product\Kuwa"
 
-Source: "..\..\windows\executors\gemma3-1b\gemma-3-1b-it-q4_0.gguf"; DestDir: "{app}\windows\executors\gemma3-1b\"; Flags: ignoreversion; Components: "models\gemma_3_1b_it_q4_0"
+Source: "..\..\windows\executors\gemma4-e2b\gemma-4-E2B_q4_0-it.gguf"; DestDir: "{app}\windows\executors\gemma4-e2b\"; Flags: ignoreversion; Components: "models\gemma_4_e2b_q4_0"
+Source: "..\..\windows\executors\gemma4-e2b\_run.yaml"; DestDir: "{app}\windows\executors\gemma4-e2b\"; Flags: ignoreversion; Components: "models\gemma_4_e2b_q4_0"
 
 Source: "{tmp}\models\Llama-3.1-TAIDE-LX-8B-Chat-Q4_K_M.gguf"; DestDir: "{app}\windows\executors\taide\"; Flags: external; Components: "models\llama3_point_1_taide_lx_8_q4_km"
 
@@ -109,6 +110,40 @@ var
   AutoLoginCheckBox: TNewCheckBox;
   Username, Password, ConfirmPass: String;
   AutoLoginValue: String;
+
+function DeleteInstalledFilesExcept(const Directory, KeepFile: String): Boolean;
+var
+  FindData: TFindRec;
+  FilePath: String;
+begin
+  Result := True;
+  if not FindFirst(Directory + '\*', FindData) then
+    Exit;
+  try
+    repeat
+      if (FindData.Name <> '.') and (FindData.Name <> '..') then
+      begin
+        FilePath := Directory + '\' + FindData.Name;
+        if (FindData.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+        begin
+          DeleteInstalledFilesExcept(FilePath, KeepFile);
+          RemoveDir(FilePath);
+        end
+        else if CompareText(FilePath, KeepFile) <> 0 then
+          DeleteFile(FilePath);
+      end;
+    until not FindNext(FindData);
+  finally
+    FindClose(FindData);
+  end;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usUninstall then
+    DeleteInstalledFilesExcept(ExpandConstant('{app}'),
+      ExpandConstant('{app}\src\multi-chat\database\database.sqlite'));
+end;
 
 function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
 begin

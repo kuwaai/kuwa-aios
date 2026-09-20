@@ -63,12 +63,10 @@ Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
 [Components]
 Name: "models"; Description: "Model Selection"; Types: full custom;Flags: fixed;
 Name: "models\llama3_point_1_taide_lx_8_q4_km"; Description: "Llama3.1 TAIDE LX-8_Q4_KM"; Types: custom; ExtraDiskSpaceRequired:5261727040;
-Name: "models\gemma_3_4b_it"; Description: "Gemma 3 4B"; Types: custom; ExtraDiskSpaceRequired:8639654085;
 ; Name: "models\phi4_multimodal_it"; Description: "Phi 4 Multimodal"; Types: custom; ExtraDiskSpaceRequired:11177094757;
 
 [Files]
 Source: "{tmp}\models\taide\Llama-3.1-TAIDE-LX-8B-Chat-Q4_K_M.gguf"; DestDir: "{app}\windows\executors\taide\"; Flags: external;Components: "models\llama3_point_1_taide_lx_8_q4_km"
-Source: "{tmp}\models\gemma3-4b\*"; DestDir: "{app}\windows\executors\gemma3-4b\"; Flags: external;Components: "models\gemma_3_4b_it";
 ; Source: "{tmp}\models\phi4\*"; DestDir: "{app}\windows\executors\phi4\"; Flags: external;Components: "models\phi4_multimodal_it";
 
 [Icons]
@@ -84,6 +82,40 @@ Name: "{userdesktop}\Construct RAG"; Filename: "{app}\windows\construct_rag.bat"
 [Code]
 var
   DownloadPage: TDownloadWizardPage;
+
+function DeleteInstalledFilesExcept(const Directory, KeepFile: String): Boolean;
+var
+  FindData: TFindRec;
+  FilePath: String;
+begin
+  Result := True;
+  if not FindFirst(Directory + '\*', FindData) then
+    Exit;
+  try
+    repeat
+      if (FindData.Name <> '.') and (FindData.Name <> '..') then
+      begin
+        FilePath := Directory + '\' + FindData.Name;
+        if (FindData.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+        begin
+          DeleteInstalledFilesExcept(FilePath, KeepFile);
+          RemoveDir(FilePath);
+        end
+        else if CompareText(FilePath, KeepFile) <> 0 then
+          DeleteFile(FilePath);
+      end;
+    until not FindNext(FindData);
+  finally
+    FindClose(FindData);
+  end;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usUninstall then
+    DeleteInstalledFilesExcept(ExpandConstant('{app}'),
+      ExpandConstant('{app}\src\multi-chat\database\database.sqlite'));
+end;
 
 function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
 begin
@@ -153,32 +185,6 @@ begin
         ''
       );
       HasDownloads := True;
-    end;
-    if WizardIsComponentSelected('models\gemma_3_4b_it') then
-    begin
-      FileListStr :=
-        '.gitattributes LICENSE NOTICE README.md added_tokens.json chat_template.json config.json ' +
-        'generation_config.json model-00001-of-00002.safetensors model-00002-of-00002.safetensors ' +
-        'model.safetensors.index.json preprocessor_config.json processor_config.json ' +
-        'special_tokens_map.json tokenizer.json tokenizer.model tokenizer_config.json';
-
-      FileList := SplitString(FileListStr, ' ');
-
-      BaseURL := 'https://huggingface.co/tetf/gemma-3-4b-it/resolve/main/';
-      TargetDir := ExpandConstant('models\gemma3-4b\');
-
-      if not DirExists(TargetDir) then
-        ForceDirectories(TargetDir);
-
-      for i := 0 to GetArrayLength(FileList) - 1 do
-      begin
-        DownloadPage.Add(
-          BaseURL + FileList[i] + '?download=true',
-          TargetDir + FileList[i],
-          ''
-        );
-        HasDownloads := True;
-      end;
     end;
     if WizardIsComponentSelected('models\phi4_multimodal_it') then
     begin

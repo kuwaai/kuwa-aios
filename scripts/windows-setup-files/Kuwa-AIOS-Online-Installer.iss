@@ -84,7 +84,7 @@ Name: "product\Kuwa"; Description: "Kuwa"; Types:  full compact custom ;Flags: f
 //Name: "product\langflow"; Description: "Langflow"; Types: full custom;ExtraDiskSpaceRequired:536870912;
 
 Name: "models"; Description: "Model Selection"; Types: full custom;Flags: fixed;
-Name: "models\gemma_3_1b_it_q4_0"; Description: "Gemma3 1B QAT Q4"; Types: full compact custom;
+Name: "models\gemma_4_e2b_q4_0"; Description: "Gemma4 E2B Q4"; Types: full compact custom; ExtraDiskSpaceRequired:3570000000;
 
 [Icons]
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
@@ -106,6 +106,40 @@ var
   Username, Password, ConfirmPass: String;
   AutoLoginValue: String;
 
+function DeleteInstalledFilesExcept(const Directory, KeepFile: String): Boolean;
+var
+  FindData: TFindRec;
+  FilePath: String;
+begin
+  Result := True;
+  if not FindFirst(Directory + '\*', FindData) then
+    Exit;
+  try
+    repeat
+      if (FindData.Name <> '.') and (FindData.Name <> '..') then
+      begin
+        FilePath := Directory + '\' + FindData.Name;
+        if (FindData.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+        begin
+          DeleteInstalledFilesExcept(FilePath, KeepFile);
+          RemoveDir(FilePath);
+        end
+        else if CompareText(FilePath, KeepFile) <> 0 then
+          DeleteFile(FilePath);
+      end;
+    until not FindNext(FindData);
+  finally
+    FindClose(FindData);
+  end;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usUninstall then
+    DeleteInstalledFilesExcept(ExpandConstant('{app}'),
+      ExpandConstant('{app}\src\multi-chat\database\database.sqlite'));
+end;
+
 function CloneRepository(const AppDir: String): Boolean;
 var
   ArchiveFile, ExtractDir, RepoDir, Url, Args: String;
@@ -114,16 +148,25 @@ begin
   Result := False;
   ArchiveFile := ExpandConstant('{tmp}\kuwa-repository.zip');
   ExtractDir := ExpandConstant('{tmp}\kuwa-repository');
-  RepoDir := ExtractDir + '\kuwa-dev-{#Branch}';
-  Url := '{#RepoHTTPSURL}/archive/refs/heads/{#Branch}.zip';
+  RepoDir := ExtractDir + '\kuwa-aios-{#Branch}';
+  Url := '{#RepoHTTPSURL}';
+  if (Length(Url) >= 4) and (Copy(Url, Length(Url) - 3, 4) = '.git') then
+    Delete(Url, Length(Url) - 3, 4);
+  Url := Url + '/archive/refs/heads/{#Branch}.zip';
   ForceDirectories(ExtractDir);
   if not Exec(ExpandConstant('{sys}\curl.exe'), '-L --fail --silent --show-error "' + Url + '" -o "' + ArchiveFile + '"', '', SW_HIDE, ewWaitUntilTerminated, RC) or (RC <> 0) then
     Exit;
   if not Exec(ExpandConstant('{sys}\tar.exe'), '-xf "' + ArchiveFile + '" -C "' + ExtractDir + '"', '', SW_HIDE, ewWaitUntilTerminated, RC) or (RC <> 0) then
     Exit;
+  if not DirExists(RepoDir) then
+  begin
+    DeleteFile(ArchiveFile);
+    Exit;
+  end;
   ForceDirectories(AppDir);
   Args := '/c xcopy /E /I /Y "' + RepoDir + '\*" "' + AppDir + '\"';
-  Result := Exec(ExpandConstant('{sys}\cmd.exe'), Args, '', SW_HIDE, ewWaitUntilTerminated, RC) and (RC <= 1);
+  Result := Exec(ExpandConstant('{sys}\cmd.exe'), Args, '', SW_HIDE, ewWaitUntilTerminated, RC) and
+    (RC <= 1) and FileExists(AppDir + '\windows\launcher.bat');
   DeleteFile(ArchiveFile);
 end;
 
@@ -151,19 +194,12 @@ var
   InitFile: String;
   InitContent: String;
   Email: String;
-  RC: Integer;
 begin
   if CurStep = ssPostInstall then
   begin
     if not CloneRepository(ExpandConstant('{app}')) then
     begin
       MsgBox('Kuwa repository clone failed. Check the repository URL, branch, and Git access.', mbError, MB_OK);
-      Abort;
-    end;
-
-    if not Exec(ExpandConstant('{sys}\cmd.exe'), '/c ""' + ExpandConstant('{app}\scripts\windows-setup-files\build.bat') + '" install"', ExpandConstant('{app}'), SW_SHOW, ewWaitUntilTerminated, RC) or (RC <> 0) then
-    begin
-      MsgBox('Runtime package installation failed. Check the build.bat output.', mbError, MB_OK);
       Abort;
     end;
 

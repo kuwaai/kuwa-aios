@@ -1,0 +1,9 @@
+version: 1
+access_code: '.model/google/gemma-4-e2b'
+
+# Simple declarative executor for the bundled Gemma 4 E2B GGUF model.
+executor:
+  type: llamacpp
+  name: Gemma 4 E2B
+  order: 311005
+  command: ["--ngl", "-1", "--model_path", "gemma-4-E2B_q4_0-it.gguf"]
