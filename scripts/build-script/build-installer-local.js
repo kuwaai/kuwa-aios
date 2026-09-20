@@ -22,11 +22,18 @@ const CACHE_FOLDER = path.join(SCRIPT_DIR, 'cache');
 const OUTPUT_DIR   = path.join(SCRIPT_DIR, 'build');
 
 const REPO_URL     = runCapture(['git', 'remote', 'get-url', 'origin'], { cwd: SCRIPT_DIR }) || die('Could not determine git remote URL');
+const PUBLIC_REPO_URL = runCapture(['git', 'remote', 'get-url', 'public'], { cwd: SCRIPT_DIR }) || REPO_URL;
+const toHttpsRepoUrl = (remoteUrl) => {
+  if (remoteUrl.startsWith('git@github.com:')) {
+    return `https://github.com/${remoteUrl.slice('git@github.com:'.length)}`;
+  }
+  return remoteUrl;
+};
 const REPO_SSH_URL = (() => {
   const m = REPO_URL.match(/^https?:\/\/github\.com\/([^/]+\/[^/?#]+?)(?:\.git)?(?:[/?#].*)?$/);
   return m ? `git@github.com:${m[1]}.git` : REPO_URL;
 })();
-const ONLINE_REPO_HTTPS_URL = 'https://github.com/kuwaai/kuwa-aios.git';
+const ONLINE_REPO_HTTPS_URL = toHttpsRepoUrl(PUBLIC_REPO_URL);
 const MODEL_URL    = 'https://huggingface.co/google/gemma-4-E2B-it-qat-q4_0-gguf/resolve/main/gemma-4-E2B_q4_0-it.gguf?download=true';
 const MODEL_DIR    = path.join(CACHE_FOLDER, 'gemma4-e2b');
 const MODEL_FILE   = path.join(MODEL_DIR, 'gemma-4-E2B_q4_0-it.gguf');

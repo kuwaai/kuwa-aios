@@ -13,7 +13,7 @@ REM Check if Node.js is available, install if missing
 if not exist "packages\%node_folder%\node.exe" (
     echo Node.js not found. Downloading and installing...
     if exist "packages\%node_folder%" rd /s /q "packages\%node_folder%"
-    call src\download_extract.bat "%url_NodeJS%" "packages\%node_folder%" packages "%filename_NodeJS%"
+    call src\download_extract.bat %url_NodeJS% packages\%node_folder% packages %filename_NodeJS%
     if errorlevel 1 (
         echo Node.js installation failed. Please check your network connection and try again.
         exit /B 1
