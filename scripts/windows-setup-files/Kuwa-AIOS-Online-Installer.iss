@@ -4,6 +4,17 @@
 #define MyAppURL "https://kuwaai.tw/os/intro"
 #define MyAppIcon "..\..\src\multi-chat\public\images\kuwa-logo.ico"
 
+; RepoURL and Branch are injected by build-installer-local.js.
+#ifndef RepoURL
+  #define RepoURL "https://github.com/kuwaai/kuwa-aios.git"
+#endif
+#ifndef RepoHTTPSURL
+  #define RepoHTTPSURL "https://github.com/kuwaai/kuwa-aios.git"
+#endif
+#ifndef Branch
+  #define Branch "main"
+#endif
+
 [Setup]
 AppId={{B37EB0AF-B52C-4200-B80F-671FBCE385DC}
 AppName={#MyAppName}
@@ -75,18 +86,6 @@ Name: "product\Kuwa"; Description: "Kuwa"; Types:  full compact custom ;Flags: f
 Name: "models"; Description: "Model Selection"; Types: full custom;Flags: fixed;
 Name: "models\gemma_3_1b_it_q4_0"; Description: "Gemma3 1B QAT Q4"; Types: full compact custom;
 
-[Files]
-Source: "..\..\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; \
-    Excludes: "package.zip,*.gguf,windows\packages\*,windows-setup-files\*.exe,windows-setup-files\*.bin,node_modules\*,vendor\*"; \
-    Permissions: users-full; Components: "product\Kuwa"
-
-Source: "..\..\.git\*"; DestDir: "{app}\.git"; Flags: ignoreversion recursesubdirs createallsubdirs; \
-    Permissions: users-full; Components: "product\Kuwa"
-
-Source: "..\..\windows\executors\gemma3-1b\gemma-3-1b-it-q4_0.gguf"; DestDir: "{app}\windows\executors\gemma3-1b\"; Flags: ignoreversion; Components: "models\gemma_3_1b_it_q4_0"
-
-Source: "{tmp}\packages\*"; DestDir: "{app}\windows\packages\"; Flags: external; Components: "product\Kuwa"
-
 [Icons]
 Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
@@ -98,21 +97,34 @@ Name: "{userdesktop}\Kuwa GenAI OS"; Filename: "{app}\windows\launcher.bat"; Wor
 Name: "{userdesktop}\Construct RAG"; Filename: "{app}\windows\construct_rag.bat"; WorkingDir: "{app}\windows"; IconFilename: "{app}\src\multi-chat\public\images\kuwa-logo.ico"
 
 [Run]
-Filename: "{app}\windows\launcher.bat"; Flags: shellexec; Components: "product\Kuwa"
+Filename: "{app}\windows\launcher.bat"; WorkingDir: "{app}\windows"; Flags: postinstall shellexec nowait skipifsilent; Check: FileExists(ExpandConstant('{app}\windows\launcher.bat'))
 
 [Code]
 var
-  DownloadPage: TDownloadWizardPage;
   AccountPage: TInputQueryWizardPage;
   AutoLoginCheckBox: TNewCheckBox;
   Username, Password, ConfirmPass: String;
   AutoLoginValue: String;
 
-function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
+function CloneRepository(const AppDir: String): Boolean;
+var
+  ArchiveFile, ExtractDir, RepoDir, Url, Args: String;
+  RC: Integer;
 begin
-  if Progress = ProgressMax then
-    Log(Format('Successfully downloaded file to {tmp}: %s', [FileName]));
-  Result := True;
+  Result := False;
+  ArchiveFile := ExpandConstant('{tmp}\kuwa-repository.zip');
+  ExtractDir := ExpandConstant('{tmp}\kuwa-repository');
+  RepoDir := ExtractDir + '\kuwa-dev-{#Branch}';
+  Url := '{#RepoHTTPSURL}/archive/refs/heads/{#Branch}.zip';
+  ForceDirectories(ExtractDir);
+  if not Exec(ExpandConstant('{sys}\curl.exe'), '-L --fail --silent --show-error "' + Url + '" -o "' + ArchiveFile + '"', '', SW_HIDE, ewWaitUntilTerminated, RC) or (RC <> 0) then
+    Exit;
+  if not Exec(ExpandConstant('{sys}\tar.exe'), '-xf "' + ArchiveFile + '" -C "' + ExtractDir + '"', '', SW_HIDE, ewWaitUntilTerminated, RC) or (RC <> 0) then
+    Exit;
+  ForceDirectories(AppDir);
+  Args := '/c xcopy /E /I /Y "' + RepoDir + '\*" "' + AppDir + '\"';
+  Result := Exec(ExpandConstant('{sys}\cmd.exe'), Args, '', SW_HIDE, ewWaitUntilTerminated, RC) and (RC <= 1);
+  DeleteFile(ArchiveFile);
 end;
 
 procedure InitializeWizard;
@@ -133,17 +145,28 @@ begin
   AutoLoginCheckBox.Width := 300;
   AutoLoginCheckBox.Caption := 'Single User Mode';
   AutoLoginCheckBox.Checked := False; 
-  DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
-  DownloadPage.ShowBaseNameInsteadOfUrl := True;
 end;
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   InitFile: String;
   InitContent: String;
   Email: String;
+  RC: Integer;
 begin
   if CurStep = ssPostInstall then
   begin
+    if not CloneRepository(ExpandConstant('{app}')) then
+    begin
+      MsgBox('Kuwa repository clone failed. Check the repository URL, branch, and Git access.', mbError, MB_OK);
+      Abort;
+    end;
+
+    if not Exec(ExpandConstant('{sys}\cmd.exe'), '/c ""' + ExpandConstant('{app}\scripts\windows-setup-files\build.bat') + '" install"', ExpandConstant('{app}'), SW_SHOW, ewWaitUntilTerminated, RC) or (RC <> 0) then
+    begin
+      MsgBox('Runtime package installation failed. Check the build.bat output.', mbError, MB_OK);
+      Abort;
+    end;
+
     Email := AccountPage.Values[0];
     Password := AccountPage.Values[1];
     ConfirmPass := AccountPage.Values[2];
@@ -186,40 +209,7 @@ begin
 end;
 function NextButtonClick(CurPageID: Integer): Boolean;
 begin
-  if CurPageID = wpReady then begin
-    if not WizardIsComponentSelected('product\Kuwa') then begin
-      Log('Skipping download because "product\Kuwa" was not selected.');
-      Result := True; 
-      Exit; 
-    end;
-
-    DownloadPage.Clear;
-    DownloadPage.Add('https://github.com/wenshui2008/RunHiddenConsole/releases/download/1.0/RunHiddenConsole.zip', 'packages\RunHiddenConsole.zip', '');
-    DownloadPage.Add('https://nodejs.org/dist/v20.19.5/node-v20.19.5-win-x64.zip', 'packages\node.zip', '');
-    DownloadPage.Add('https://windows.php.net/downloads/releases/archives/php-8.3.24-Win32-vs16-x64.zip', 'packages\php.zip', '');
-    DownloadPage.Add('https://nginx.org/download/nginx-1.26.3.zip', 'packages\nginx.zip', '');
-    DownloadPage.Add('https://www.python.org/ftp/python/3.10.11/python-3.10.11-embed-amd64.zip', 'packages\python.zip', '');
-    DownloadPage.Add('https://github.com/redis-windows/redis-windows/releases/download/6.0.20/Redis-6.0.20-Windows-x64-msys2.zip', 'packages\redis.zip', '');
-    DownloadPage.Add('https://github.com/git-for-windows/git/releases/download/v2.45.1.windows.1/PortableGit-2.45.1-64-bit.7z.exe', 'packages\gitbash.7z.exe', '');
-    DownloadPage.Add('https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-7.1.1-essentials_build.zip', 'packages\ffmpeg.zip', '');
-
-    DownloadPage.Show;
-    
-    try
-      try
-        DownloadPage.Download;
-        Result := True;
-      except
-        if DownloadPage.AbortedByUser then
-          Log('Aborted by user.')
-        else
-          SuppressibleMsgBox(AddPeriod(GetExceptionMessage), mbCriticalError, MB_OK, IDOK);
-        Result := False;
-      end;
-    finally
-      DownloadPage.Hide;
-    end;
-  end else if CurPageID = AccountPage.ID then
+  if CurPageID = AccountPage.ID then
   begin
     Username := AccountPage.Values[0];
     Password := AccountPage.Values[1];

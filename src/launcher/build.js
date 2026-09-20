@@ -540,10 +540,13 @@ async function runBuild({ pythonOnly: _pythonOnly = false, uiOnly: _uiOnly = fal
             logToFile('Installing updated version of pip and uv');
             step('installing pip + uv');
             const pipExe = path.join(pythonDir, 'Scripts', 'pip.exe');
+            const uvExe = path.join(pythonDir, 'Scripts', 'uv.exe');
             if (!fileExists(pipExe)) {
               await runAsync('python get-pip.py --no-warn-script-location', { cwd: pythonDir });
             }
-            await runAsync('python -m pip install -U pip uv');
+            if (!fileExists(uvExe)) {
+              await runAsync('python -m pip install -U pip uv');
+            }
 
             step('uv pip sync');
             // Clean up dangling temp directories (e.g. ~package_name.dist-info)

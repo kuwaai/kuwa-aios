@@ -80,11 +80,10 @@ Name: "models\llama3_point_1_taide_lx_8_q4_km"; Description: "Llama3.1 TAIDE LX-
 
 [Files]
 Source: "..\..\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; \
-    Excludes: "*.gguf,windows\packages\*,windows-setup-files\*.exe,windows-setup-files\*.bin,node_modules\*,vendor\*"; \
+  Excludes: "*.gguf,.git\*,.venv\*,docker\*,test-results\*,src\multi-chat\public\storage\*,src\multi-chat\frontend\.next\*,windows\cache\*,windows\logs\*,windows\packages\*,windows-setup-files\*.exe,windows-setup-files\*.bin,node_modules\*,vendor\*,package.zip"; \
     Permissions: users-full; Components: "product\Kuwa"
 
-Source: "..\..\.git\*"; DestDir: "{app}\.git"; Flags: ignoreversion recursesubdirs createallsubdirs; \
-    Permissions: users-full; Components: "product\Kuwa"
+Source: "package.zip"; DestDir: "{app}"; Flags: ignoreversion; Components: "product\Kuwa"
 
 Source: "..\..\windows\executors\gemma3-1b\gemma-3-1b-it-q4_0.gguf"; DestDir: "{app}\windows\executors\gemma3-1b\"; Flags: ignoreversion; Components: "models\gemma_3_1b_it_q4_0"
 
