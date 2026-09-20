@@ -1,5 +1,5 @@
 version: 1
-access_code: '.tool/turu/contextualizer'
+access_code: '.tool/kuwa/contextualizer'
 
 # Simple declarative executor (mirrors docker/compose/contextualizer.yaml).
 executor:

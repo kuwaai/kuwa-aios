@@ -1,5 +1,5 @@
 version: 1
-access_code: '.tool/turu/extractor'
+access_code: '.tool/kuwa/extractor'
 
 # Simple declarative executor (mirrors docker/compose/extractor.yaml).
 executor:
