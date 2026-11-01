@@ -77,11 +77,11 @@ function initVariables(noMigrate) {
   cfg.node_folder = folderFromFilename(urlFilename(cfg.url_NodeJS));
 
   // PHP
-  cfg.url_PHP = 'https://windows.php.net/downloads/releases/php-8.3.24-Win32-vs16-x64.zip';
+  cfg.url_PHP = 'https://downloads.php.net/~windows/releases/php-8.3.36-1-Win32-vs16-x64.zip';
   cfg.php_folder = folderFromFilename(urlFilename(cfg.url_PHP));
 
   // PHP Fallback
-  cfg.url_PHP_Fallback = 'https://windows.php.net/downloads/releases/archives/php-8.3.24-Win32-vs16-x64.zip';
+  cfg.url_PHP_Fallback = 'https://downloads.php.net/~windows/releases/archives/php-8.3.36-1-Win32-vs16-x64.zip';
   cfg.php_folder_Fallback = folderFromFilename(urlFilename(cfg.url_PHP_Fallback));
 
   // Nginx
