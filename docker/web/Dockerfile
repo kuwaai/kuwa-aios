@@ -6,6 +6,6 @@ RUN apk upgrade --no-cache && \
 
 COPY docker/web/fastcgi.conf /etc/nginx/fastcgi.conf
 COPY docker/web/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=kuwaai/multi-chat:latest /app/public /app/public
+RUN mkdir -p /app/public
 
 EXPOSE 80

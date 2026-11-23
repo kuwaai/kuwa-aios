@@ -9,6 +9,7 @@ kernel/
 report/
 records.pickle
 src/
+**/node_modules/
 docker/executor/
 docker/kernel/
 docker/multi-chat/

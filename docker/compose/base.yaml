@@ -12,6 +12,7 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - multi-chat-storage:/app/storage:ro
+      - multi-chat-public:/app/public:ro
       - ../root:/app/storage/app/public/root:ro
     ports: ["80:80", "443:443"]
     depends_on: ["multi-chat"]
@@ -60,6 +61,7 @@ services:
       - admin-password
     volumes: 
       - multi-chat-storage:/app/storage:rw
+      - multi-chat-public:/app/public:rw
       - ../root:/app/storage/app/public/root:rw
       - ../root:/var/kuwa/docker/root:rw
       - ../root/custom:/app/resources/views/components/custom:ro
@@ -98,6 +100,7 @@ services:
 
 volumes:
   multi-chat-storage: {}
+  multi-chat-public: {}
   kuwa-root: # The root of Kuwa filesystem hierarchy to store user-uploaded data during runtime.
     driver: local
     driver_opts:
