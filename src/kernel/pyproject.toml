@@ -39,7 +39,7 @@ dependencies=[
   "flask>=3.1.0",
   "flask-sse>=1.0.0",
   "huggingface-hub[cli]>=0.30.2",
-  "requests>=2.32.3",
+  "requests>=2.33.0",
   "uvicorn>=0.29.0",
   "fastapi",
   "httpx",

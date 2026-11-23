@@ -5,10 +5,10 @@ import zipfile
 import tempfile
 import hashlib
 from pathlib import Path
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from langchain_community.vectorstores import FAISS
 #from langchain_community.retrievers import BM25Retriever
-from langchain.schema.vectorstore import VectorStoreRetriever
+from langchain_core.vectorstores import VectorStoreRetriever
 #from langchain.retrievers.ensemble import EnsembleRetriever
 
 from .parallel_splitter import ParallelSplitter

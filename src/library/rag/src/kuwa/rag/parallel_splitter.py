@@ -3,9 +3,9 @@ import asyncio
 import itertools
 from concurrent.futures import ProcessPoolExecutor
 from typing import Callable, Iterable
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 #from langchain.text_splitter import SentenceTransformersTokenTextSplitter
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 
 
 async def async_pool_map(fn: Callable, data: Iterable, max_workers=None) -> Iterable:

@@ -4,7 +4,7 @@
 from typing import Generator
 from collections import namedtuple
 from pathlib import Path
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from kuwa.executor import Modelfile
 from kuwa.client import KuwaClient
 

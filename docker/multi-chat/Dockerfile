@@ -1,46 +1,51 @@
-FROM --platform=$BUILDPLATFORM php:8.3-cli AS build
+# syntax=docker/dockerfile:1
+FROM --platform=$BUILDPLATFORM php:8.5.12-cli AS build-base
 
-RUN apt-get update
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git unzip libldap-dev libzip-dev && \
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs && \
+    npm install -g pnpm@10.30.3 --no-audit --no-fund && \
+    docker-php-ext-install ldap zip && \
+    curl -sS https://getcomposer.org/installer | php -- \
+        --install-dir=/usr/local/bin --filename=composer
 
-# Install nodejs and composer
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - &&\
-    apt-get install -y nodejs &&\
-    echo Version of Node.js: $(node -v) &&\
-    echo Version of NPM: $(npm -v)
-RUN curl -s https://getcomposer.org/installer | php &&\
-    mv composer.phar /usr/local/bin/composer &&\
-    echo Version of Composer: $(composer --version)
-
-# Install dependency of PHP extension for building
-RUN apt-get install -y libldap-dev libzip-dev &&\
-    docker-php-ext-install ldap zip
-
-# Build the multi-chat application
-COPY src/multi-chat /app
 WORKDIR /app
-## Install dependencies using npm and composer
 ENV HTTP_PROXY_REQUEST_FULLURI=0
 ENV HTTPS_PROXY_REQUEST_FULLURI=0
-RUN composer update --no-interaction &&\
-    composer install --no-interaction --optimize-autoloader --no-dev &&\
-    npm install
-## Optimize composer dependency
-RUN php artisan clear-compiled &&\
-    composer dump-autoload --optimize
-## Build the front-end assets
-RUN npm run build
-## Reconstruct the symbolic link
-WORKDIR /app/public
-RUN rm -f storage &&\
-    ln -s ../storage/app/public storage
+ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV CI=true
 
-# Cleanup
+COPY src/multi-chat/composer.json src/multi-chat/composer.lock ./
+RUN --mount=type=cache,target=/tmp/composer/cache \
+    composer install --no-dev --no-scripts --no-autoloader --prefer-dist
+
+COPY src/multi-chat/package.json src/multi-chat/pnpm-lock.yaml ./
+RUN --mount=type=cache,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
+FROM build-base AS build
+COPY src/multi-chat /app
+RUN --mount=type=cache,target=/tmp/composer/cache \
+    mkdir -p storage/framework/views storage/framework/cache storage/framework/sessions \
+        storage/logs bootstrap/cache && \
+    composer install --no-interaction --optimize-autoloader --no-dev && \
+    php artisan clear-compiled && \
+    composer dump-autoload --optimize && \
+    pnpm install --frozen-lockfile && \
+    pnpm run build
+
+WORKDIR /app/public
+RUN rm -f storage && ln -s ../storage/app/public storage
+
 WORKDIR /app
-RUN rm -rf node_modules storage &&\
+RUN rm -rf node_modules storage && \
     mkdir -p storage
 
 #============================================
-FROM php:8.3-fpm
+FROM php:8.5.12-fpm
+ARG PHPREDIS_VERSION=6.3.0
+ARG PHPREDIS_SHA256=cb8f81df1a275599e4f8ddcfec7e1f65ed1953e6f5673649149fd680ebff4cad
 
 # Align the UID and PID with Nginx
 RUN usermod -u 101 www-data &&\
@@ -52,19 +57,30 @@ COPY docker/multi-chat/conf/php-override.ini ${PHP_INI_DIR}/conf.d/00-override.i
 RUN mv "$PHP_INI_DIR/php.ini-production" "${PHP_INI_DIR}/php.ini"
 
 # Install required PHP extensions
-RUN apt-get update &&\
-    apt-get install -y libldap-dev libzip-dev libcurl4-openssl-dev libonig-dev \
-                       libxml2-dev libpq-dev libpng-dev &&\
-    docker-php-ext-install curl mbstring xml zip ldap mysqli pdo_mysql pgsql pdo_pgsql gd
-RUN pear config-set http_proxy "${https_proxy:-${HTTPS_PROXY}}" &&\
-    pecl install redis-6.0.2 &&\
-    docker-php-ext-enable redis
-
-# Install tools to check service status
-RUN apt-get install -y procps netcat-openbsd wget &&\
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libldap-dev libzip-dev libcurl4-openssl-dev libonig-dev \
+        libxml2-dev libpq-dev libsqlite3-dev libpng-dev \
+        procps netcat-openbsd wget \
+        linux-libc-dev apt zlib1g zlib1g-dev && \
+    apt-get install -y --only-upgrade zlib1g libpq5 linux-libc-dev && \
+    docker-php-ext-install curl mbstring xml zip ldap mysqli pdo_mysql pgsql pdo_pgsql pdo_sqlite gd && \
+    curl -fsSL --retry 3 -o /tmp/phpredis.tar.gz \
+        "https://github.com/phpredis/phpredis/archive/refs/tags/${PHPREDIS_VERSION}.tar.gz" && \
+    echo "${PHPREDIS_SHA256}  /tmp/phpredis.tar.gz" | sha256sum -c - && \
+    docker-php-source extract && \
+    mkdir -p /usr/src/php/ext/redis && \
+    tar -xzf /tmp/phpredis.tar.gz -C /usr/src/php/ext/redis --strip-components=1 && \
+    docker-php-ext-install redis && \
+    docker-php-source delete && \
+    rm -f /tmp/phpredis.tar.gz && \
     wget -O /usr/local/bin/php-fpm-healthcheck \
       https://raw.githubusercontent.com/renatomefi/php-fpm-healthcheck/master/php-fpm-healthcheck &&\
-    chmod +x /usr/local/bin/php-fpm-healthcheck
+    chmod +x /usr/local/bin/php-fpm-healthcheck && \
+    apt-get purge -y \
+        libldap-dev libzip-dev libcurl4-openssl-dev libonig-dev \
+        libxml2-dev libpq-dev libsqlite3-dev libpng-dev zlib1g-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app /app
 COPY docker/multi-chat/conf/app.env /app/.env

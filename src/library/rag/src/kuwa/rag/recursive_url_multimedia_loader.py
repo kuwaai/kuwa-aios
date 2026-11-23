@@ -20,9 +20,9 @@ from pathlib import Path
 from urllib.parse import urlparse, unquote
 from urllib.error import HTTPError
 
-from langchain.docstore.document import Document
-from langchain.document_loaders.base import BaseLoader
-from langchain.utils.html import extract_sub_links
+from langchain_core.documents import Document
+from langchain_core.document_loaders.base import BaseLoader
+from langchain_core.utils.html import extract_sub_links
 import aiohttp
 import trafilatura
 from markitdown import MarkItDown

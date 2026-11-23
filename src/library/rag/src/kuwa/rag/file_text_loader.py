@@ -4,7 +4,7 @@ import traceback
 import trafilatura
 from typing import List, AsyncIterator
 from pathlib import Path
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from langchain_community.document_loaders.text import TextLoader
 from magika import Magika
 from markitdown import MarkItDown

@@ -10,7 +10,7 @@ trap cleanup EXIT
 cd ../../ # To root of repository
 
 ARCH=${1:-x86_64}
-IMAGE_VARIANT=${2:-cu121}
+IMAGE_VARIANT=${2:-cu128}
 
 echo ARCH: ${ARCH}
 echo IMAGE_VARIANT: ${IMAGE_VARIANT}
