@@ -29,6 +29,10 @@ class AuthenticatedSessionController extends Controller
 
         Auth::logoutOtherDevices($request->get('password'));
         $request->session()->regenerate();
+        $request->session()->put(
+            'password_hash_' . Auth::getDefaultDriver(),
+            Auth::guard('web')->hashPasswordForCookie(Auth::user()->getAuthPassword())
+        );
         if ($request->input("_token") == null){
             return response()->noContent();
         }
