@@ -21,7 +21,9 @@ import_bots() {
     echo $botfile
     # Check if the file exists
     if [ -f "$botfile" ]; then
-        php artisan bot:import "$botfile"
+        if ! php artisan bot:import "$botfile"; then
+            echo "Warning: skipped optional bot because its base executor is unavailable: $botfile" >&2
+        fi
     fi
     done
     echo "Successfully import default bots."

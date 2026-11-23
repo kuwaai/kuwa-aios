@@ -155,9 +155,7 @@ class SearchQaExecutor(LLMExecutor):
         self.searching_engine_id = self.args.google_cse_id
         self.user_agent = self.args.user_agent
 
-        loop = asyncio.get_event_loop()
-        task = loop.create_task(self._app_setup())
-        loop.run_until_complete(task)
+        asyncio.run(self._app_setup())
 
     async def _app_setup(self, params: ParameterDict = ParameterDict()):
         await self.doc_qa._app_setup(params=params)

@@ -73,7 +73,8 @@ RUN if [ -d /usr/local/lib/python3.14/dist-packages/nvidia ]; then \
 
 COPY docker/executor/multi-chat-client/multi-chat-client /usr/local/bin/
 COPY docker/executor/docker-entrypoint /usr/local/bin/
-RUN chmod +x /usr/local/bin/multi-chat-client /usr/local/bin/docker-entrypoint
+RUN sed -i 's/\r$//' /usr/local/bin/multi-chat-client /usr/local/bin/docker-entrypoint && \
+    chmod +x /usr/local/bin/multi-chat-client /usr/local/bin/docker-entrypoint
 
 ENV KUWA_ROOT="/var/kuwa/docker/root"
 VOLUME ${KUWA_ROOT}

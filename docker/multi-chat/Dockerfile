@@ -53,6 +53,7 @@ RUN usermod -u 101 www-data &&\
 
 # Configure PHP
 COPY docker/multi-chat/conf/fpm-app-gateway-pool.conf /usr/local/etc/php-fpm.d/app-gateway-pool.conf
+COPY docker/multi-chat/conf/fpm-healthcheck.conf /usr/local/etc/php-fpm.d/zz-healthcheck.conf
 COPY docker/multi-chat/conf/php-override.ini ${PHP_INI_DIR}/conf.d/00-override.ini
 RUN mv "$PHP_INI_DIR/php.ini-production" "${PHP_INI_DIR}/php.ini"
 
@@ -61,7 +62,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libldap-dev libzip-dev libcurl4-openssl-dev libonig-dev \
         libxml2-dev libpq-dev libsqlite3-dev libpng-dev \
-        procps netcat-openbsd wget \
+        procps netcat-openbsd wget libfcgi-bin \
         linux-libc-dev apt zlib1g zlib1g-dev && \
     apt-get install -y --only-upgrade zlib1g libpq5 linux-libc-dev && \
     docker-php-ext-install curl mbstring xml zip ldap mysqli pdo_mysql pgsql pdo_pgsql pdo_sqlite gd && \
@@ -89,7 +90,9 @@ COPY docker/multi-chat/src/*.php /app/app/Console/
 # Copy the scripts
 COPY docker/multi-chat/bin/* /usr/local/bin/
 WORKDIR /usr/local/bin
-RUN chmod +x docker-entrypoint multi-chat import-bots prune-executor upgrade
+RUN sed -i 's/\r$//' \
+        docker-entrypoint multi-chat import-bots prune-executor upgrade && \
+    chmod +x docker-entrypoint multi-chat import-bots prune-executor upgrade
 
 # Copy the bootstrap bots
 ENV KUWA_ROOT="/var/kuwa/docker/root"

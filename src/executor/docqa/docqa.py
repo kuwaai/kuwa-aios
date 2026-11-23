@@ -166,9 +166,7 @@ class DocQaExecutor(LLMExecutor):
             ttl_sec=self.args.vector_db_ttl_sec
         )
 
-        loop = asyncio.get_event_loop()
-        task = loop.create_task(self._app_setup())
-        loop.run_until_complete(task)
+        asyncio.run(self._app_setup())
 
     async def _app_setup(self, params: ParameterDict = ParameterDict()):
         general_params = params["_"]

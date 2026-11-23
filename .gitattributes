@@ -1,0 +1,13 @@
+# Ensure shell scripts and Docker entrypoint files always use LF line endings.
+# Linux containers fail with "command not found" / exit 127 when scripts have CRLF.
+*.sh                                    text eol=lf
+docker/**/bin/*                         text eol=lf
+docker/**/docker-entrypoint*            text eol=lf
+docker/multi-chat/bin/*                 text eol=lf
+docker/executor/docker-entrypoint       text eol=lf
+docker/executor/multi-chat-client/**    text eol=lf
+
+# Tool entry scripts are executed directly by the pipe executor via their
+# shebang (#!/usr/bin/env python). CRLF turns the shebang into "python\r" and
+# breaks them in Linux containers, so force LF for the tool Python sources.
+src/tools/**/*.py                       text eol=lf

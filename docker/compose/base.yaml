@@ -17,7 +17,7 @@ services:
     depends_on: ["multi-chat"]
     networks: ["backend"]
     healthcheck:
-      test: ["CMD-SHELL", "curl", "-f", "http://${DOMAIN_NAME}/"]
+      test: ["CMD-SHELL", "curl -f http://${DOMAIN_NAME}/"]
       timeout: 10s
     extra_hosts:
       - "host.docker.internal:host-gateway"
